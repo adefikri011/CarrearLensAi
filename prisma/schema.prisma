@@ -56,3 +56,48 @@ enum UserRole {
   GRADUATE
   ADMIN
 }
+
+model Analysis {
+  id               String   @id @default(cuid())
+  userId           String
+  cvUploadId       String?
+  result           Json
+  overallReadiness Int?
+  cvScore          Int?
+  selectedPath     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model CVUpload {
+  id            String   @id @default(cuid())
+  userId        String
+  filename      String
+  fileUrl       String
+  fileSize      Int?
+  extractedText String?
+  createdAt     DateTime @default(now())
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  bio             String?
+  usia            Int?
+  sekolah         String?
+  schoolName      String?
+  lulusan         String?
+  jurusan         String?
+  minat           String[]
+  hardSkills      String[]
+  softSkills      String[]
+  experienceLevel String?
+  targetGaji      Int?
+  targetPosisi    String?
+  preferensiKerja String?
+  kotaTarget      String[]
+  sertifikasi     String[]
+  pengalaman      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
