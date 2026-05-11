@@ -17,7 +17,9 @@ interface CVPreviewProps {
     id: string;
     filename: string;
     extractedText: string;
+    createdAt?: string;
   };
+  analysisResult?: any;
   onReset?: () => void;
 }
 
@@ -26,32 +28,115 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
 };
 
-export default function CVPreview({ data, onReset }: CVPreviewProps) {
+export default function CVPreview({ data, analysisResult, onReset }: CVPreviewProps) {
   const [score, setScore] = useState(0);
   const [analyzing, setAnalyzing] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    // Simulate score animation
-    const timer = setTimeout(() => {
+    if (analysisResult) {
       setAnalyzing(false);
-      let current = 0;
-      const interval = setInterval(() => {
-        if (current >= 84) {
-          clearInterval(interval);
-        } else {
-          current += 2;
-          setScore(current);
-        }
-      }, 30);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+      setScore(analysisResult.cvScore?.total || 0);
+    } else {
+      // Simulate score animation if no real data yet
+      const timer = setTimeout(() => {
+        setAnalyzing(false);
+        let current = 0;
+        const interval = setInterval(() => {
+          if (current >= 80) {
+            clearInterval(interval);
+          } else {
+            current += 2;
+            setScore(current);
+          }
+        }, 30);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [analysisResult]);
+
+  const handleDownloadPDF = () => {
+    if (!analysisResult) {
+      toast.error("Tunggu hasil analisis selesai sebelum mengunduh.");
+      return;
+    }
+    const content = `
+LAPORAN ANALISIS CV - CAREERLENS AI
+=====================================
+Nama File: ${data.filename}
+Tanggal Upload: ${new Date(data.createdAt || Date.now()).toLocaleDateString('id-ID')}
+ATS Score: ${analysisResult?.cvScore?.atsCompatibility || 0}%
+
+HASIL ANALISIS:
+- Kompatibilitas ATS: ${analysisResult?.cvScore?.atsCompatibility || 0}%
+- Kelengkapan CV: ${analysisResult?.cvScore?.completeness || 0}%
+- Skor Total: ${analysisResult?.cvScore?.total || 0}%
+
+KEYWORD TERDETEKSI:
+${analysisResult?.cvScore?.keywords?.matched?.join(', ') || 'Tidak ada keyword terdeteksi'}
+
+REKOMENDASI:
+${analysisResult?.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\n') || 'Tidak ada rekomendasi khusus'}
+
+JALUR KARIER REKOMENDASI:
+${analysisResult?.careerPaths?.map((p: any) => 
+  `- ${p.nama}: ${p.matchScore}% match`
+).join('\n') || 'Tidak ada jalur terdeteksi'}
+    `
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `laporan-careerlens-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success("Laporan berhasil diunduh!");
+  }
+
+  const handleSimpanHasil = async () => {
+    if (!analysisResult) return
+    setIsSaving(true)
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cvUploadId: data.id,
+          saveOnly: true,
+          result: analysisResult
+        })
+      })
+      if (res.ok) {
+        toast.success('Hasil analisis berhasil disimpan!')
+      } else {
+        toast.error('Gagal menyimpan hasil analisis.')
+      }
+    } catch (error) {
+      toast.error('Terjadi kesalahan saat menyimpan.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const detectedSections = analysisResult?.cvScore?.sections || [
+    { title: "Data Pribadi", detected: true },
+    { title: "Ringkasan Profil", detected: true },
+    { title: "Pengalaman Kerja", detected: true },
+    { title: "Pendidikan", detected: true },
+    { title: "Skill Teknis", detected: true },
+    { title: "Proyek & Sertifikat", detected: false },
+  ];
+
+  const keywords = analysisResult?.cvScore?.keywords?.matched?.map((k: string) => ({ t: k, m: true })) || [
+    { t: "Communikation", m: true }, { t: "Teamwork", m: true }
+  ];
 
   return (
     <div className="space-y-12">
       {/* --- Action Bar --- */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
          {onReset ? (
+// ... existing button ...
            <button 
              onClick={onReset}
              className="flex items-center gap-2 text-gray-400 hover:text-black transition-colors font-bold group"
@@ -68,11 +153,19 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
          )}
          
          <div className="flex gap-4">
-            <Button variant="outline" className="rounded-full px-6 h-12 font-bold border-[#F3F4F6] hover:bg-surface">
+            <Button 
+              onClick={handleDownloadPDF}
+              variant="outline" 
+              className="rounded-full px-6 h-12 font-bold border-[#F3F4F6] hover:bg-surface"
+            >
                <Download className="w-4 h-4 mr-2" /> Download Laporan (PDF)
             </Button>
-            <Button className="rounded-full px-8 h-12 font-bold bg-teal hover:bg-teal-dark shadow-lg shadow-teal/10">
-               Simpan Hasil
+            <Button 
+              onClick={handleSimpanHasil}
+              disabled={isSaving || !analysisResult}
+              className="rounded-full px-8 h-12 font-bold bg-teal hover:bg-teal-dark shadow-lg shadow-teal/10"
+            >
+               {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : "Simpan Hasil"}
             </Button>
          </div>
       </div>
@@ -128,17 +221,10 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
                   </h3>
                </div>
                <div className="space-y-4">
-                  {[
-                     { t: "Data Pribadi", d: true },
-                     { t: "Ringkasan Profil", d: true },
-                     { t: "Pengalaman Kerja", d: true },
-                     { t: "Pendidikan", d: true },
-                     { t: "Skill Teknis", d: true },
-                     { t: "Proyek & Sertifikat", d: false },
-                  ].map((s, i) => (
+                  {detectedSections.map((s: any, i: number) => (
                      <div key={i} className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 border border-transparent hover:border-gray-100 transition-all">
-                        <span className={cn("text-sm font-bold", s.d ? "text-black" : "text-gray-300")}>{s.t}</span>
-                        {s.d ? <CheckCircle2 className="w-5 h-5 text-teal" /> : <AlertCircle className="w-5 h-5 text-amber" />}
+                        <span className={cn("text-sm font-bold", s.detected ? "text-black" : "text-gray-300")}>{s.title}</span>
+                        {s.detected ? <CheckCircle2 className="w-5 h-5 text-teal" /> : <AlertCircle className="w-5 h-5 text-amber" />}
                      </div>
                   ))}
                </div>
@@ -152,12 +238,7 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
                   </h3>
                </div>
                <div className="flex flex-wrap gap-2">
-                  {[
-                     { t: "React", m: true }, { t: "Next.js", m: true }, { t: "TypeScript", m: false },
-                     { t: "UI/UX", m: true }, { t: "Tailwind", m: true }, { t: "Prisma", m: false },
-                     { t: "Agile", m: true }, { t: "Scrum", m: false }, { t: "Git", m: true },
-                     { t: "Node.js", m: true }, { t: "Postgres", m: false }, { t: "Docker", m: false }
-                  ].map((k, i) => (
+                  {keywords.map((k: any, i: number) => (
                      <Badge 
                        key={i} 
                        className={cn(

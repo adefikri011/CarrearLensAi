@@ -14,7 +14,13 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ success: true, data: analysis });
+    return NextResponse.json({ 
+      success: true, 
+      data: analysis ? {
+        ...analysis,
+        result: analysis.result
+      } : null 
+    });
   } catch (error) {
     console.error("Latest Analysis API Error:", error);
     return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });

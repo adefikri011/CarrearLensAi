@@ -92,6 +92,47 @@ export default function AnalysisPage() {
     { subject: 'Adaptabilitas', A: 0 },
   ];
 
+  const handleDownloadPDF = () => {
+    if (!analysis || !result) {
+      toast.error("Tidak ada data analisis untuk diunduh.");
+      return;
+    }
+    const content = `
+LAPORAN HASIL ANALISIS KARIER - CAREERLENS AI
+=============================================
+Tanggal Analisis: ${new Date(analysis.createdAt).toLocaleDateString('id-ID')}
+Overall Readiness: ${analysis.overallReadiness}%
+
+HASIL ANALISIS:
+- CV Score: ${analysis.cvScore}%
+- Jalur Utama: ${analysis.selectedPath}
+
+KOMPETENSI (Radar):
+- Teknis: ${result.skillRadar?.teknisDigital || 0}%
+- Komunikasi: ${result.skillRadar?.komunikasi || 0}%
+- Kepemimpinan: ${result.skillRadar?.kepemimpinan || 0}%
+- Kreativitas: ${result.skillRadar?.kreativitas || 0}%
+- Analitis: ${result.skillRadar?.analitis || 0}%
+- Adaptabilitas: ${result.skillRadar?.adaptabilitas || 0}%
+
+JALUR KARIER DIREKOMENDASIKAN:
+${result.careerPaths?.map((p: any) => 
+  `- ${p.nama} (${p.matchScore}% Match): ${p.deskripsi}`
+).join('\n')}
+
+REKOMENDASI UTAMA:
+${result.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\n')}
+    `
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `careerlens-analysis-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success("Hasil analisis berhasil diunduh!");
+  };
+
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -178,7 +219,7 @@ export default function AnalysisPage() {
                    <div className="flex flex-wrap gap-4 items-center justify-between">
                       <div className="flex gap-3">
                          <Button 
-                          onClick={() => toast.success("Hasil analisis berhasil disimpan sebagai PDF!")}
+                          onClick={handleDownloadPDF}
                           variant="outline" 
                           className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
                          >

@@ -9,11 +9,6 @@ export async function GET() {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma.roadmapProgress) {
-      console.error("Prisma model 'roadmapProgress' is not defined. Checking Prisma Client...");
-      return NextResponse.json({ success: false, error: "Database model not initialized" }, { status: 500 });
-    }
-
     const progress = await prisma.roadmapProgress.findMany({
       where: { userId: session.user.id },
     });
@@ -39,10 +34,6 @@ export async function PATCH(req: Request) {
 
     if (!taskId) {
       return NextResponse.json({ success: false, error: "Task ID is required" }, { status: 400 });
-    }
-
-    if (!prisma.roadmapProgress) {
-        return NextResponse.json({ success: false, error: "Database model not initialized" }, { status: 500 });
     }
 
     const progress = await prisma.roadmapProgress.upsert({

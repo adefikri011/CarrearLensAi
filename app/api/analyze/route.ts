@@ -29,9 +29,24 @@ export async function POST(req: NextRequest) {
       // Body might be empty, that's fine if we have data in DB
     }
     
-    let { profile, cvText, cvUploadId } = body;
+    let { profile, cvText, cvUploadId, saveOnly, result: providedResult } = body;
 
-    // 3. Fallback to latest data if not provided
+    // If saveOnly is true, we directly save the provided result if it exists
+    if (saveOnly && providedResult) {
+      const savedAnalysis = await prisma.analysis.create({
+        data: {
+          userId: session.user.id,
+          cvUploadId: cvUploadId || null,
+          result: providedResult as any,
+          overallReadiness: providedResult.overallReadiness,
+          cvScore: providedResult.cvScore?.total || 0,
+          selectedPath: providedResult.careerPaths?.[0]?.nama || null,
+        },
+      });
+      return NextResponse.json({ success: true, data: savedAnalysis });
+    }
+
+    // 3. Fallback to latest data if not provided (for full analysis)
     if (!profile) {
       const dbProfile = await prisma.profile.findUnique({
         where: { userId: session.user.id },
@@ -124,10 +139,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: {
-        id: savedAnalysis.id,
-        result: analysisResult,
-      },
+      data: savedAnalysis,
     });
 
   } catch (error: any) {

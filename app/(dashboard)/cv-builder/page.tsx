@@ -30,6 +30,7 @@ const fadeUp = {
 
 export default function CVBuilderPage() {
   const [uploadedData, setUploadedData] = useState<any>(null);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfirmReplace, setShowConfirmReplace] = useState(false);
@@ -38,9 +39,23 @@ export default function CVBuilderPage() {
   useEffect(() => {
     fetchLatestCV();
     fetchHistory();
+    fetchLatestAnalysis();
   }, []);
 
+  const fetchLatestAnalysis = async () => {
+    try {
+      const res = await fetch("/api/analyze/latest");
+      const result = await res.json();
+      if (result.success && result.data?.result) {
+        setAnalysisResult(result.data.result);
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest analysis", error);
+    }
+  };
+
   const fetchLatestCV = async () => {
+// ... existing fetchLatestCV ...
     try {
       const res = await fetch("/api/upload/history");
       const result = await res.json();
@@ -73,13 +88,17 @@ export default function CVBuilderPage() {
     
     // Automatically trigger analysis
     toast.promise(
-      fetch("/api/analyze", { method: "POST" }),
+      fetch("/api/analyze", { method: "POST" }).then(async res => {
+        if (!res.ok) throw new Error('Analysis failed');
+        const result = await res.json();
+        if (result.success && result.data?.result) {
+          setAnalysisResult(result.data.result);
+        }
+        return result;
+      }),
       {
         loading: 'Mencerahkan potensi karier kamu...',
-        success: (res) => {
-          if (!res.ok) throw new Error('Analysis failed');
-          return 'Analisis selesai! Silakan lihat hasil karier kamu.';
-        },
+        success: 'Analisis selesai! Silakan lihat hasil karier kamu.',
         error: 'Gagal menganalisis secara otomatis. Silakan klik "Analisis CV" secara manual.',
       }
     );
@@ -101,6 +120,9 @@ export default function CVBuilderPage() {
       });
       const result = await res.json();
       if (result.success) {
+        if (result.data?.result) {
+          setAnalysisResult(result.data.result);
+        }
         toast.success("Analisis ulang berhasil!");
       } else {
         toast.error(result.error || "Gagal melakukan analisis");
@@ -256,7 +278,7 @@ export default function CVBuilderPage() {
                 </div>
             </div>
 
-            <CVPreview data={uploadedData} />
+            <CVPreview data={uploadedData} analysisResult={analysisResult} />
           </motion.div>
         )}
       </AnimatePresence>
