@@ -22,10 +22,41 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Request Body Parsing
-    const body = await req.json();
-    const { profile, cvText, cvUploadId } = body;
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch (e) {
+      // Body might be empty, that's fine if we have data in DB
+    }
+    
+    let { profile, cvText, cvUploadId } = body;
 
-    // 3. Validation
+    // 3. Fallback to latest data if not provided
+    if (!profile) {
+      const dbProfile = await prisma.profile.findUnique({
+        where: { userId: session.user.id },
+      });
+      if (dbProfile) {
+        profile = dbProfile;
+      } else {
+        return NextResponse.json({ success: false, error: "Profil belum lengkap. Silakan isi profil terlebih dahulu." }, { status: 400 });
+      }
+    }
+
+    if (!cvText || !cvUploadId) {
+      const latestCV = await prisma.cVUpload.findFirst({
+        where: { userId: session.user.id },
+        orderBy: { createdAt: "desc" },
+      });
+      if (latestCV) {
+        cvText = cvText || latestCV.extractedText;
+        cvUploadId = cvUploadId || latestCV.id;
+      } else {
+        return NextResponse.json({ success: false, error: "CV belum diunggah. Silakan unggah CV terlebih dahulu." }, { status: 400 });
+      }
+    }
+
+    // 4. Validation
     const validation = ProfileSchema.safeParse(profile);
     if (!validation.success) {
       return NextResponse.json(

@@ -36,10 +36,10 @@ export default function AnalysisPage() {
 
   const fetchLatestAnalysis = async () => {
     try {
-      const res = await fetch("/api/dashboard/stats");
+      const res = await fetch("/api/analyze/latest");
       const result = await res.json();
-      if (result.success && result.data.latestAnalysis) {
-        setAnalysis(result.data.latestAnalysis);
+      if (result.success && result.data) {
+        setAnalysis(result.data);
       }
     } catch (error) {
       console.error("Failed to fetch analysis", error);
@@ -51,8 +51,6 @@ export default function AnalysisPage() {
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
     try {
-      // First, we need to get the CV data. For now, assume we take the latest upload.
-      // In a real app, we might pass an ID.
       const res = await fetch("/api/analyze", {
         method: "POST",
       });
@@ -76,13 +74,22 @@ export default function AnalysisPage() {
     );
   }
 
-  const radarData = [
-    { subject: 'Teknis', A: 120 },
-    { subject: 'Komunikasi', A: 98 },
-    { subject: 'Leadership', A: 86 },
-    { subject: 'Kreativitas', A: 99 },
-    { subject: 'Analitik', A: 85 },
-    { subject: 'Adaptabilitas', A: 65 },
+  const result = analysis?.result as any;
+
+  const radarData = result?.skillRadar ? [
+    { subject: 'Teknis', A: result.skillRadar.teknisDigital || 0 },
+    { subject: 'Komunikasi', A: result.skillRadar.komunikasi || 0 },
+    { subject: 'Leadership', A: result.skillRadar.kepemimpinan || 0 },
+    { subject: 'Kreativitas', A: result.skillRadar.kreativitas || 0 },
+    { subject: 'Analitik', A: result.skillRadar.analitis || 0 },
+    { subject: 'Adaptabilitas', A: result.skillRadar.adaptabilitas || 0 },
+  ] : [
+    { subject: 'Teknis', A: 0 },
+    { subject: 'Komunikasi', A: 0 },
+    { subject: 'Leadership', A: 0 },
+    { subject: 'Kreativitas', A: 0 },
+    { subject: 'Analitik', A: 0 },
+    { subject: 'Adaptabilitas', A: 0 },
   ];
 
   return (
@@ -189,52 +196,48 @@ export default function AnalysisPage() {
                          </Button>
                       </div>
                       <div className="hidden sm:block">
-                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Update Terakhir: Hari Ini</p>
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Update Terakhir: {new Date(analysis?.createdAt || Date.now()).toLocaleDateString('id-ID')}</p>
                       </div>
                    </div>
 
                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       {/* Career Path Cards */}
                       <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                         {[
-                            { t: "Full-stack Developer", s: 94, d: "Cocok dengan skill technical dan minat teknologi kamu.", c: "teal" },
-                            { t: "Technical Product Manager", s: 82, d: "Menggabungkan skill analitis dan pemahaman produk.", c: "black" },
-                            { t: "Cloud Architect", s: 71, d: "Potensi tinggi untuk pemahaman infrastruktur software.", c: "gray" },
-                         ].map((path, i) => (
-                            <div key={i} className={cn(
-                               "p-8 rounded-[40px] border border-gray-100 bg-white transition-all hover:shadow-xl hover:scale-[1.01] group",
-                               i === 0 && "md:col-span-2"
-                            )}>
-                               <div className="flex justify-between items-start mb-10">
-                                  <div className="space-y-2">
-                                     <h3 className="text-2xl font-extrabold text-black group-hover:text-teal transition-colors tracking-tight">{path.t}</h3>
-                                     <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{path.d}</p>
-                                  </div>
-                                  <div className={cn(
-                                     "w-20 h-20 rounded-3xl flex flex-col items-center justify-center shrink-0 border-4 transition-all",
-                                     path.c === 'teal' ? "bg-teal-light border-white text-teal" : 
-                                     path.c === 'black' ? "bg-black/5 border-white text-black" : "bg-gray-50 border-white text-gray-400"
-                                  )}>
-                                     <span className="text-2xl font-black">{path.s}%</span>
-                                     <span className="text-[9px] font-black uppercase tracking-tighter">MATCH</span>
-                                  </div>
-                               </div>
-                               <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
-                                   <Link href="/roadmap" className="flex-1">
-                                      <Button className="w-full bg-black text-white rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal transition-all">
-                                         LIHAT ROADMAP
-                                      </Button>
-                                   </Link>
-                                   <Button 
-                                    onClick={() => toast.success(`${path.t} dipilih sebagai target utama!`)}
-                                    variant="ghost" 
-                                    className="w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-teal hover:text-white transition-all"
-                                   >
-                                      <Target className="w-5 h-5" />
-                                   </Button>
-                               </div>
-                            </div>
-                         ))}
+                          {(result?.careerPaths || []).map((path: any, i: number) => (
+                             <div key={i} className={cn(
+                                "p-8 rounded-[40px] border border-gray-100 bg-white transition-all hover:shadow-xl hover:scale-[1.01] group",
+                                i === 0 && "md:col-span-2"
+                             )}>
+                                <div className="flex justify-between items-start mb-10">
+                                   <div className="space-y-2">
+                                      <h3 className="text-2xl font-extrabold text-black group-hover:text-teal transition-colors tracking-tight">{path.nama}</h3>
+                                      <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{path.deskripsi}</p>
+                                   </div>
+                                   <div className={cn(
+                                      "w-20 h-20 rounded-3xl flex flex-col items-center justify-center shrink-0 border-4 transition-all",
+                                      i === 0 ? "bg-teal-light border-white text-teal" : 
+                                      i === 1 ? "bg-black/5 border-white text-black" : "bg-gray-50 border-white text-gray-400"
+                                   )}>
+                                      <span className="text-2xl font-black">{path.matchScore}%</span>
+                                      <span className="text-[9px] font-black uppercase tracking-tighter">MATCH</span>
+                                   </div>
+                                </div>
+                                <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
+                                    <Link href="/roadmap" className="flex-1">
+                                       <Button className="w-full bg-black text-white rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal transition-all">
+                                          LIHAT ROADMAP
+                                       </Button>
+                                    </Link>
+                                    <Button 
+                                     onClick={() => toast.success(`${path.nama} dipilih sebagai target utama!`)}
+                                     variant="ghost" 
+                                     className="w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-teal hover:text-white transition-all"
+                                    >
+                                       <Target className="w-5 h-5" />
+                                    </Button>
+                                </div>
+                             </div>
+                          ))}
                       </div>
 
                       {/* Skill Radar Chart */}
@@ -255,9 +258,11 @@ export default function AnalysisPage() {
                                </RadarChart>
                             </ResponsiveContainer>
                          </div>
-                         <p className="text-[11px] text-gray-400 mt-10 leading-relaxed text-center font-bold">
-                            Kamu memiliki keunggulan kuat di <span className="text-teal font-black uppercase">Technical & Kreativitas</span>. Tingkatkan <span className="text-black font-black uppercase">Leadership</span> untuk jalur Management.
-                         </p>
+                         <div className="mt-10 pt-6 border-t border-gray-50 w-full text-center">
+                            <p className="text-[11px] text-gray-400 leading-relaxed font-bold">
+                               Proyeksi kekuatan skill berdasarkan analisis AI dari CV dan profil kamu.
+                            </p>
+                         </div>
                       </div>
                    </div>
                 </motion.div>

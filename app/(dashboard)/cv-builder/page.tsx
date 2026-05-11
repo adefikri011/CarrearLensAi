@@ -67,9 +67,22 @@ export default function CVBuilderPage() {
     }
   };
 
-  const handleUploadSuccess = (data: any) => {
+  const handleUploadSuccess = async (data: any) => {
     setUploadedData(data);
     fetchHistory();
+    
+    // Automatically trigger analysis
+    toast.promise(
+      fetch("/api/analyze", { method: "POST" }),
+      {
+        loading: 'Mencerahkan potensi karier kamu...',
+        success: (res) => {
+          if (!res.ok) throw new Error('Analysis failed');
+          return 'Analisis selesai! Silakan lihat hasil karier kamu.';
+        },
+        error: 'Gagal menganalisis secara otomatis. Silakan klik "Analisis CV" secara manual.',
+      }
+    );
   };
 
   const handleViewHistory = (item: any) => {

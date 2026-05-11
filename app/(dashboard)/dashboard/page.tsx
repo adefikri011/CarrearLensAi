@@ -87,7 +87,7 @@ export default function DashboardPage() {
   const readinessScore = latestAnalysis?.overallReadiness || 0;
   const analysisCount = stats?.analysisCount || 0;
   const profileCompleteness = stats?.profileCompleteness || 0;
-  const skillMatch = latestAnalysis?.careerPaths?.[0]?.matchScore || 0;
+  const skillMatch = latestAnalysis?.result?.careerPaths?.[0]?.matchScore || 0;
 
   return (
     <motion.div 
@@ -193,8 +193,8 @@ export default function DashboardPage() {
                          <p className="text-gray-400 text-sm">Berdasarkan data terbaru dari CV kamu.</p>
                       </div>
                       <div className="flex -space-x-4">
-                         {(latestAnalysis.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
-                           <div key={i} className="w-12 h-12 rounded-full border-4 border-black bg-teal flex items-center justify-center text-[10px] font-black shadow-xl" title={path.title}>
+                         {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
+                           <div key={i} className="w-12 h-12 rounded-full border-4 border-black bg-teal flex items-center justify-center text-[10px] font-black shadow-xl" title={path.nama}>
                               {path.matchScore}%
                            </div>
                          ))}
@@ -202,10 +202,10 @@ export default function DashboardPage() {
                    </div>
 
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-                      {(latestAnalysis.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
+                      {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
                         <div key={i} className="bg-white/5 border border-white/10 p-4 rounded-2xl">
                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">JALUR {i+1}</p>
-                           <p className="text-sm font-bold truncate">{path.title}</p>
+                           <p className="text-sm font-bold truncate">{path.nama}</p>
                         </div>
                       ))}
                    </div>
