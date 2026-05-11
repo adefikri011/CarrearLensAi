@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, GraduationCap, Code, Target, CheckCircle, 
   ChevronRight, ChevronLeft, Camera, Briefcase, 
-  Heart, Sparkles, MapPin, Search
+  Heart, Sparkles, MapPin, Search, Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -27,24 +29,98 @@ const STEPS = [
 ];
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: "Budi Santoso",
-    age: 22,
-    city: "Jakarta",
+    name: "",
+    age: 20,
+    city: "",
     gender: "Laki-laki",
-    education: "S1",
-    major: "Teknik Informatika",
-    gradYear: "2024",
-    skills: ["React", "TypeScript", "UI Design"],
-    interests: ["Teknologi", "Desain", "Startups"],
-    salary: 8000000,
-    targetPos: "Front-end Developer",
+    education: "SMK",
+    major: "",
+    gradYear: "",
+    skills: [] as string[],
+    interests: [] as string[],
+    salary: 5000000,
+    targetPos: "",
     workPref: "Remote"
   });
 
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/profile");
+      const result = await res.json();
+      if (result.success && result.data) {
+        const p = result.data;
+        setFormData({
+          name: p.name || "",
+          age: p.usia || 20,
+          city: p.kotaTarget?.[0] || "",
+          gender: p.gender || "Laki-laki",
+          education: p.sekolah || "SMK",
+          major: p.jurusan || "",
+          gradYear: p.lulusan || "",
+          skills: p.hardSkills || [],
+          interests: p.minat || [],
+          salary: p.targetGaji || 5000000,
+          targetPos: p.targetPosisi || "",
+          workPref: p.preferensiKerja || "Remote"
+        });
+      }
+    } catch (error) {
+      console.error("Fetch profile error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const result = await res.json();
+      if (result.success) {
+        toast({
+          title: "Berhasil",
+          description: "Profil berhasil disimpan",
+        });
+        router.refresh();
+      } else {
+        throw new Error(result.error || "Gagal menyimpan profil");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Gagal",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-teal" />
+      </div>
+    );
+  }
 
   const renderStep = () => {
     switch (currentStep) {
@@ -53,34 +129,34 @@ export default function ProfilePage() {
           <motion.div variants={fadeUp} className="space-y-8">
             <div className="flex flex-col items-center mb-10">
                <div className="relative group">
-                  <div className="w-32 h-32 rounded-full bg-surface-2 border-4 border-white shadow-xl overflow-hidden flex items-center justify-center">
-                     <User className="w-16 h-16 text-text-faint" />
+                  <div className="w-24 h-24 rounded-full bg-gray-50 border-4 border-white shadow-xl overflow-hidden flex items-center justify-center">
+                     <User className="w-10 h-10 text-gray-300" />
                   </div>
-                  <button className="absolute bottom-0 right-0 p-2.5 bg-teal text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all">
-                     <Camera className="w-5 h-5" />
+                  <button className="absolute bottom-0 right-0 p-2 bg-teal text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all">
+                     <Camera className="w-4 h-4" />
                   </button>
                </div>
-               <p className="mt-4 text-sm font-bold text-teal">Ganti Foto Profil</p>
+               <p className="mt-4 text-xs font-bold text-teal uppercase tracking-widest">Foto Profil</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div className="space-y-2">
-                  <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Nama Lengkap</Label>
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Nama Lengkap</Label>
                   <Input 
                     value={formData.name} 
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="h-14 rounded-2xl border-[#F3F4F6] focus:border-teal focus:ring-teal/10"
-                    placeholder="Contoh: John Doe"
+                    className="h-12 rounded-xl border-gray-100 focus:border-teal focus:ring-teal/10 text-sm"
+                    placeholder="John Doe"
                   />
                </div>
                <div className="space-y-2">
-                  <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Kota Domisili</Label>
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Kota Domisili</Label>
                   <div className="relative">
-                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
+                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                      <Input 
                         value={formData.city}
                         onChange={(e) => setFormData({...formData, city: e.target.value})}
-                        className="h-14 pl-12 rounded-2xl border-[#F3F4F6] focus:border-teal"
+                        className="h-12 pl-11 rounded-xl border-gray-100 focus:border-teal text-sm"
                         placeholder="Contoh: Jakarta"
                      />
                   </div>
@@ -89,31 +165,31 @@ export default function ProfilePage() {
 
             <div className="space-y-6">
                <div className="flex justify-between items-end">
-                  <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Usia: {formData.age} Tahun</Label>
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Usia: {formData.age} Tahun</Label>
                </div>
                <input 
                   type="range" 
                   min="16" max="45" 
                   value={formData.age} 
                   onChange={(e) => setFormData({...formData, age: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-surface-2 rounded-full appearance-none cursor-pointer accent-teal"
+                  className="w-full h-1.5 bg-gray-100 rounded-full appearance-none cursor-pointer accent-teal"
                />
-               <div className="flex justify-between text-[10px] text-text-faint font-bold uppercase tracking-widest px-1">
+               <div className="flex justify-between text-[9px] text-gray-400 font-bold uppercase tracking-widest px-1">
                   <span>16 Tahun</span>
                   <span>45 Tahun</span>
                </div>
             </div>
 
             <div className="space-y-3">
-               <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Jenis Kelamin</Label>
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Jenis Kelamin</Label>
                <div className="grid grid-cols-2 gap-4">
                   {["Laki-laki", "Perempuan"].map(g => (
                      <button
                         key={g}
                         onClick={() => setFormData({...formData, gender: g})}
                         className={cn(
-                           "h-14 rounded-2xl border-2 transition-all font-bold text-sm",
-                           formData.gender === g ? "bg-teal-light border-teal text-teal" : "bg-white border-[#F3F4F6] text-text-secondary hover:border-teal/30"
+                           "h-12 rounded-xl border transition-all font-bold text-xs",
+                           formData.gender === g ? "bg-teal text-white border-teal" : "bg-white border-gray-100 text-gray-500 hover:border-teal/30"
                         )}
                      >
                         {g}
@@ -127,18 +203,18 @@ export default function ProfilePage() {
         return (
           <motion.div variants={fadeUp} className="space-y-8">
             <div className="space-y-3">
-               <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Jenjang Pendidikan Terakhir</Label>
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Jenjang Pendidikan Terakhir</Label>
                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {["SMA", "SMK", "D3", "S1", "S2", "Profesional"].map(edu => (
+                  {["SMA", "SMK", "D3", "S1", "S2", "Lainnya"].map(edu => (
                      <button
                         key={edu}
                         onClick={() => setFormData({...formData, education: edu})}
                         className={cn(
-                           "p-4 rounded-2xl border-2 transition-all font-bold text-sm flex flex-col items-center gap-3",
-                           formData.education === edu ? "bg-teal-light border-teal text-teal shadow-lg shadow-teal/10" : "bg-white border-[#F3F4F6] text-text-secondary hover:border-teal/30"
+                           "p-4 rounded-xl border transition-all font-bold text-xs flex flex-col items-center gap-3",
+                           formData.education === edu ? "bg-gray-50 border-teal text-teal shadow-sm" : "bg-white border-gray-100 text-gray-500 hover:border-teal/30"
                         )}
                      >
-                        <GraduationCap className={cn("w-6 h-6", formData.education === edu ? "text-teal" : "text-text-faint")} />
+                        <GraduationCap className={cn("w-5 h-5", formData.education === edu ? "text-teal" : "text-gray-300")} />
                         {edu}
                      </button>
                   ))}
@@ -147,19 +223,20 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div className="space-y-2">
-                  <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Jurusan / Konsentrasi</Label>
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Jurusan / Konsentrasi</Label>
                   <Input 
                     value={formData.major} 
                     onChange={(e) => setFormData({...formData, major: e.target.value})}
-                    className="h-14 rounded-2xl border-[#F3F4F6]"
+                    className="h-12 rounded-xl border-gray-100 text-sm"
                   />
                </div>
                <div className="space-y-2">
-                  <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Tahun Lulus</Label>
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Tahun Lulus</Label>
                   <Input 
                     value={formData.gradYear} 
                     onChange={(e) => setFormData({...formData, gradYear: e.target.value})}
-                    className="h-14 rounded-2xl border-[#F3F4F6]"
+                    className="h-12 rounded-xl border-gray-100 text-sm"
+                    placeholder="2024"
                   />
                </div>
             </div>
@@ -169,13 +246,13 @@ export default function ProfilePage() {
         return (
           <motion.div variants={fadeUp} className="space-y-8">
             <div className="space-y-4">
-               <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Pilih Skill Kamu (Multi-select)</Label>
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Skill Kamu</Label>
                <div className="relative mb-4">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
-                  <Input className="h-12 pl-12 rounded-xl bg-surface border-none" placeholder="Cari skill (misal: React, Python, Sales...)" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input className="h-11 pl-11 rounded-xl bg-gray-50 border-none text-xs" placeholder="Cari skill (React, Python...)" />
                </div>
-               <div className="flex flex-wrap gap-3">
-                  {["React", "TypeScript", "Node.js", "Figma", "UI Design", "SEO", "Copywriting", "Python", "Excel"].map(skill => (
+               <div className="flex flex-wrap gap-2">
+                  {["React", "TypeScript", "Node.js", "Figma", "UI Design", "SEO", "Python", "Excel"].map(skill => (
                      <button
                         key={skill}
                         onClick={() => {
@@ -185,8 +262,8 @@ export default function ProfilePage() {
                            setFormData({...formData, skills: newSkills});
                         }}
                         className={cn(
-                           "px-5 py-2.5 rounded-full border-2 text-sm font-bold transition-all",
-                           formData.skills.includes(skill) ? "bg-teal text-white border-teal shadow-lg shadow-teal/20" : "bg-white border-[#F3F4F6] text-text-secondary hover:border-teal/30"
+                           "px-4 py-2 rounded-full border text-[11px] font-bold transition-all",
+                           formData.skills.includes(skill) ? "bg-black text-white border-black" : "bg-white border-gray-100 text-gray-500"
                         )}
                      >
                         {skill}
@@ -196,8 +273,8 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-6">
-               <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Minat Industri</Label>
-               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Minat Industri</Label>
+               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
                      { t: "Teknologi", icon: <Code /> },
                      { t: "Kesehatan", icon: <Heart /> },
@@ -215,17 +292,17 @@ export default function ProfilePage() {
                            setFormData({...formData, interests: newInt});
                         }}
                         className={cn(
-                           "p-6 rounded-3xl border-2 transition-all flex flex-col gap-4 text-left group",
-                           formData.interests.includes(ind.t) ? "bg-purple-light border-purple text-purple shadow-lg shadow-purple/10" : "bg-white border-[#F3F4F6] text-text-secondary hover:border-purple/30"
+                           "p-4 rounded-2xl border transition-all flex flex-col gap-3 text-left group",
+                           formData.interests.includes(ind.t) ? "bg-teal border-teal text-white shadow-md shadow-teal/10" : "bg-white border-gray-100 text-gray-500"
                         )}
-                     >
+                      >
                         <div className={cn(
-                           "w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110",
-                           formData.interests.includes(ind.t) ? "bg-white text-purple" : "bg-surface-2 text-text-faint"
+                           "w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105",
+                           formData.interests.includes(ind.t) ? "bg-white/20 text-white" : "bg-gray-50 text-gray-400"
                         )}>
-                           {React.cloneElement(ind.icon as React.ReactElement, { className: "w-6 h-6" })}
+                           {React.cloneElement(ind.icon as React.ReactElement, { className: "w-5 h-5" })}
                         </div>
-                        <span className="font-bold text-sm">{ind.t}</span>
+                        <span className="font-bold text-[11px]">{ind.t}</span>
                      </button>
                   ))}
                </div>
@@ -236,43 +313,43 @@ export default function ProfilePage() {
         return (
           <motion.div variants={fadeUp} className="space-y-8">
             <div className="space-y-2">
-               <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Target Posisi Pekerjaan</Label>
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Target Posisi Pekerjaan</Label>
                <Input 
                   value={formData.targetPos}
                   onChange={(e) => setFormData({...formData, targetPos: e.target.value})}
-                  className="h-14 rounded-2xl border-[#F3F4F6]"
-                  placeholder="Misal: Senior Product Manager"
+                  className="h-12 rounded-xl border-gray-100 text-sm"
+                  placeholder="Misal: Frontend Developer"
                />
             </div>
 
             <div className="space-y-6">
                <div className="flex justify-between items-end">
-                  <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Ekspektasi Gaji (Rp)</Label>
-                  <span className="text-teal font-black text-lg">Rp {formData.salary.toLocaleString('id-ID')}</span>
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Ekspektasi Gaji (Rp)</Label>
+                  <span className="text-teal font-black text-base">Rp {formData.salary.toLocaleString('id-ID')}</span>
                </div>
                <input 
                   type="range" 
                   min="2000000" max="50000000" step="500000"
                   value={formData.salary} 
                   onChange={(e) => setFormData({...formData, salary: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-surface-2 rounded-full appearance-none cursor-pointer accent-teal"
+                  className="w-full h-1.5 bg-gray-100 rounded-full appearance-none cursor-pointer accent-teal"
                />
-               <div className="flex justify-between text-[10px] text-text-faint font-bold uppercase tracking-widest px-1">
-                  <span>Rp 2 Juta</span>
-                  <span>Rp 50 Juta</span>
+               <div className="flex justify-between text-[9px] text-gray-400 font-bold uppercase tracking-widest px-1">
+                  <span>2 Jt</span>
+                  <span>50 Jt</span>
                </div>
             </div>
 
             <div className="space-y-3">
-               <Label className="text-xs font-black text-text-faint uppercase tracking-widest pl-2">Preferensi Kerja</Label>
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Preferensi Kerja</Label>
                <div className="grid grid-cols-3 gap-4">
                   {["On-site", "Remote", "Hybrid"].map(pref => (
                      <button
                         key={pref}
                         onClick={() => setFormData({...formData, workPref: pref})}
                         className={cn(
-                           "p-4 rounded-2xl border-2 transition-all font-bold text-sm",
-                           formData.workPref === pref ? "bg-teal-light border-teal text-teal" : "bg-white border-[#F3F4F6] text-text-secondary hover:border-teal/30"
+                           "p-4 rounded-xl border transition-all font-bold text-xs",
+                           formData.workPref === pref ? "bg-teal text-white border-teal" : "bg-white border-gray-100 text-gray-500"
                         )}
                      >
                         {pref}
@@ -285,52 +362,52 @@ export default function ProfilePage() {
       case 5:
         return (
           <motion.div variants={fadeUp} className="space-y-8">
-            <div className="p-8 bg-surface rounded-[40px] border border-[#F3F4F6] relative overflow-hidden group">
+            <div className="p-8 bg-white rounded-3xl border border-gray-100 relative overflow-hidden shadow-sm">
                <div className="absolute top-0 right-0 p-8">
-                  <CheckCircle className="w-12 h-12 text-teal opacity-20" />
+                  <CheckCircle className="w-10 h-10 text-teal opacity-10" />
                </div>
-               <h3 className="text-2xl font-black text-[#030712] mb-8">Review Profil Kamu</h3>
+               <h3 className="text-xl font-bold text-black mb-8">Review Profil</h3>
                
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
                   <div className="space-y-6">
                      <div>
-                        <p className="text-[10px] font-black text-text-faint uppercase tracking-widest mb-1">DATA DIRI</p>
-                        <p className="font-bold text-[#030712]">{formData.name} • {formData.age} Thn</p>
-                        <p className="text-text-secondary text-sm">{formData.city} • {formData.gender}</p>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 font-mono">Data Diri</p>
+                        <p className="font-bold text-black text-sm">{formData.name} • {formData.age} Thn</p>
+                        <p className="text-gray-500 text-xs">{formData.city} • {formData.gender}</p>
                      </div>
                      <div>
-                        <p className="text-[10px] font-black text-text-faint uppercase tracking-widest mb-1">PENDIDIKAN</p>
-                        <p className="font-bold text-[#030712]">{formData.education} {formData.major}</p>
-                        <p className="text-text-secondary text-sm">Lulus Tahun {formData.gradYear}</p>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 font-mono">Pendidikan</p>
+                        <p className="font-bold text-black text-sm">{formData.education} {formData.major}</p>
+                        <p className="text-gray-500 text-xs">Lulus {formData.gradYear}</p>
                      </div>
                      <div>
-                        <p className="text-[10px] font-black text-text-faint uppercase tracking-widest mb-1">TARGET KARIER</p>
-                        <p className="font-bold text-[#030712]">{formData.targetPos}</p>
-                        <p className="text-text-secondary text-sm">Gaji: Rp {formData.salary.toLocaleString('id-ID')} • {formData.workPref}</p>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 font-mono">Target Karier</p>
+                        <p className="font-bold text-black text-sm">{formData.targetPos}</p>
+                        <p className="text-gray-500 text-xs">Rp {formData.salary.toLocaleString('id-ID')} • {formData.workPref}</p>
                      </div>
                   </div>
                   <div className="space-y-6">
                      <div>
-                        <p className="text-[10px] font-black text-text-faint uppercase tracking-widest mb-1">SKILLS</p>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 font-mono">Skills</p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                           {formData.skills.map(s => <Badge key={s} variant="outline" className="rounded-full border-teal/20 text-teal">{s}</Badge>)}
+                           {formData.skills.map(s => <Badge key={s} variant="outline" className="rounded-full border-gray-100 text-gray-600 font-bold bg-gray-50">{s}</Badge>)}
                         </div>
                      </div>
                      <div>
-                        <p className="text-[10px] font-black text-text-faint uppercase tracking-widest mb-1">MINAT INDUSTRI</p>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 font-mono">Minat Industri</p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                           {formData.interests.map(i => <Badge key={i} className="rounded-full bg-purple-light text-purple border-none">{i}</Badge>)}
+                           {formData.interests.map(i => <Badge key={i} className="rounded-full bg-teal/10 text-teal border-none font-bold">{i}</Badge>)}
                         </div>
                      </div>
                   </div>
                </div>
             </div>
 
-            <div className="p-6 bg-teal-light rounded-2xl border border-teal/10 flex items-center gap-4">
-               <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5 text-white" />
+            <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-4">
+               <div className="w-8 h-8 rounded-full bg-teal flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-white" />
                </div>
-               <p className="text-sm font-medium text-teal-dark">AI kami akan menganalisis profilmu segera setelah kamu menekan tombol simpan.</p>
+               <p className="text-xs font-medium text-gray-600 leading-relaxed">AI kami akan menyesuaikan rekomendasi berdasarkan profil yang baru saja kamu lengkapi.</p>
             </div>
           </motion.div>
         );
@@ -339,17 +416,16 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-6">
-      {/* Header */}
-      <div className="text-center mb-16">
-         <h1 className="text-h2 text-[#030712] mb-3">Lengkapi Profilmu</h1>
-         <p className="text-text-secondary">Informasi ini membantu AI kami memberikan rekomendasi karier yang lebih akurat.</p>
+      <div className="text-center mb-12">
+         <h1 className="text-2xl font-black text-black mb-2">Profil Karier</h1>
+         <p className="text-sm text-gray-500">Lengkapi data untuk mendapatkan analisis yang presisi.</p>
       </div>
 
-      {/* Progress Indicator */}
-      <div className="relative mb-20 px-4">
-         <div className="absolute top-1/2 left-0 w-full h-[2px] bg-surface-2 -translate-y-1/2 z-0" />
+      {/* Progress */}
+      <div className="relative mb-16 px-4">
+         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-100 -translate-y-1/2" />
          <div 
-           className="absolute top-1/2 left-0 h-[2px] bg-teal -translate-y-1/2 z-0 transition-all duration-500 ease-out" 
+           className="absolute top-1/2 left-0 h-[2px] bg-teal -translate-y-1/2 transition-all duration-500 ease-out" 
            style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
          />
          <div className="relative z-10 flex justify-between items-center">
@@ -357,62 +433,61 @@ export default function ProfilePage() {
                const isActive = currentStep >= step.id;
                const isCurrent = currentStep === step.id;
                return (
-                  <div key={step.id} className="flex flex-col items-center gap-3">
+                  <div key={step.id} className="flex flex-col items-center gap-2">
                      <button 
                         onClick={() => setCurrentStep(step.id)}
                         className={cn(
-                           "w-12 h-12 rounded-full border-4 transition-all duration-300 flex items-center justify-center",
-                           isActive ? "bg-white border-teal text-teal shadow-xl shadow-teal/20" : "bg-white border-surface-2 text-text-faint",
-                           isCurrent && "scale-125 border-teal bg-teal text-white"
+                           "w-10 h-10 rounded-full border-2 transition-all duration-300 flex items-center justify-center",
+                           isActive ? "bg-white border-teal text-teal shadow-md" : "bg-white border-gray-100 text-gray-300",
+                           isCurrent && "scale-110 border-teal bg-teal text-white"
                         )}
                      >
-                        <step.icon className={cn("w-5 h-5", isCurrent ? "text-white" : isActive ? "text-teal" : "text-text-faint")} />
+                        <step.icon className={cn("w-4 h-4", isCurrent ? "text-white" : isActive ? "text-teal" : "text-gray-300")} />
                      </button>
-                     <span className={cn(
-                        "text-[10px] font-black uppercase tracking-widest hidden sm:block",
-                        isActive ? "text-teal" : "text-text-faint"
-                     )}>
-                        {step.title}
-                     </span>
                   </div>
                );
             })}
          </div>
       </div>
 
-      {/* Form Container */}
-      <div className="bg-white rounded-[48px] border border-[#F3F4F6] shadow-2xl p-8 md:p-14 mb-10 overflow-hidden min-h-[500px]">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-xl p-8 md:p-12 mb-8 min-h-[480px]">
          <AnimatePresence mode="wait">
             <motion.div 
                key={currentStep}
-               initial={{ opacity: 0, x: 10 }}
-               animate={{ opacity: 1, x: 0 }}
-               exit={{ opacity: 0, x: -10 }}
-               transition={{ duration: 0.3 }}
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               transition={{ duration: 0.2 }}
             >
                {renderStep()}
             </motion.div>
          </AnimatePresence>
       </div>
 
-      {/* Controls */}
       <div className="flex items-center justify-between">
          <Button 
             variant="ghost" 
             onClick={prevStep} 
             disabled={currentStep === 1}
-            className="h-14 px-8 rounded-2xl font-bold text-text-secondary disabled:opacity-20 translate-all"
+            className="h-12 px-6 rounded-full font-bold text-gray-500 hover:bg-gray-50"
          >
-            <ChevronLeft className="w-5 h-5 mr-2" /> Kembali
+            <ChevronLeft className="w-4 h-4 mr-2" /> Kembali
          </Button>
          <Button 
-            onClick={currentStep === 5 ? () => alert('Profil Disimpan!') : nextStep}
-            className="h-14 px-10 rounded-2xl bg-[#030712] text-white font-bold hover:bg-black group transition-all"
+            onClick={currentStep === 5 ? handleSave : nextStep}
+            disabled={isSaving}
+            className="h-12 px-8 rounded-full bg-black text-white font-bold hover:bg-gray-900 shadow-lg shadow-black/10"
          >
-            {currentStep === 5 ? "Simpan Profil" : "Lanjut"} 
-            <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-all" />
+            {isSaving ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : currentStep === 5 ? (
+              "Simpan Profil"
+            ) : (
+              <>Lanjut <ChevronRight className="w-4 h-4 ml-2" /></>
+            )}
          </Button>
       </div>
     </div>
   );
 }
+

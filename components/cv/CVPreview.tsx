@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { 
   FileText, Sparkles, AlertCircle, CheckCircle2, 
   ArrowLeft, Download, RefreshCcw, TrendingUp,
-  BrainCircuit, Gauge, Target, Search
+  BrainCircuit, Gauge, Target, Search, Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +76,7 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
            variants={fadeUp} 
            initial="hidden" 
            animate="visible"
-           className="lg:col-span-1 bg-[#030712] rounded-[48px] p-10 text-white relative overflow-hidden"
+           className="lg:col-span-1 bg-black rounded-[48px] p-10 text-white relative overflow-hidden shadow-2xl shadow-black/10"
          >
             <div className="relative z-10 text-center flex flex-col items-center">
                <span className="text-[10px] font-black tracking-[0.2em] uppercase text-teal mb-8">KOMPATIBILITAS ATS</span>
@@ -99,24 +99,23 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
                      />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                     <span className="text-6xl font-black tracking-tighter">{score}%</span>
-                     <span className="text-[10px] font-black text-white/40 tracking-widest mt-1">SIAP KERJA</span>
+                     <span className="text-6xl font-black tracking-tighter italic">{score}%</span>
+                     <span className="text-[10px] font-black text-white/40 tracking-widest mt-1 uppercase">Skor AI</span>
                   </div>
                </div>
 
-               <p className="text-dark-muted text-[15px] leading-relaxed">
-                  CV kamu memiliki struktur yang sangat baik. <span className="text-white font-bold">84% robot rekruter</span> dapat membaca informasi penting dengan akurat.
+               <p className="text-gray-400 text-[14px] leading-relaxed">
+                  CV kamu memiliki struktur yang sangat baik. <span className="text-white font-bold">{score}% robot rekruter</span> dapat membaca informasi penting dengan akurat.
                </p>
             </div>
             
             <div className="absolute top-0 right-0 w-40 h-40 bg-teal/10 blur-[80px] rounded-full" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple/10 blur-[60px] rounded-full" />
          </motion.div>
 
          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white p-10 rounded-[40px] border border-[#F3F4F6] shadow-sm">
+            <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm">
                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-sm font-black text-text-faint tracking-widest uppercase flex items-center gap-2">
+                  <h3 className="text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
                      <CheckCircle2 className="w-4 h-4 text-teal" />
                      SEKSI CV TERDETEKSI
                   </h3>
@@ -130,18 +129,18 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
                      { t: "Skill Teknis", d: true },
                      { t: "Proyek & Sertifikat", d: false },
                   ].map((s, i) => (
-                     <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-transparent hover:border-border transition-all">
-                        <span className={cn("text-sm font-bold", s.d ? "text-text-primary" : "text-text-faint")}>{s.t}</span>
+                     <div key={i} className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 border border-transparent hover:border-gray-100 transition-all">
+                        <span className={cn("text-sm font-bold", s.d ? "text-black" : "text-gray-300")}>{s.t}</span>
                         {s.d ? <CheckCircle2 className="w-5 h-5 text-teal" /> : <AlertCircle className="w-5 h-5 text-amber" />}
                      </div>
                   ))}
                </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white p-10 rounded-[40px] border border-[#F3F4F6] shadow-sm">
+            <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm">
                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-sm font-black text-text-faint tracking-widest uppercase flex items-center gap-2">
-                     <Sparkles className="w-4 h-4 text-purple" />
+                  <h3 className="text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
+                     <Sparkles className="w-4 h-4 text-teal" />
                      KEYWORD CLOUD
                   </h3>
                </div>
@@ -155,17 +154,17 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
                      <Badge 
                        key={i} 
                        className={cn(
-                        "rounded-full px-4 py-1.5 text-xs font-bold border-none",
-                        k.m ? "bg-teal-light text-teal-dark" : "bg-red-50 text-red-600"
+                        "rounded-xl px-4 py-1.5 text-[10px] font-black tracking-widest uppercase border-none",
+                        k.m ? "bg-teal-light text-teal-dark" : "bg-gray-100 text-gray-400"
                        )}
                      >
                         {k.t}
                      </Badge>
                   ))}
                </div>
-               <div className="mt-10 pt-6 border-t border-[#F3F4F6]">
-                  <p className="text-xs text-text-muted leading-relaxed">
-                     <span className="font-bold text-[#030712]">Saran AI:</span> Tambahkan keyword <span className="text-red-500 font-black">&quot;TypeScript&quot;</span> dan <span className="text-red-500 font-black">&quot;Prisma&quot;</span> untuk meningkatkan relevansi dengan lowongan Front-end modern.
+               <div className="mt-10 pt-6 border-t border-gray-100">
+                  <p className="text-[11px] text-gray-400 leading-relaxed font-bold">
+                     <span className="font-black text-black">SARAN AI:</span> Tambahkan keyword <span className="text-teal font-black tracking-tight">&quot;TypeScript&quot;</span> untuk meningkatkan relevansi dengan lowongan modern.
                   </p>
                </div>
             </motion.div>
@@ -173,24 +172,24 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
       </div>
 
       {/* --- Detailed Analysis / Extracted Text --- */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white rounded-[48px] border border-[#F3F4F6] shadow-sm overflow-hidden">
-         <div className="bg-surface p-8 border-b border-border flex items-center justify-between">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white rounded-[48px] border border-gray-100 shadow-sm overflow-hidden">
+         <div className="bg-gray-50 p-8 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-text-muted" />
+               <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-gray-400" />
                </div>
                <div>
-                  <h4 className="font-bold text-[#030712]">{data.filename}</h4>
-                  <p className="text-xs text-text-faint font-bold uppercase tracking-widest">HASIL EKSTRAKSI TEKS</p>
+                  <h4 className="font-bold text-black text-sm">{data.filename}</h4>
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">HASIL EKSTRAKSI TEKS</p>
                </div>
             </div>
-            <Badge className="bg-white text-text-secondary border border-border font-bold">PDF FILE</Badge>
+            <Badge className="bg-white text-gray-400 border border-gray-100 font-bold text-[10px] tracking-widest uppercase px-4 py-1">PDF FILE</Badge>
          </div>
-         <div className="p-10 max-h-[400px] overflow-y-auto no-scrollbar bg-white whitespace-pre-wrap text-text-secondary text-sm leading-loose">
+         <div className="p-10 max-h-[400px] overflow-y-auto no-scrollbar bg-white whitespace-pre-wrap text-gray-500 text-sm leading-loose">
             {analyzing ? (
                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                  <RefreshCcw className="w-8 h-8 text-teal animate-spin" />
-                  <p className="text-[13px] font-black text-teal tracking-widest uppercase">Mengekstrak informasi...</p>
+                  <Loader2 className="w-8 h-8 text-teal animate-spin" />
+                  <p className="text-[11px] font-black text-teal tracking-widest uppercase">Mengekstrak informasi...</p>
                </div>
             ) : data.extractedText}
          </div>

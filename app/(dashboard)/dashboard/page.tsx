@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   BrainCircuit, 
@@ -11,9 +11,9 @@ import {
   FileText,
   ChevronRight,
   Sparkles,
-  Calendar,
-  Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Loader2,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,41 @@ const stagger = {
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
   const userName = session?.user?.name?.split(' ')[0] || "User";
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch("/api/dashboard/stats");
+      const result = await res.json();
+      if (result.success) {
+        setStats(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch dashboard stats", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-teal" />
+        <p className="text-gray-400 font-bold uppercase text-[11px] tracking-widest">Memuat Dashboard...</p>
+      </div>
+    );
+  }
+
+  const readinessScore = stats?.latestAnalysis?.overallReadiness || 0;
+  const analysisCount = stats?.analysisCount || 0;
+  const profileCompleteness = stats?.profileCompleteness || 0;
 
   return (
     <motion.div 
@@ -43,42 +77,45 @@ export default function DashboardPage() {
       {/* --- Greeting Section --- */}
       <motion.section variants={fadeUp} className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
-           <div className="flex items-center gap-2 text-teal font-bold text-[13px] uppercase tracking-[0.15em] mb-3">
+           <div className="flex items-center gap-2 text-teal font-bold text-[12px] uppercase tracking-[0.1em] mb-4">
               <Sparkles className="w-4 h-4" />
-              Selamat Pagi, {userName}!
+              Selamat Datang, {userName}!
            </div>
-           <h1 className="text-h2 text-[#030712]">Overviuw Karier</h1>
-           <p className="text-text-secondary mt-2">Ini yang terjadi dengan perkembangan kariermu hari ini.</p>
+           <h1 className="text-3xl font-black text-black">Dashboard Overview</h1>
+           <p className="text-gray-500 mt-2">Ini perkembangan kariermu berdasarkan data terbaru.</p>
         </div>
         
-        <div className="flex items-center gap-6 p-1 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm">
+        <div className="flex items-center gap-6 p-1 bg-white rounded-2xl border border-gray-100 shadow-sm">
            <div className="flex flex-col items-end px-6 py-2">
-              <span className="text-[10px] font-black text-text-faint tracking-widest uppercase">READINESS SCORE</span>
-              <span className="text-2xl font-black text-[#030712]">84%</span>
+              <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase">READINESS SCORE</span>
+              <span className="text-2xl font-black text-black">{readinessScore}%</span>
            </div>
-           <div className="w-12 h-12 mr-2 rounded-xl bg-teal flex items-center justify-center text-white shadow-lg shadow-teal/10">
+           <div className={cn(
+             "w-12 h-12 mr-2 rounded-xl flex items-center justify-center text-white shadow-lg transition-all",
+             readinessScore > 75 ? "bg-teal shadow-teal/10" : "bg-black shadow-black/10"
+           )}>
               <TrendingUp className="w-6 h-6" />
            </div>
         </div>
       </motion.section>
 
       {/* --- Stats Grid --- */}
-      <motion.section variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.section variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: <FileText className="text-teal" />, label: "Analisis CV", val: "12", trend: "+2", bg: "bg-teal-light" },
-          { icon: <Target className="text-purple" />, label: "Target Posisi", val: "3", trend: "0", bg: "bg-purple-light" },
-          { icon: <Layers className="text-amber" />, label: "Progres Roadmap", val: "65%", trend: "+5%", bg: "bg-amber-light" },
-          { icon: <Zap className="text-red-500" />, label: "Skill Baru", val: "8", trend: "+1", bg: "bg-red-50" },
+          { icon: <FileText className="text-black" />, label: "Analisis CV", val: analysisCount.toString(), desc: "Total dokumen", bg: "bg-gray-50" },
+          { icon: <Target className="text-teal" />, label: "Target Posisi", val: "1", desc: "Posisi utama", bg: "bg-teal-light/30" },
+          { icon: <CheckCircle2 className="text-black" />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan data", bg: "bg-gray-50" },
+          { icon: <Zap className="text-teal" />, label: "Skill Match", val: analysisCount > 0 ? "Bagus" : "-", desc: "Kecocokan industri", bg: "bg-teal-light/30" },
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-3xl border border-[#F3F4F6] flex items-center gap-5 hover:border-teal/20 transition-all group">
-            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500", stat.bg)}>
-              {React.cloneElement(stat.icon as React.ReactElement, { className: "w-7 h-7" })}
+          <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 hover:border-black/5 transition-all group shadow-sm">
+            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-500", stat.bg)}>
+              {React.cloneElement(stat.icon as React.ReactElement, { className: "w-6 h-6" })}
             </div>
             <div>
-              <p className="text-xs font-bold text-text-faint tracking-wider uppercase mb-1">{stat.label}</p>
+              <p className="text-[10px] font-black text-gray-400 tracking-wider uppercase mb-0.5">{stat.label}</p>
               <div className="flex items-baseline gap-2">
-                 <span className="text-2xl font-black text-[#030712]">{stat.val}</span>
-                 <span className="text-[10px] font-black text-teal">{stat.trend}</span>
+                 <span className="text-xl font-black text-black">{stat.val}</span>
+                 <span className="text-[9px] font-bold text-gray-300 uppercase">{stat.desc}</span>
               </div>
             </div>
           </div>
@@ -86,136 +123,150 @@ export default function DashboardPage() {
       </motion.section>
 
       {/* --- Main Content Area --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left: Active Mission & Quick Actions */}
-        <div className="lg:col-span-2 space-y-10">
-           {/* Active Mission Card */}
-           <motion.div variants={fadeUp} className="bg-[#030712] rounded-[40px] p-10 text-white relative overflow-hidden group">
-              <div className="relative z-10">
-                 <div className="flex justify-between items-start mb-16">
-                    <div className="space-y-3">
-                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-black tracking-widest uppercase">
-                          MISI AKTIF • MINGGU KE-3
-                       </div>
-                       <h2 className="text-3xl font-bold max-w-sm">Optimalisasi Portofolio & LinkedIn</h2>
-                       <p className="text-dark-muted max-w-xs text-sm">Persiapkan aset digitalmu agar siap dinilai oleh rekruter profesional.</p>
-                    </div>
-                    <div className="w-14 h-14 rounded-2xl bg-teal flex items-center justify-center shadow-2xl shadow-teal/40">
-                       <BrainCircuit className="w-7 h-7 text-white" />
-                    </div>
-                 </div>
+        {/* Left: Active Mission or Empty State */}
+        <div className="lg:col-span-2 space-y-8">
+           {analysisCount === 0 ? (
+             <motion.div variants={fadeUp} className="bg-white border border-gray-100 rounded-[40px] p-12 text-center flex flex-col items-center space-y-6 shadow-sm">
+                <div className="w-16 h-16 rounded-[24px] bg-gray-50 flex items-center justify-center text-gray-300">
+                   <AlertCircle className="w-8 h-8" />
+                </div>
+                <div className="space-y-2">
+                   <h2 className="text-2xl font-black text-black italic">Mulai Perjalanan Kariermu</h2>
+                   <p className="text-gray-500 max-w-sm mx-auto">Upload CV kamu sekarang untuk melihat potensi karier dan roadmap aksi 90 hari.</p>
+                </div>
+                <Link href="/cv-builder">
+                   <Button className="bg-black text-white hover:bg-teal rounded-full px-10 h-14 font-black text-[12px] uppercase tracking-widest transition-all">
+                      UPLOAD CV PERTAMA <ArrowUpRight className="ml-2 w-5 h-5" />
+                   </Button>
+                </Link>
+             </motion.div>
+           ) : (
+             <motion.div variants={fadeUp} className="bg-black rounded-[40px] p-10 text-white relative overflow-hidden group">
+                <div className="relative z-10">
+                   <div className="flex justify-between items-start mb-16">
+                      <div className="space-y-3">
+                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[9px] font-black tracking-widest uppercase">
+                            MISI AKTIF • MINGGU KE-1
+                         </div>
+                         <h2 className="text-3xl font-black italic max-w-sm">Perkuat Portofolio Tech</h2>
+                         <p className="text-gray-400 max-w-xs text-sm">Target minggu ini: Selesaikan analisis skill gap berdasarkan CV kamu.</p>
+                      </div>
+                      <div className="w-14 h-14 rounded-2xl bg-teal flex items-center justify-center shadow-2xl shadow-teal/40">
+                         <BrainCircuit className="w-7 h-7 text-white" />
+                      </div>
+                   </div>
 
-                 <div className="space-y-4 mb-10">
-                    <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                       <span className="text-dark-muted">Progres Keseluruhan</span>
-                       <span className="text-teal">65% Selesai</span>
-                    </div>
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: "65%" }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="h-full bg-teal rounded-full" 
-                       />
-                    </div>
-                 </div>
+                   <div className="space-y-4 mb-10">
+                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                         <span className="text-gray-500">Progres Misi</span>
+                         <span className="text-teal">20% Selesai</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                         <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: "20%" }}
+                          transition={{ duration: 1, delay: 0.5 }}
+                          className="h-full bg-teal rounded-full" 
+                         />
+                      </div>
+                   </div>
 
-                 <div className="flex flex-wrap gap-4">
-                    <Link 
-                      href="/roadmap"
-                      className="bg-white text-[#030712] px-8 py-3.5 rounded-full text-sm font-bold hover:bg-teal hover:text-white transition-all flex items-center gap-2"
-                    >
-                      Lanjutkan Misi <ArrowUpRight className="w-4 h-4" />
-                    </Link>
-                    <Link 
-                      href="/roadmap"
-                      className="bg-white/5 text-white border border-white/10 px-8 py-3.5 rounded-full text-sm font-bold hover:bg-white/10 transition-all"
-                    >
-                      Lihat Detail Roadmap
-                    </Link>
-                 </div>
-              </div>
-              
-              <div className="absolute top-0 right-0 w-80 h-80 bg-teal/10 blur-[100px] rounded-full translate-x-1/4 -translate-y-1/4" />
-              <div className="absolute bottom-0 left-0 w-60 h-60 bg-purple/10 blur-[80px] rounded-full -translate-x-1/4 translate-y-1/4" />
-           </motion.div>
+                   <div className="flex flex-wrap gap-4">
+                      <Link 
+                        href="/analysis"
+                        className="bg-white text-black px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-teal hover:text-white transition-all flex items-center gap-2"
+                      >
+                        Hasil Analisis <ArrowUpRight className="w-4 h-4" />
+                      </Link>
+                      <Link 
+                        href="/profile"
+                        className="bg-white/5 text-white border border-white/10 px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                      >
+                        Update Profil
+                      </Link>
+                   </div>
+                </div>
+                
+                <div className="absolute top-0 right-0 w-80 h-80 bg-teal/5 blur-[100px] rounded-full translate-x-1/4 -translate-y-1/4" />
+             </motion.div>
+           )}
 
            {/* Quick Actions Grid */}
-           <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+           <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                { t: "Analisis CV", icon: <FileText className="text-teal" />, href: "/cv-builder", c: "teal" },
-                { t: "Cari Lowongan", icon: <ExploreIcon className="text-purple" />, href: "/explore", c: "purple" },
-                { t: "Tips & Trik", icon: <Sparkles className="text-amber" />, href: "/blog", c: "amber" },
+                { t: "Analisis CV", icon: <FileText />, href: "/cv-builder", c: "teal" },
+                { t: "Hasil Karier", icon: <Sparkles />, href: "/analysis", c: "black" },
+                { t: "Profil Saya", icon: <CheckCircle2 />, href: "/profile", c: "teal" },
               ].map((act, i) => (
                 <Link key={i} href={act.href}>
-                  <div className="bg-white p-6 rounded-[32px] border border-[#F3F4F6] text-center hover:border-teal/30 hover:shadow-xl hover:shadow-teal/5 transition-all group">
+                  <div className="bg-white p-6 rounded-2xl border border-gray-100 text-center hover:border-teal/30 hover:shadow-xl hover:shadow-teal/5 transition-all group shadow-sm">
                     <div className={cn(
-                      "w-12 h-12 rounded-2xl mx-auto flex items-center justify-center mb-4 transition-transform group-hover:scale-110",
-                      act.c === 'teal' ? "bg-teal-light" : act.c === 'purple' ? "bg-purple-light" : "bg-amber-light"
+                      "w-10 h-10 rounded-xl mx-auto flex items-center justify-center mb-3 transition-transform group-hover:scale-110",
+                      act.c === 'teal' ? "bg-teal-light text-teal" : "bg-gray-50 text-black"
                     )}>
-                      {React.cloneElement(act.icon as React.ReactElement, { className: "w-6 h-6" })}
+                      {React.cloneElement(act.icon as React.ReactElement, { className: "w-5 h-5" })}
                     </div>
-                    <span className="text-sm font-bold text-[#030712]">{act.t}</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-black">{act.t}</span>
                   </div>
                 </Link>
               ))}
            </motion.div>
         </div>
 
-        {/* Right: Task List & Mentor Card */}
-        <div className="space-y-10">
-           {/* Task List */}
-           <motion.div variants={fadeUp} className="bg-white p-8 rounded-[40px] border border-[#F3F4F6] shadow-sm">
+        {/* Right: Task List */}
+        <div className="space-y-8">
+           <motion.div variants={fadeUp} className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm">
               <div className="flex items-center justify-between mb-8">
-                 <h3 className="text-[13px] font-black text-text-faint tracking-widest uppercase flex items-center gap-2">
+                 <h3 className="text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-teal" />
                     DAFTAR TUGAS
                  </h3>
-                 <span className="text-[10px] font-bold text-teal bg-teal-light px-2 py-0.5 rounded-md">2 LAGI</span>
+                 <span className="text-[9px] font-black text-teal bg-teal-light px-2 py-0.5 rounded-md uppercase">Wajib</span>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-4">
                  {[
-                    { t: "Update Headline LinkedIn", d: true },
-                    { t: "Ekstrak CV Baru", d: true },
-                    { t: "Simulasi Interview AI", d: false },
-                    { t: "Pilih 3 Minat Industri", d: false },
+                    { t: "Lengkapi data sekolah", d: !!stats?.profileCompleteness && stats.profileCompleteness > 50 },
+                    { t: "Upload CV Terbaru", d: analysisCount > 0 },
+                    { t: "Lihat hasil analisis", d: analysisCount > 0 },
+                    { t: "Pilih target karier", d: false },
                  ].map((task, i) => (
-                    <div key={i} className="flex items-center gap-4 group cursor-pointer">
+                    <div key={i} className="flex items-center gap-3 group cursor-pointer">
                        <div className={cn(
-                          "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
-                          task.d ? "bg-teal border-teal" : "border-[#E5E7EB] group-hover:border-teal"
+                          "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
+                          task.d ? "bg-teal border-teal" : "border-gray-200 group-hover:border-teal"
                        )}>
                           {task.d && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                        </div>
                        <span className={cn(
-                          "text-[15px] font-medium transition-all",
-                          task.d ? "text-text-faint line-through" : "text-[#030712]"
+                          "text-sm font-bold transition-all",
+                          task.d ? "text-gray-300 line-through" : "text-black"
                        )}>{task.t}</span>
                     </div>
                  ))}
               </div>
 
-              <button className="w-full mt-10 p-4 border border-[#F3F4F6] rounded-2xl text-xs font-bold text-text-faint hover:bg-surface hover:text-[#030712] transition-all">
+              <button className="w-full mt-10 p-4 bg-gray-50 hover:bg-black hover:text-white rounded-2xl text-[10px] font-black text-gray-400 uppercase tracking-widest transition-all">
                 LIHAT SEMUA TUGAS
               </button>
            </motion.div>
 
-           {/* Upgrade / Mentor Card */}
-           <motion.div variants={fadeUp} className="bg-gradient-to-br from-purple to-[#8E87EB] p-8 rounded-[40px] text-white shadow-2xl shadow-purple/20 relative overflow-hidden group">
+           {/* AI Insight Card */}
+           <motion.div variants={fadeUp} className="bg-teal p-8 rounded-[40px] text-white shadow-2xl shadow-teal/20 relative overflow-hidden group">
               <div className="relative z-10">
-                 <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-8">
-                    <Target className="w-7 h-7 text-white" />
+                 <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6">
+                    <TrendingUp className="w-6 h-6 text-white" />
                  </div>
-                 <h3 className="text-2xl font-bold leading-tight mb-3">Konsultasi Khusus dengan AI Mentor</h3>
-                 <p className="text-white/70 text-sm leading-relaxed mb-8">Dapatkan feedback mendalam secara real-time untuk setiap keraguan kariermu.</p>
-                 <button className="w-full py-4 bg-white text-purple text-sm font-bold rounded-2xl shadow-xl shadow-black/10 hover:scale-105 active:scale-95 transition-all">
-                    Jadwalkan Sekarang
-                 </button>
+                 <h3 className="text-xl font-black italic leading-tight mb-3">Saran AI Hari Ini</h3>
+                 <p className="text-white/80 text-xs leading-relaxed mb-8">Berdasarkan profil kamu, posisi <span className="font-bold text-white underline">UI/UX Designer</span> sangat cocok dengan kreativitasmu.</p>
+                 <Link href="/analysis">
+                    <button className="w-full py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-gray-900 transition-all">
+                       PELAJARI JALUR INI
+                    </button>
+                 </Link>
               </div>
-              
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 blur-3xl rounded-full transition-transform group-hover:scale-150 duration-700" />
            </motion.div>
         </div>
 
@@ -223,18 +274,3 @@ export default function DashboardPage() {
     </motion.div>
   );
 }
-
-const ExploreIcon = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-  </svg>
-);

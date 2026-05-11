@@ -3,10 +3,10 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 /**
- * PUT /api/profile
+ * POST /api/profile
  * Updates the user's career profile information.
  */
-export async function PUT(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     if (!session || !session.user?.id) {
@@ -14,25 +14,41 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { bio, location, school, major, graduationYear, experienceLevel, skills } = body;
-
-    // We store profile data in the Profile table linked to User
+    
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },
       update: {
-        bio,
-        schoolName: school,
-        jurusan: major,
-        hardSkills: skills.split(",").map((s: string) => s.trim()),
-        experienceLevel,
+        usia: body.age,
+        schoolName: body.schoolName,
+        sekolah: body.education,
+        jurusan: body.major,
+        lulusan: body.gradYear,
+        hardSkills: body.skills,
+        minat: body.interests,
+        targetGaji: body.salary,
+        targetPosisi: body.targetPos,
+        preferensiKerja: body.workPref,
+        bio: body.bio,
+        experienceLevel: body.experienceLevel,
+        softSkills: body.softSkills || [],
+        kotaTarget: body.city ? [body.city] : [],
       },
       create: {
         userId: session.user.id,
-        bio,
-        schoolName: school,
-        jurusan: major,
-        hardSkills: skills.split(",").map((s: string) => s.trim()),
-        experienceLevel,
+        usia: body.age,
+        schoolName: body.schoolName,
+        sekolah: body.education,
+        jurusan: body.major,
+        lulusan: body.gradYear,
+        hardSkills: body.skills,
+        minat: body.interests,
+        targetGaji: body.salary,
+        targetPosisi: body.targetPos,
+        preferensiKerja: body.workPref,
+        bio: body.bio,
+        experienceLevel: body.experienceLevel,
+        softSkills: body.softSkills || [],
+        kotaTarget: body.city ? [body.city] : [],
       },
     });
 

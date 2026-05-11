@@ -26,7 +26,6 @@ const menuItems = [
   { icon: User, label: "Profil Karier", href: "/profile" },
   { icon: FileText, label: "Analisis CV", href: "/cv-builder" },
   { icon: RoadmapIcon, label: "Roadmap Karier", href: "/roadmap" },
-  { icon: ExploreIcon, label: "Eksplorasi", href: "/explore" },
   { icon: SettingsIcon, label: "Pengaturan", href: "/settings" },
 ];
 
@@ -45,7 +44,7 @@ export default function Sidebar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={toggleSidebar}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-black/5 backdrop-blur-sm z-40 lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -60,15 +59,15 @@ export default function Sidebar() {
         }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "fixed left-0 top-0 h-screen z-50 bg-white border-r border-[#F3F4F6] flex flex-col",
+          "fixed left-0 top-0 h-screen z-50 bg-white border-r border-gray-100 flex flex-col",
           "lg:translate-x-0"
         )}
       >
         {/* Logo Section */}
-        <div className="h-20 flex items-center px-4 border-b border-[#F3F4F6]">
+        <div className="h-20 flex items-center px-4 border-b border-gray-50">
           <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 shrink-0 rounded-xl bg-teal flex items-center justify-center shadow-lg shadow-teal/10">
-              <BrainCircuit className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-black flex items-center justify-center shadow-sm">
+              <BrainCircuit className="w-6 h-6 text-teal" />
             </div>
             {isSidebarOpen && (
               <motion.div 
@@ -76,15 +75,14 @@ export default function Sidebar() {
                 animate={{ opacity: 1, x: 0 }} 
                 className="flex flex-col"
               >
-                <span className="font-bold text-[#030712] tracking-tight whitespace-nowrap">CareerLens AI</span>
-                <span className="text-[10px] text-teal font-black tracking-widest uppercase leading-none">PREMIUM</span>
+                <span className="font-bold text-black tracking-tight whitespace-nowrap">CareerLens AI</span>
               </motion.div>
             )}
           </Link>
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 overflow-y-auto py-8 px-3 space-y-1.5 no-scrollbar">
+        <nav className="flex-1 overflow-y-auto py-8 px-3 space-y-1 no-scrollbar">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -96,19 +94,19 @@ export default function Sidebar() {
                   className={cn(
                     "flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 group relative",
                     isActive 
-                      ? "bg-teal-light text-teal border border-teal-mid/20" 
-                      : "text-text-secondary hover:bg-surface-2 hover:text-text-primary"
+                      ? "bg-gray-50 text-teal" 
+                      : "text-gray-500 hover:bg-gray-50 hover:text-black"
                   )}
                 >
-                  <item.icon className={cn("w-6 h-6 shrink-0", isActive ? "text-teal" : "text-text-muted group-hover:text-text-primary")} />
+                  <item.icon className={cn("w-5 h-5 shrink-0 transition-colors", isActive ? "text-teal" : "text-gray-400 group-hover:text-black")} />
                   {isSidebarOpen && (
-                    <span className="font-medium text-[15px] whitespace-nowrap overflow-hidden hidden lg:inline">
+                    <span className="font-medium text-[14px] whitespace-nowrap overflow-hidden">
                         {item.label}
                     </span>
                   )}
                   {/* Tooltip for collapsed state */}
                   {!isSidebarOpen && hoveredItem === item.label && (
-                    <div className="absolute left-16 bg-[#030712] text-white text-xs font-bold py-2 px-4 rounded-lg whitespace-nowrap z-50 shadow-xl">
+                    <div className="absolute left-16 bg-black text-white text-[10px] font-bold py-2 px-3 rounded-lg whitespace-nowrap z-50 shadow-xl">
                       {item.label}
                     </div>
                   )}
@@ -119,45 +117,27 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer / User Section */}
-        <div className="p-4 space-y-4 border-t border-[#F3F4F6]">
-          {isSidebarOpen && (
-             <div className="p-4 bg-purple-light rounded-2xl border border-purple/10 group overflow-hidden relative">
-                <div className="absolute -top-4 -right-4 w-12 h-12 bg-purple/10 blur-xl rounded-full" />
-                <div className="flex items-center gap-2 text-[10px] font-black text-purple uppercase tracking-widest mb-1">
-                   <Zap className="w-3 h-3 fill-current" />
-                   Edisi Pro
-                </div>
-                <p className="text-[11px] text-purple/70 font-medium leading-tight mb-3">Analisis unlimitied & roadmap 90 hari.</p>
-                <button className="w-full h-8 flex items-center justify-center bg-purple text-white text-[11px] font-bold rounded-lg hover:bg-purple/90 transition-all">
-                  Upgrade
-                </button>
-             </div>
-          )}
-
+        <div className="p-4 space-y-3 border-t border-gray-50">
           <div className={cn(
-            "flex items-center gap-3 p-3 rounded-2xl border border-[#F3F4F6] bg-surface",
+            "flex items-center gap-3 p-2.5 rounded-2xl border border-gray-100 bg-gray-50/50",
             !isSidebarOpen && "justify-center"
           )}>
-            <div className="w-10 h-10 shrink-0 rounded-full bg-white border border-[#E5E7EB] overflow-hidden flex items-center justify-center">
+            <div className="w-8 h-8 shrink-0 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
               {session?.user?.image ? (
                  <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-5 h-5 text-text-muted" />
+                <User className="w-4 h-4 text-gray-400" />
               )}
             </div>
             {isSidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-text-primary truncate leading-none mb-1">{session?.user?.name || "User"}</p>
-                <div className="flex items-center gap-1">
-                   <span className="w-1.5 h-1.5 rounded-full bg-teal" />
-                   <span className="text-[10px] font-bold text-teal tracking-wide uppercase">Free Tier</span>
-                </div>
+                <p className="text-xs font-bold text-black truncate leading-none">{session?.user?.name || "User"}</p>
               </div>
             )}
             {isSidebarOpen && (
               <button 
                 onClick={() => signOut()}
-                className="p-1.5 text-text-faint hover:text-red-500 transition-colors"
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
                 title="Keluar"
               >
                 <LogOut className="w-4 h-4" />
@@ -167,9 +147,16 @@ export default function Sidebar() {
           
           <button 
             onClick={toggleSidebar}
-            className="w-full flex items-center justify-center h-10 rounded-xl border border-[#F3F4F6] text-text-faint hover:text-teal hover:bg-teal-light/50 transition-all"
+            className="w-full flex items-center justify-center h-9 rounded-xl border border-gray-100 text-gray-400 hover:text-teal hover:bg-gray-50 transition-all font-medium text-xs gap-2"
           >
-             {isSidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+             {isSidebarOpen ? (
+               <>
+                 <ChevronLeft className="w-4 h-4" />
+                 <span>Sembunyikan</span>
+               </>
+             ) : (
+               <ChevronRight className="w-4 h-4" />
+             )}
           </button>
         </div>
       </motion.aside>

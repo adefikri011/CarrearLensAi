@@ -42,23 +42,23 @@ export default function UploadZone({ onUploadSuccess }: UploadZoneProps) {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/extract-cv", {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Gagal mengekstrak CV");
+      if (!response.ok) throw new Error("Gagal mengunggah CV");
 
       const result = await response.json();
       
       setUploadProgress(100);
       setTimeout(() => {
         onUploadSuccess({
-          id: Math.random().toString(36).substring(7),
-          filename: file.name,
-          extractedText: result.data.text,
+          id: result.data.id,
+          filename: result.data.filename,
+          extractedText: result.data.extractedText,
         });
-        toast.success("CV Berhasil Diekstrak!");
+        toast.success("CV Berhasil Unggah & Ekstrak!");
       }, 500);
 
     } catch (error) {
