@@ -47,7 +47,16 @@ export async function POST(req: NextRequest) {
     fs.writeFileSync(tempPath, buffer);
 
     // Extract Text from PDF
-    const extractedText = await extractTextFromPDF(buffer);
+    const rawExtractedText = await extractTextFromPDF(buffer);
+
+    // Sanitize extracted text to prevent UTF8 encoding errors in PostgreSQL
+    const sanitizedText = rawExtractedText
+      .replace(/\0/g, '')           // remove null bytes
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // remove control chars
+      .replace(/\uFFFD/g, '')       // remove replacement chars
+      .trim();
+    
+    const finalText = sanitizedText.slice(0, 50000);
 
     // 4. Save CVUpload Record to Database
     // Note: Since we're not using remote storage, fileUrl is the temp path or a placeholder
@@ -56,7 +65,7 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         filename: file.name,
         fileUrl: tempPath, // Storing temp path for reference
-        extractedText,
+        extractedText: finalText,
         fileSize: file.size,
       },
     });
@@ -66,7 +75,7 @@ export async function POST(req: NextRequest) {
       data: {
         id: cvUpload.id,
         filename: cvUpload.filename,
-        extractedText,
+        extractedText: finalText,
       },
     });
 

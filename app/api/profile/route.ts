@@ -84,21 +84,19 @@ export async function GET(req: NextRequest) {
 
     const profile = await prisma.profile.findUnique({
       where: { userId: session.user.id },
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
-      }
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true }
     });
 
     if (!profile) {
-      // Return empty profile but with name from user session if available
+      // Return empty profile but with name from user if available
       return NextResponse.json({ 
         success: true, 
         data: { 
-          name: session.user.name 
+          name: user?.name || session.user.name 
         } 
       });
     }
@@ -106,7 +104,7 @@ export async function GET(req: NextRequest) {
     // Flatten name 
     const data = {
       ...profile,
-      name: profile.user?.name || "",
+      name: user?.name || "",
     };
 
     return NextResponse.json({ success: true, data });
