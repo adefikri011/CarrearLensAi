@@ -5,8 +5,9 @@ import { motion } from "framer-motion";
 import { 
   FileText, Sparkles, AlertCircle, CheckCircle2, 
   ArrowLeft, Download, RefreshCcw, TrendingUp,
-  BrainCircuit, Gauge, Target, Search, Loader2
+  BrainCircuit, Gauge, Target, Search
 } from "lucide-react";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ interface CVPreviewProps {
     filename: string;
     extractedText: string;
   };
-  onReset: () => void;
+  onReset?: () => void;
 }
 
 const fadeUp = {
@@ -50,15 +51,21 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
     <div className="space-y-12">
       {/* --- Action Bar --- */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-         <button 
-           onClick={onReset}
-           className="flex items-center gap-2 text-text-faint hover:text-text-primary transition-colors font-bold group"
-         >
-            <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-text-primary transition-all">
-               <ArrowLeft className="w-4 h-4" />
-            </div>
-            Kembali & Upload Ulang
-         </button>
+         {onReset ? (
+           <button 
+             onClick={onReset}
+             className="flex items-center gap-2 text-gray-400 hover:text-black transition-colors font-bold group"
+           >
+              <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-black transition-all">
+                 <ArrowLeft className="w-4 h-4" />
+              </div>
+              Kembali & Upload Ulang
+           </button>
+         ) : (
+           <div className="flex items-center gap-2 text-teal font-bold uppercase text-[10px] tracking-widest">
+              <CheckCircle2 className="w-4 h-4" /> CV Siap Digunakan
+           </div>
+         )}
          
          <div className="flex gap-4">
             <Button variant="outline" className="rounded-full px-6 h-12 font-bold border-[#F3F4F6] hover:bg-surface">
@@ -188,7 +195,7 @@ export default function CVPreview({ data, onReset }: CVPreviewProps) {
          <div className="p-10 max-h-[400px] overflow-y-auto no-scrollbar bg-white whitespace-pre-wrap text-gray-500 text-sm leading-loose">
             {analyzing ? (
                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                  <Loader2 className="w-8 h-8 text-teal animate-spin" />
+                  <LoadingSpinner size="md" />
                   <p className="text-[11px] font-black text-teal tracking-widest uppercase">Mengekstrak informasi...</p>
                </div>
             ) : data.extractedText}

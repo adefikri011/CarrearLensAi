@@ -5,18 +5,17 @@ import {
   motion, AnimatePresence 
 } from "framer-motion";
 import { 
-  User, Lock, Bell, ShieldAlert, ChevronRight, 
-  Mail, Smartphone, Globe, Github, Linkedin, 
-  Twitter, Camera, Save, RefreshCcw, CheckCircle2,
-  AlertCircle, Trash2, Info
+  User, Lock, ShieldAlert, ChevronRight, 
+  Linkedin, Github, Twitter, Camera, Save, 
+  CheckCircle2, AlertCircle, Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },
@@ -38,7 +37,6 @@ export default function SettingsPage() {
   const menuItems = [
     { id: "profile", label: "Profil Publik", icon: User },
     { id: "account", label: "Akun & Keamanan", icon: Lock },
-    { id: "notifications", label: "Notifikasi", icon: Bell },
     { id: "danger", label: "Zona Bahaya", icon: ShieldAlert, color: "text-red-500" },
   ];
 
@@ -159,7 +157,7 @@ export default function SettingsPage() {
 
                     <div className="pt-8 border-t border-gray-100 flex justify-end">
                        <Button onClick={handleSave} disabled={isLoading} className="h-14 px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-xs hover:bg-teal transition-all">
-                          {isLoading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : <>Simpan Profil <Save className="w-4 h-4 ml-2" /></>}
+                          {isLoading ? <LoadingSpinner size="sm" /> : <>Simpan Profil <Save className="w-4 h-4 ml-2" /></>}
                        </Button>
                     </div>
                  </motion.div>
@@ -218,48 +216,9 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="pt-8 border-t border-gray-100 flex justify-end">
-                       <Button onClick={handleSave} className="h-14 px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-xs hover:bg-teal transition-all">
-                          Update Password
+                       <Button onClick={handleSave} disabled={isLoading} className="h-14 px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-xs hover:bg-teal transition-all">
+                          {isLoading ? <LoadingSpinner size="sm" /> : "Update Password"}
                        </Button>
-                    </div>
-                 </motion.div>
-              )}
-
-              {activeSection === "notifications" && (
-                 <motion.div key="notifications" variants={fadeUp} initial="hidden" animate="visible" className="space-y-10">
-                    <div className="pb-8 border-b border-gray-100">
-                       <h1 className="text-2xl font-black text-black mb-1">Notifikasi</h1>
-                       <p className="text-gray-500 text-sm">Pilih bagaimana kami memberikan update tentang perjalanan kariermu.</p>
-                    </div>
-
-                    <div className="space-y-4">
-                       {[
-                          { id: "email", label: "Email Notifications", desc: "Dapatkan update mingguan dan laporan lengkap ke emailmu.", icon: Mail },
-                          { id: "wa", label: "WhatsApp Alerts", desc: "Notifikasi instan untuk pesan dari rekruter dan jadwal interview.", icon: Smartphone },
-                          { id: "push", label: "Browser Push", desc: "Notifikasi real-time saat kamu sedang aktif di platform.", icon: Globe },
-                       ].map((item) => (
-                          <div key={item.id} className="p-8 bg-white border border-gray-100 rounded-[32px] flex items-center justify-between group hover:bg-gray-50 transition-all shadow-sm">
-                             <div className="flex items-center gap-6">
-                                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-teal group-hover:text-white transition-all">
-                                   <item.icon className="w-6 h-6" />
-                                </div>
-                                <div>
-                                   <h4 className="font-bold text-black text-lg">{item.label}</h4>
-                                   <p className="text-sm text-gray-400 font-medium">{item.desc}</p>
-                                </div>
-                             </div>
-                             <Switch defaultChecked className="data-[state=checked]:bg-teal" />
-                          </div>
-                       ))}
-                    </div>
-
-                    <div className="p-8 bg-teal-light/20 border border-teal/10 rounded-[32px] flex items-center gap-4">
-                       <Info className="w-6 h-6 text-teal" />
-                       <p className="text-xs text-teal font-medium italic font-bold">&quot;Tenang, kami tidak akan membanjiri inbox kamu. Kami hanya mengirimkan pesan yang benar-benar penting.&quot;</p>
-                    </div>
-
-                    <div className="pt-8 border-t border-gray-100 flex justify-end">
-                       <Button onClick={handleSave} className="h-14 px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-xs">Simpan Preferensi</Button>
                     </div>
                  </motion.div>
               )}

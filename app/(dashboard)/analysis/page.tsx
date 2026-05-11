@@ -8,6 +8,8 @@ import {
   BrainCircuit, Target, ArrowLeft, Bookmark, Sparkles,
   ChevronRight, RefreshCcw, Loader2, AlertCircle, FileText
 } from "lucide-react";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import PageLoader from "@/components/shared/PageLoader";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -70,10 +72,7 @@ export default function AnalysisPage() {
 
   if (loading) {
     return (
-      <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-teal" />
-        <p className="text-gray-400 font-bold uppercase text-[11px] tracking-widest">Memuat Analisis...</p>
-      </div>
+      <PageLoader isLoading={true} text="Memuat Analisis..." />
     );
   }
 
@@ -112,7 +111,7 @@ export default function AnalysisPage() {
               disabled={isAnalyzing}
               className="h-12 rounded-full px-8 bg-black text-white font-bold hover:bg-gray-800 transition-all shadow-xl shadow-black/10"
             >
-              {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
+              {isAnalyzing ? <LoadingSpinner size="sm" className="mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
               {analysis ? "Analisis Ulang" : "Mulai Analisis"}
             </Button>
          </div>
@@ -136,7 +135,7 @@ export default function AnalysisPage() {
       ) : isAnalyzing ? (
         <div className="bg-white border border-gray-100 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8">
            <div className="relative">
-              <Loader2 className="w-16 h-16 animate-spin text-teal" />
+              <LoadingSpinner size="lg" />
               <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-teal-dark animate-pulse" />
            </div>
            <div className="space-y-2">

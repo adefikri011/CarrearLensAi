@@ -15,6 +15,8 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import PageLoader from "@/components/shared/PageLoader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -56,10 +58,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-teal" />
-        <p className="text-gray-400 font-bold uppercase text-[11px] tracking-widest">Memuat Dashboard...</p>
-      </div>
+      <PageLoader isLoading={true} text="Memuat Dashboard..." />
     );
   }
 

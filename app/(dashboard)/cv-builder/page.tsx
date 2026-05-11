@@ -1,51 +1,106 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { 
+  motion, AnimatePresence 
+} from "framer-motion";
+import { 
+  Sparkles, CheckCircle2, History, FileText, 
+  ArrowRight, RefreshCcw, Trash2, AlertCircle
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import UploadZone from "@/components/cv/UploadZone";
 import CVPreview from "@/components/cv/CVPreview";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, History, ArrowRight, FileText, CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import PageLoader from "@/components/shared/PageLoader";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.05 } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
 };
 
 export default function CVBuilderPage() {
-  const [uploadedData, setUploadedData] = useState<{
-    id: string;
-    filename: string;
-    extractedText: string;
-  } | null>(null);
+  const [uploadedData, setUploadedData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showConfirmReplace, setShowConfirmReplace] = useState(false);
+  const [history, setHistory] = useState([
+    { name: "Curriculum_Vitae_Budi.pdf", date: "12 MEI 2024", score: 84 },
+    { name: "CV_Graphic_Designer.pdf", date: "05 MEI 2024", score: 72 },
+  ]);
 
-  const handleUploadSuccess = (data: { id: string; filename: string; extractedText: string }) => {
+  useEffect(() => {
+    fetchLatestCV();
+  }, []);
+
+  const fetchLatestCV = async () => {
+    try {
+      const res = await fetch("/api/upload");
+      const result = await res.json();
+      if (result.success && result.data) {
+        setUploadedData(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest CV", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUploadSuccess = (data: any) => {
     setUploadedData(data);
+    // Add to history (mock)
+    setHistory([{ name: data.filename, date: "HARI INI", score: 84 }, ...history]);
   };
 
-  const handleReset = () => {
+  const handleReanalyze = async () => {
+    if (!uploadedData) return;
+    setIsProcessing(true);
+    try {
+      // Re-trigger analysis logic
+      const res = await fetch("/api/analyze", {
+        method: "POST"
+      });
+      const result = await res.json();
+      if (result.success) {
+        toast.success("Analisis ulang berhasil!");
+      } else {
+        toast.error(result.error || "Gagal melakukan analisis");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan sistem");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleResetCV = () => {
+    setShowConfirmReplace(true);
+  };
+
+  const confirmResetCV = () => {
     setUploadedData(null);
+    setShowConfirmReplace(false);
+    toast.info("Upload CV baru sekarang.");
   };
 
-  const history = [
-    { date: "2 Mei 2024", name: "CV_Project_Manager.pdf", score: 88 },
-    { date: "28 April 2024", name: "CV_Fullstack_Dev.pdf", score: 76 },
-    { date: "15 April 2024", name: "CV_Draft_Final.pdf", score: 82 },
-  ];
+  if (isLoading) return <PageLoader isLoading={true} text="Memeriksa Data CV..." />;
 
   return (
-    <motion.div 
-      initial="hidden" 
-      animate="visible" 
-      variants={stagger}
-      className="space-y-16"
-    >
+    <div className="space-y-16 pb-20">
+      <PageLoader isLoading={isProcessing} text="Sedang Menganalisis CV..." />
+
       {/* Header Section */}
-      <motion.section variants={fadeUp} className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <motion.section variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="max-w-2xl">
            <div className="flex items-center gap-2 text-teal font-bold text-[12px] uppercase tracking-[0.1em] mb-4">
               <Sparkles className="w-4 h-4" />
@@ -71,13 +126,12 @@ export default function CVBuilderPage() {
       </motion.section>
 
       {/* Steps Indicator (Progressive) */}
-      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center gap-12 sm:gap-24 relative px-10">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row items-center gap-12 sm:gap-24 relative px-10">
          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-100 -translate-y-1/2 z-0 hidden sm:block" />
          
          {[
-           { step: "01", label: "UPLOAD", active: true },
-           { step: "02", label: "EKSTRAK", active: !!uploadedData },
-           { step: "03", label: "ANALISIS", active: !!uploadedData },
+           { step: "01", label: "UPLOAD", active: !uploadedData },
+           { step: "02", label: "ANALYZE", active: !!uploadedData },
          ].map((s, i) => (
            <div key={i} className="flex flex-col items-center gap-3 relative z-10">
               <div className={cn(
@@ -94,16 +148,9 @@ export default function CVBuilderPage() {
          ))}
       </motion.div>
 
-      {/* Content Area */}
       <AnimatePresence mode="wait">
         {!uploadedData ? (
-          <motion.div
-            key="upload-section"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <motion.div key="upload" variants={fadeUp} initial="hidden" animate="visible" exit={{ opacity: 0, y: -20 }}>
             <UploadZone onUploadSuccess={handleUploadSuccess} />
 
             {/* History Section */}
@@ -113,7 +160,6 @@ export default function CVBuilderPage() {
                      <History className="w-4 h-4" />
                      RIWAYAT ANALISIS
                   </h3>
-                  <button className="text-[10px] font-black text-teal hover:underline tracking-widest">LIHAT SEMUA</button>
                </div>
                <div className="grid grid-cols-1 gap-3">
                   {history.map((h, i) => (
@@ -128,7 +174,7 @@ export default function CVBuilderPage() {
                           </div>
                        </div>
                        <div className="flex items-center gap-8">
-                          <div className="text-right hidden sm:block">
+                          <div className="text-right">
                              <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">SKOR ATS</p>
                              <p className="text-lg font-black text-black">{h.score}%</p>
                           </div>
@@ -142,17 +188,69 @@ export default function CVBuilderPage() {
             </div>
           </motion.div>
         ) : (
-          <motion.div
-            key="preview-section"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <CVPreview data={uploadedData} onReset={handleReset} />
+          <motion.div key="preview" variants={fadeUp} initial="hidden" animate="visible" className="space-y-12">
+            {/* CV Details Banner */}
+            <div className="bg-white border border-gray-100 rounded-[32px] p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-teal">
+                        <FileText className="w-8 h-8" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold text-black">{uploadedData.filename}</h3>
+                        <p className="text-xs text-gray-400 font-medium uppercase mt-1">Diunggah pada: {new Date(uploadedData.createdAt || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <Button 
+                      onClick={handleReanalyze}
+                      variant="outline" 
+                      className="h-12 rounded-xl px-8 font-black text-[10px] uppercase tracking-widest border-gray-100 bg-white hover:bg-gray-50"
+                    >
+                      <RefreshCcw className="w-4 h-4 mr-2" /> Analisis Ulang
+                    </Button>
+                    <Button 
+                      onClick={handleResetCV}
+                      className="h-12 rounded-xl px-8 font-black text-[10px] uppercase tracking-widest bg-black text-white hover:bg-red-600"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" /> Ganti CV
+                    </Button>
+                </div>
+            </div>
+
+            <CVPreview data={uploadedData} />
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmReplace} onOpenChange={setShowConfirmReplace}>
+        <DialogContent className="rounded-[32px] p-8">
+           <DialogHeader>
+              <div className="w-16 h-16 bg-red-50 rounded-[24px] flex items-center justify-center text-red-600 mb-6 mx-auto">
+                 <AlertCircle className="w-8 h-8" />
+              </div>
+              <DialogTitle className="text-2xl font-black text-center text-black">Ganti CV Saat Ini?</DialogTitle>
+              <DialogDescription className="text-center text-gray-500 pt-4 text-sm leading-relaxed">
+                 CV lama dan hasil analisis sebelumnya akan diganti dengan data baru. Tindakan ini tidak dapat dibatalkan.
+              </DialogDescription>
+           </DialogHeader>
+           <DialogFooter className="flex flex-row justify-center gap-4 mt-8 sm:justify-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowConfirmReplace(false)}
+                className="flex-1 h-12 rounded-xl font-bold border-gray-100"
+              >
+                Batal
+              </Button>
+              <Button 
+                onClick={confirmResetCV}
+                className="flex-1 h-12 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700"
+              >
+                Konfirmasi
+              </Button>
+           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
