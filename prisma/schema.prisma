@@ -111,6 +111,7 @@ model Profile {
 model RoadmapProgress {
   id        String   @id @default(cuid())
   userId    String
+  weekId    String
   taskId    String   // Identifier like "w1-t0"
   completed Boolean  @default(false)
   updatedAt DateTime @updatedAt
