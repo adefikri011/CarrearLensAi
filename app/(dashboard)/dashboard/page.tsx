@@ -34,23 +34,45 @@ const stagger = {
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [stats, setStats] = useState<any>(null);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [cvData, setCvData] = useState<any>(null);
+  const [latestAnalysis, setLatestAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState({
+    profileComplete: false,
+    cvUploaded: false,
+    analysisComplete: false,
+    careerSelected: false
+  });
   
   const userName = session?.user?.name?.split(' ')[0] || "User";
 
   useEffect(() => {
-    fetchStats();
+    fetchAllData();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchAllData = async () => {
     try {
-      const res = await fetch("/api/dashboard/stats");
-      const result = await res.json();
-      if (result.success) {
-        setStats(result.data);
-      }
+      const [profileRes, cvRes, analysisRes, statsRes] = await Promise.all([
+        fetch('/api/profile').then(r => r.json()),
+        fetch('/api/upload/history').then(r => r.json()),
+        fetch('/api/analyze/latest').then(r => r.json()),
+        fetch('/api/dashboard/stats').then(r => r.json()),
+      ]);
+
+      setProfileData(profileRes.data);
+      setCvData(cvRes.cv);
+      setLatestAnalysis(analysisRes.data);
+      setStats(statsRes.data);
+
+      setTasks({
+        profileComplete: !!profileRes.data?.id,
+        cvUploaded: !!cvRes.cv,
+        analysisComplete: !!analysisRes.data,
+        careerSelected: !!analysisRes.data?.selectedPath
+      });
     } catch (error) {
-      console.error("Failed to fetch dashboard stats", error);
+      console.error("Failed to fetch dashboard data", error);
     } finally {
       setLoading(false);
     }
@@ -62,9 +84,10 @@ export default function DashboardPage() {
     );
   }
 
-  const readinessScore = stats?.latestAnalysis?.overallReadiness || 0;
+  const readinessScore = latestAnalysis?.overallReadiness || 0;
   const analysisCount = stats?.analysisCount || 0;
   const profileCompleteness = stats?.profileCompleteness || 0;
+  const skillMatch = latestAnalysis?.careerPaths?.[0]?.matchScore || 0;
 
   return (
     <motion.div 
@@ -102,9 +125,9 @@ export default function DashboardPage() {
       <motion.section variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { icon: <FileText className="text-black" />, label: "Analisis CV", val: analysisCount.toString(), desc: "Total dokumen", bg: "bg-gray-50" },
-          { icon: <Target className="text-teal" />, label: "Target Posisi", val: "1", desc: "Posisi utama", bg: "bg-teal-light/30" },
+          { icon: <Target className="text-teal" />, label: "Target Posisi", val: tasks.careerSelected ? "1" : "0", desc: "Posisi utama", bg: "bg-teal-light/30" },
           { icon: <CheckCircle2 className="text-black" />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan data", bg: "bg-gray-50" },
-          { icon: <Zap className="text-teal" />, label: "Skill Match", val: analysisCount > 0 ? "Bagus" : "-", desc: "Kecocokan industri", bg: "bg-teal-light/30" },
+          { icon: <Zap className="text-teal" />, label: "Skill Match", val: skillMatch > 0 ? `${skillMatch}%` : "-", desc: "Kecocokan industri", bg: "bg-teal-light/30" },
         ].map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 hover:border-black/5 transition-all group shadow-sm">
             <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-500", stat.bg)}>
@@ -126,64 +149,73 @@ export default function DashboardPage() {
         
         {/* Left: Active Mission or Empty State */}
         <div className="lg:col-span-2 space-y-8">
-           {analysisCount === 0 ? (
+           {!tasks.cvUploaded ? (
              <motion.div variants={fadeUp} className="bg-white border border-gray-100 rounded-[40px] p-12 text-center flex flex-col items-center space-y-6 shadow-sm">
                 <div className="w-16 h-16 rounded-[24px] bg-gray-50 flex items-center justify-center text-gray-300">
                    <AlertCircle className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                   <h2 className="text-2xl font-black text-black italic">Mulai Perjalanan Kariermu</h2>
-                   <p className="text-gray-500 max-w-sm mx-auto">Upload CV kamu sekarang untuk melihat potensi karier dan roadmap aksi 90 hari.</p>
+                   <h2 className="text-2xl font-black text-black italic">Upload CV Pertama Kamu</h2>
+                   <p className="text-gray-500 max-w-sm mx-auto">Mulai perjalanan kariermu dengan mengunggah CV untuk dianalisis oleh AI kami.</p>
                 </div>
                 <Link href="/cv-builder">
                    <Button className="bg-black text-white hover:bg-teal rounded-full px-10 h-14 font-black text-[12px] uppercase tracking-widest transition-all">
-                      UPLOAD CV PERTAMA <ArrowUpRight className="ml-2 w-5 h-5" />
+                      UPLOAD CV SEKARANG <ArrowUpRight className="ml-2 w-5 h-5" />
+                   </Button>
+                </Link>
+             </motion.div>
+           ) : !tasks.analysisComplete ? (
+             <motion.div variants={fadeUp} className="bg-white border-2 border-teal/20 rounded-[40px] p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-teal/5">
+                <div className="flex items-center gap-6">
+                   <div className="w-20 h-20 rounded-[28px] bg-teal flex items-center justify-center text-white shadow-lg shadow-teal/20">
+                      <CheckCircle2 className="w-10 h-10" />
+                   </div>
+                   <div className="space-y-1">
+                      <h3 className="text-2xl font-black text-black italic">CV Berhasil Diupload</h3>
+                      <p className="text-gray-500 font-medium">{cvData.filename} • {new Date(cvData.createdAt).toLocaleDateString('id-ID')}</p>
+                   </div>
+                </div>
+                <Link href="/cv-builder">
+                   <Button className="bg-black text-white hover:bg-teal h-16 px-10 rounded-2xl font-black text-xs uppercase tracking-widest transition-all group">
+                      Analisis CV Sekarang <ArrowUpRight className="ml-2 w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                    </Button>
                 </Link>
              </motion.div>
            ) : (
              <motion.div variants={fadeUp} className="bg-black rounded-[40px] p-10 text-white relative overflow-hidden group">
                 <div className="relative z-10">
-                   <div className="flex justify-between items-start mb-16">
-                      <div className="space-y-3">
-                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[9px] font-black tracking-widest uppercase">
-                            MISI AKTIF • MINGGU KE-1
+                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+                      <div className="space-y-1">
+                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[9px] font-black tracking-widest uppercase text-teal">
+                            ANALISIS TERFAVORIT
                          </div>
-                         <h2 className="text-3xl font-black italic max-w-sm">Perkuat Portofolio Tech</h2>
-                         <p className="text-gray-400 max-w-xs text-sm">Target minggu ini: Selesaikan analisis skill gap berdasarkan CV kamu.</p>
+                         <h2 className="text-3xl font-black italic">Kesiapan Kerja: {readinessScore}%</h2>
+                         <p className="text-gray-400 text-sm">Berdasarkan data terbaru dari CV kamu.</p>
                       </div>
-                      <div className="w-14 h-14 rounded-2xl bg-teal flex items-center justify-center shadow-2xl shadow-teal/40">
-                         <BrainCircuit className="w-7 h-7 text-white" />
+                      <div className="flex -space-x-4">
+                         {(latestAnalysis.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
+                           <div key={i} className="w-12 h-12 rounded-full border-4 border-black bg-teal flex items-center justify-center text-[10px] font-black shadow-xl" title={path.title}>
+                              {path.matchScore}%
+                           </div>
+                         ))}
                       </div>
                    </div>
 
-                   <div className="space-y-4 mb-10">
-                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                         <span className="text-gray-500">Progres Misi</span>
-                         <span className="text-teal">20% Selesai</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                         <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: "20%" }}
-                          transition={{ duration: 1, delay: 0.5 }}
-                          className="h-full bg-teal rounded-full" 
-                         />
-                      </div>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                      {(latestAnalysis.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
+                        <div key={i} className="bg-white/5 border border-white/10 p-4 rounded-2xl">
+                           <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">JALUR {i+1}</p>
+                           <p className="text-sm font-bold truncate">{path.title}</p>
+                        </div>
+                      ))}
                    </div>
 
                    <div className="flex flex-wrap gap-4">
                       <Link 
                         href="/analysis"
-                        className="bg-white text-black px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-teal hover:text-white transition-all flex items-center gap-2"
+                        className="bg-white text-black px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal hover:text-white transition-all flex items-center gap-2"
                       >
-                        Hasil Analisis <ArrowUpRight className="w-4 h-4" />
-                      </Link>
-                      <Link 
-                        href="/profile"
-                        className="bg-white/5 text-white border border-white/10 px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-                      >
-                        Update Profil
+                        Lihat Hasil Lengkap <ArrowUpRight className="w-4 h-4" />
                       </Link>
                    </div>
                 </div>
@@ -227,10 +259,10 @@ export default function DashboardPage() {
 
               <div className="space-y-4">
                  {[
-                    { t: "Lengkapi data sekolah", d: !!stats?.profileCompleteness && stats.profileCompleteness > 50 },
-                    { t: "Upload CV Terbaru", d: analysisCount > 0 },
-                    { t: "Lihat hasil analisis", d: analysisCount > 0 },
-                    { t: "Pilih target karier", d: false },
+                    { t: "Lengkapi data sekolah", d: tasks.profileComplete },
+                    { t: "Upload CV Terbaru", d: tasks.cvUploaded },
+                    { t: "Lihat hasil analisis", d: tasks.analysisComplete },
+                    { t: "Pilih target karier", d: tasks.careerSelected },
                  ].map((task, i) => (
                     <div key={i} className="flex items-center gap-3 group cursor-pointer">
                        <div className={cn(
