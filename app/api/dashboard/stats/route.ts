@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,26 +9,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = session.user.id;
+
     // 1. Get latest analysis
-    const latestAnalysis = await prisma.analysis.findFirst({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-    });
+    const latestAnalysis = await db.analysis.getLatest(userId);
 
     // 2. Counts
-    const analysisCount = await prisma.analysis.count({
-      where: { userId: session.user.id },
-    });
+    const analyses = await db.analysis.getAll(userId);
+    const analysisCount = analyses.length;
 
     // 3. Profile completeness
-    const profile = await prisma.profile.findUnique({
-      where: { userId: session.user.id },
-    });
+    const profile = await db.profile.get(userId);
     
     let completeness = 0;
     if (profile) {
       const fields = [
-        profile.usia, profile.sekolah, profile.jurusan, 
+        profile.usia, profile.jurusan, 
         profile.lulusan, profile.targetPosisi, profile.targetGaji
       ];
       const filled = fields.filter(f => f !== null && f !== undefined && f !== "").length;

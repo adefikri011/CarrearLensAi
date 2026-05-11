@@ -38,8 +38,13 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { isSidebarOpen, toggleSidebar } = useAppStore();
+  const { isSidebarOpen, toggleSidebar, clearUserData } = useAppStore();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    clearUserData();
+    await signOut({ callbackUrl: "/" });
+  };
 
   const sidebarContent = (
     <div className={cn(
@@ -121,7 +126,7 @@ export default function Sidebar({
           )}
           {(isSidebarOpen || inDrawer) && (
             <button 
-              onClick={() => signOut()}
+              onClick={handleLogout}
               className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
               title="Keluar"
             >

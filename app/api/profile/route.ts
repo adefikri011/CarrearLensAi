@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 /**
  * POST /api/profile
@@ -23,45 +24,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const profile = await prisma.profile.upsert({
-      where: { userId: session.user.id },
-      update: {
+    const profile = await db.profile.upsert(session.user.id, {
         usia: body.age,
-        gender: body.gender,
-        schoolName: body.schoolName,
-        sekolah: body.education,
         jurusan: body.major,
         lulusan: body.gradYear,
-        nilaiRata: body.avgScore ? parseFloat(body.avgScore) : null,
         hardSkills: body.skills,
         minat: body.interests,
         targetGaji: body.salary,
-        targetPosisi: body.targetPos,
+        targetPosisi: body.targetPos as any,
         preferensiKerja: body.workPref,
-        bio: body.bio,
-        experienceLevel: body.experienceLevel,
         softSkills: body.softSkills || [],
         kotaTarget: body.city ? [body.city] : [],
-      },
-      create: {
-        userId: session.user.id,
-        usia: body.age,
-        gender: body.gender,
-        schoolName: body.schoolName,
-        sekolah: body.education,
-        jurusan: body.major,
-        lulusan: body.gradYear,
-        nilaiRata: body.avgScore ? parseFloat(body.avgScore) : null,
-        hardSkills: body.skills,
-        minat: body.interests,
-        targetGaji: body.salary,
-        targetPosisi: body.targetPos,
-        preferensiKerja: body.workPref,
-        bio: body.bio,
-        experienceLevel: body.experienceLevel,
-        softSkills: body.softSkills || [],
-        kotaTarget: body.city ? [body.city] : [],
-      },
+        sertifikasi: body.sertifikasi || [],
+        pengalaman: body.pengalaman || null,
     });
 
     return NextResponse.json({ success: true, data: profile });
@@ -82,9 +57,7 @@ export async function GET(req: NextRequest) {
        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const profile = await prisma.profile.findUnique({
-      where: { userId: session.user.id },
-    });
+    const profile = await db.profile.get(session.user.id);
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

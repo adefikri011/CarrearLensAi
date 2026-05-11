@@ -36,6 +36,13 @@ export function buildAnalysisPrompt(profile: any, cvText: string): string {
 Kamu adalah career counselor AI expert. Analisis SINKRONISASI antara 
 profil yang diisi user DAN isi CV mereka.
 
+PRIORITAS ANALISIS:
+1. ISI CV = sumber utama (primary source). Jika ada perbedaan antara profil dan CV, prioritaskan bukti dari CV.
+2. Profil = konteks tambahan untuk memahami minat dan target pengguna.
+3. Career path HARUS berakar pada pengalaman atau potensi yang terlihat di CV.
+4. Keywords diambil dari isi CV, bukan sekadar dari input profil.
+5. Jika CV dan profil tidak sinkron (misal: pengalaman admin tapi ingin jadi programmer), rekomendasikan langkah konkret untuk menyelaraskannya.
+
 PROFIL YANG DIISI USER:
 - Nama: ${profile.nama || 'Tidak diisi'}
 - Pendidikan: ${profile.lulusan || '-'} - ${profile.jurusan || '-'}

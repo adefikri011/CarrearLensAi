@@ -1,9 +1,6 @@
-// NOTE: Run "npx prisma generate && npx prisma db push" 
-// if you see "Cannot read properties of undefined" error
-
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export async function GET() {
   try {
@@ -12,10 +9,7 @@ export async function GET() {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const prismaAny = prisma as any;
-    const progress = await prismaAny.roadmapProgress.findMany({
-      where: { userId: session.user.id },
-    });
+    const progress = await db.roadmap.getProgress(session.user.id);
 
     return NextResponse.json({ success: true, data: progress });
   } catch (error) {
@@ -41,24 +35,12 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ success: false, error: "Task ID is required" }, { status: 400 });
     }
 
-    const prismaAny = prisma as any;
-    const progress = await prismaAny.roadmapProgress.upsert({
-      where: {
-        userId_taskId: {
-          userId: session.user.id,
-          taskId,
-        },
-      },
-      update: {
-        completed,
-      },
-      create: {
-        userId: session.user.id,
-        taskId,
-        completed,
-        weekId: weekId || "w1", // Default to w1 if missing
-      },
-    });
+    const progress = await db.roadmap.upsertProgress(
+      session.user.id, 
+      taskId, 
+      weekId || "w1", 
+      completed
+    );
 
     return NextResponse.json({ success: true, data: progress });
   } catch (error) {

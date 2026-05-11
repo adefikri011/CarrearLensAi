@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { extractTextFromPDF } from "@/lib/pdf-parser";
 import fs from "fs";
 import path from "path";
@@ -59,15 +60,11 @@ export async function POST(req: NextRequest) {
     const finalText = sanitizedText.slice(0, 50000);
 
     // 4. Save CVUpload Record to Database
-    // Note: Since we're not using remote storage, fileUrl is the temp path or a placeholder
-    const cvUpload = await prisma.cVUpload.create({
-      data: {
-        userId: session.user.id,
+    const cvUpload = await db.cvUpload.replaceAndCreate(session.user.id, {
         filename: file.name,
-        fileUrl: tempPath, // Storing temp path for reference
+        fileUrl: tempPath,
         extractedText: finalText,
         fileSize: file.size,
-      },
     });
 
     return NextResponse.json({

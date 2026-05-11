@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { useSession, signOut } from "next-auth/react";
+import { useAppStore } from "@/store/useAppStore";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ const fadeUp = {
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
+  const { clearUserData } = useAppStore();
   const [activeSection, setActiveSection] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -140,6 +142,7 @@ export default function SettingsPage() {
     setIsLoading(true);
     // Simulating delete
     setTimeout(() => {
+      clearUserData();
       signOut({ callbackUrl: "/" });
       toast.success("Akun kamu telah dihapus.");
     }, 2000);

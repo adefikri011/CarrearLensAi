@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getGeminiModel, buildAnalysisPrompt } from "@/lib/gemini";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { AnalysisResult } from "@/types/analysis";
 
 /**
@@ -19,13 +19,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Always fetch fresh data from database
+    // Always fetch fresh data from database using helper
     const [profile, cvUpload] = await Promise.all([
-      prisma.profile.findUnique({ where: { userId: session.user.id } }),
-      prisma.cVUpload.findFirst({ 
-        where: { userId: session.user.id },
-        orderBy: { createdAt: 'desc' }
-      })
+      db.profile.get(session.user.id),
+      db.cvUpload.getLatest(session.user.id)
     ]);
 
     if (!profile) {
@@ -56,45 +53,18 @@ export async function POST(req: NextRequest) {
     const cleanJson = responseText.replace(/```json|```/g, "").trim();
     const analysisResult: AnalysisResult = JSON.parse(cleanJson);
     
-    // Find latest analysis to upsert or just create a new one
-    // The user suggested using findFirst to get the ID then upsert
-    const latestAnalysis = await prisma.analysis.findFirst({ 
-      where: { userId: session.user.id },
-      orderBy: { createdAt: 'desc' }
-    });
-
-    const savedAnalysis = await prisma.analysis.upsert({
-      where: { 
-        id: latestAnalysis?.id || 'new_placeholder_id'
-      },
-      create: {
-        userId: session.user.id,
+    await db.analysis.create(session.user.id, {
         cvUploadId: cvUpload.id,
         result: analysisResult as any,
         overallReadiness: analysisResult.overallReadiness,
         cvScore: analysisResult.cvScore.total,
         selectedPath: analysisResult.careerPaths[0]?.nama || null,
-      },
-      update: {
-        result: analysisResult as any,
-        overallReadiness: analysisResult.overallReadiness,
-        cvScore: analysisResult.cvScore.total,
-        cvUploadId: cvUpload.id,
-        selectedPath: analysisResult.careerPaths[0]?.nama || null,
-      }
     });
 
     return NextResponse.json({ success: true, data: analysisResult });
 
   } catch (error: any) {
     console.error("Analysis API Error:", error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: "Gagal menganalisis profil. Silakan coba lagi nanti.",
-        details: error instanceof Error ? error.message : "Kesalahan tidak diketahui"
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: "Gagal menganalisis profil dan CV" }, { status: 500 });
   }
 }
