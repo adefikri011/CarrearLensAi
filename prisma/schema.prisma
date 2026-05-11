@@ -20,6 +20,7 @@ model User {
   role          UserRole  @default(STUDENT)
   accounts      Account[]
   sessions      Session[]
+  profile       Profile?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -84,10 +85,12 @@ model Profile {
   userId          String   @unique
   bio             String?
   usia            Int?
+  gender          String?
   sekolah         String?
   schoolName      String?
   lulusan         String?
   jurusan         String?
+  nilaiRata       Float?
   minat           String[]
   hardSkills      String[]
   softSkills      String[]
@@ -100,4 +103,6 @@ model Profile {
   pengalaman      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

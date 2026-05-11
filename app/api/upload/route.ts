@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { extractTextFromPDF } from "@/lib/pdf-parser";
-import { getSupabase } from "@/lib/supabase";
+import fs from "fs";
+import path from "path";
 
 /**
  * POST /api/upload
@@ -10,7 +11,6 @@ import { getSupabase } from "@/lib/supabase";
  */
 export async function POST(req: NextRequest) {
   try {
-    const supabase = getSupabase();
     // 1. Session Validation
     const session = await auth();
     if (!session || !session.user?.id) {
@@ -38,37 +38,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Extract Text from PDF
+    // 3. Save File Locally (/tmp/) and Extract Text
     const buffer = Buffer.from(await file.arrayBuffer());
+    const tempFilename = `${session.user.id}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    const tempPath = path.join("/tmp", tempFilename);
+
+    // Save to /tmp
+    fs.writeFileSync(tempPath, buffer);
+
+    // Extract Text from PDF
     const extractedText = await extractTextFromPDF(buffer);
 
-    // 4. Upload to Supabase Storage
-    const filename = `${session.user.id}_${Date.now()}_${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("cv-uploads")
-      .upload(filename, buffer, {
-        contentType: "application/pdf",
-        upsert: true,
-      });
-
-    if (uploadError) {
-      console.error("Supabase Storage Error:", uploadError);
-      // Even if storage fails, we might want to continue if extraction succeeded,
-      // but usually we want to persist the file.
-      return NextResponse.json(
-        { success: false, error: "Gagal mengunggah file ke storage", details: uploadError.message },
-        { status: 500 }
-      );
-    }
-
-    const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/cv-uploads/${uploadData.path}`;
-
-    // 5. Save CVUpload Record to Database
+    // 4. Save CVUpload Record to Database
+    // Note: Since we're not using remote storage, fileUrl is the temp path or a placeholder
     const cvUpload = await prisma.cVUpload.create({
       data: {
         userId: session.user.id,
         filename: file.name,
-        fileUrl,
+        fileUrl: tempPath, // Storing temp path for reference
         extractedText,
         fileSize: file.size,
       },

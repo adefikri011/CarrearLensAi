@@ -15,14 +15,24 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     
+    // Update user name if provided
+    if (body.name) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { name: body.name }
+      });
+    }
+
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },
       update: {
         usia: body.age,
+        gender: body.gender,
         schoolName: body.schoolName,
         sekolah: body.education,
         jurusan: body.major,
         lulusan: body.gradYear,
+        nilaiRata: body.avgScore ? parseFloat(body.avgScore) : null,
         hardSkills: body.skills,
         minat: body.interests,
         targetGaji: body.salary,
@@ -36,10 +46,12 @@ export async function POST(req: NextRequest) {
       create: {
         userId: session.user.id,
         usia: body.age,
+        gender: body.gender,
         schoolName: body.schoolName,
         sekolah: body.education,
         jurusan: body.major,
         lulusan: body.gradYear,
+        nilaiRata: body.avgScore ? parseFloat(body.avgScore) : null,
         hardSkills: body.skills,
         minat: body.interests,
         targetGaji: body.salary,
@@ -61,7 +73,7 @@ export async function POST(req: NextRequest) {
 
 /**
  * GET /api/profile
- * Fetches the user's profile.
+ * Fetches the user's profile including user name.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -72,10 +84,34 @@ export async function GET(req: NextRequest) {
 
     const profile = await prisma.profile.findUnique({
       where: { userId: session.user.id },
+      include: {
+        user: {
+          select: {
+            name: true
+          }
+        }
+      }
     });
 
-    return NextResponse.json({ success: true, data: profile });
+    if (!profile) {
+      // Return empty profile but with name from user session if available
+      return NextResponse.json({ 
+        success: true, 
+        data: { 
+          name: session.user.name 
+        } 
+      });
+    }
+
+    // Flatten name 
+    const data = {
+      ...profile,
+      name: profile.user?.name || "",
+    };
+
+    return NextResponse.json({ success: true, data });
   } catch (error) {
+    console.error("Profile GET Error:", error);
     return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, GraduationCap, Code, Target, CheckCircle, 
   ChevronRight, ChevronLeft, Camera, Briefcase, 
-  Heart, Sparkles, MapPin, Search, Loader2
+  Heart, Sparkles, MapPin, Search, Loader2, Plus, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -34,14 +34,18 @@ export default function ProfilePage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [skillInput, setSkillInput] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     age: 20,
     city: "",
     gender: "Laki-laki",
     education: "SMK",
+    schoolName: "",
     major: "",
     gradYear: "",
+    avgScore: "",
     skills: [] as string[],
     interests: [] as string[],
     salary: 5000000,
@@ -60,14 +64,19 @@ export default function ProfilePage() {
       const result = await res.json();
       if (result.success && result.data) {
         const p = result.data;
+        // Only set isUpdate if we actually have fields populated (or if the ID exists)
+        if (p.id) setIsUpdate(true);
+        
         setFormData({
           name: p.name || "",
           age: p.usia || 20,
           city: p.kotaTarget?.[0] || "",
           gender: p.gender || "Laki-laki",
           education: p.sekolah || "SMK",
+          schoolName: p.schoolName || "",
           major: p.jurusan || "",
           gradYear: p.lulusan || "",
+          avgScore: p.nilaiRata?.toString() || "",
           skills: p.hardSkills || [],
           interests: p.minat || [],
           salary: p.targetGaji || 5000000,
@@ -221,13 +230,24 @@ export default function ProfilePage() {
                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Jurusan / Konsentrasi</Label>
+            <div className="space-y-2">
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Nama Sekolah / Instansi</Label>
+               <Input 
+                 value={formData.schoolName} 
+                 onChange={(e) => setFormData({...formData, schoolName: e.target.value})}
+                 className="h-12 rounded-xl border-gray-100 text-sm"
+                 placeholder="Contoh: SMK Negeri 1 Jakarta"
+               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               <div className="space-y-2 md:col-span-1">
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Jurusan</Label>
                   <Input 
                     value={formData.major} 
                     onChange={(e) => setFormData({...formData, major: e.target.value})}
                     className="h-12 rounded-xl border-gray-100 text-sm"
+                    placeholder="Teknik Informatika"
                   />
                </div>
                <div className="space-y-2">
@@ -239,31 +259,93 @@ export default function ProfilePage() {
                     placeholder="2024"
                   />
                </div>
+               <div className="space-y-2">
+                  <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Nilai Rata-rata / IPK</Label>
+                  <Input 
+                    value={formData.avgScore} 
+                    onChange={(e) => setFormData({...formData, avgScore: e.target.value})}
+                    className="h-12 rounded-xl border-gray-100 text-sm"
+                    placeholder="85.5 / 4.0"
+                  />
+               </div>
             </div>
           </motion.div>
         );
       case 3:
+        const addSkill = (s: string) => {
+          const val = s.trim();
+          if (!val) return;
+          if (formData.skills.length >= 15) {
+            toast({ title: "Limit Tercapai", description: "Maksimal 15 skill diperbolehkan", variant: "destructive" });
+            return;
+          }
+          if (!formData.skills.includes(val)) {
+            setFormData({ ...formData, skills: [...formData.skills, val] });
+          }
+          setSkillInput("");
+        };
+
+        const removeSkill = (s: string) => {
+          setFormData({ ...formData, skills: formData.skills.filter(item => item !== s) });
+        };
+
+        const presetSkills = ["React", "TypeScript", "Node.js", "Figma", "UI Design", "SEO", "Python", "Excel"];
+
         return (
           <motion.div variants={fadeUp} className="space-y-8">
             <div className="space-y-4">
-               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Skill Kamu</Label>
-               <div className="relative mb-4">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input className="h-11 pl-11 rounded-xl bg-gray-50 border-none text-xs" placeholder="Cari skill (React, Python...)" />
+               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Skill Kamu (Maks 15)</Label>
+               <div className="flex gap-2">
+                  <div className="relative flex-1">
+                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                     <Input 
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onKeyDown={(e) => {
+                           if (e.key === "Enter") {
+                              e.preventDefault();
+                              addSkill(skillInput);
+                           }
+                        }}
+                        className="h-12 pl-11 rounded-xl bg-gray-50 border-none text-sm" 
+                        placeholder="Ketik skill (Enter untuk menambah)" 
+                     />
+                  </div>
+                  <Button 
+                     onClick={() => addSkill(skillInput)}
+                     className="h-12 w-12 rounded-xl bg-black text-white hover:bg-teal shrink-0"
+                  >
+                     <Plus className="w-5 h-5" />
+                  </Button>
                </div>
+
+               {/* Selected Skills */}
+               <div className="flex flex-wrap gap-2 mb-4">
+                  {formData.skills.map(skill => (
+                     <Badge 
+                        key={skill} 
+                        className="bg-black text-white px-3 py-1.5 rounded-lg flex items-center gap-2 font-bold text-[11px]"
+                     >
+                        {skill}
+                        <button onClick={() => removeSkill(skill)} className="hover:text-teal">
+                           <X className="w-3 h-3" />
+                        </button>
+                     </Badge>
+                  ))}
+               </div>
+
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Saran Skill</p>
                <div className="flex flex-wrap gap-2">
-                  {["React", "TypeScript", "Node.js", "Figma", "UI Design", "SEO", "Python", "Excel"].map(skill => (
+                  {presetSkills.map(skill => (
                      <button
                         key={skill}
-                        onClick={() => {
-                           const newSkills = formData.skills.includes(skill) 
-                              ? formData.skills.filter(s => s !== skill)
-                              : [...formData.skills, skill];
-                           setFormData({...formData, skills: newSkills});
-                        }}
+                        disabled={formData.skills.includes(skill)}
+                        onClick={() => addSkill(skill)}
                         className={cn(
                            "px-4 py-2 rounded-full border text-[11px] font-bold transition-all",
-                           formData.skills.includes(skill) ? "bg-black text-white border-black" : "bg-white border-gray-100 text-gray-500"
+                           formData.skills.includes(skill) 
+                              ? "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed" 
+                              : "bg-white border-gray-100 text-gray-500 hover:border-teal/30 hover:text-teal"
                         )}
                      >
                         {skill}
@@ -481,7 +563,7 @@ export default function ProfilePage() {
             {isSaving ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : currentStep === 5 ? (
-              "Simpan Profil"
+              isUpdate ? "Perbarui Profil" : "Simpan Profil"
             ) : (
               <>Lanjut <ChevronRight className="w-4 h-4 ml-2" /></>
             )}
