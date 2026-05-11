@@ -44,10 +44,10 @@ export default function CVBuilderPage() {
 
   const fetchLatestCV = async () => {
     try {
-      const res = await fetch("/api/upload");
+      const res = await fetch("/api/upload/history");
       const result = await res.json();
-      if (result.success && result.data) {
-        setUploadedData(result.data);
+      if (result.success && result.cv) {
+        setUploadedData(result.cv);
       }
     } catch (error) {
       console.error("Failed to fetch latest CV", error);
