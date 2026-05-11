@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   motion, AnimatePresence 
 } from "framer-motion";
@@ -32,17 +32,98 @@ const fadeUp = {
 };
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [activeSection, setActiveSection] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const handleSave = () => {
+  // Form States
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  // Password States
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Load Initial Data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch("/api/settings");
+        const result = await res.json();
+        if (result.success && result.data) {
+          setDisplayName(result.data.name || "");
+          setEmail(result.data.email || "");
+          setAvatarUrl(result.data.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${result.data.id || "Budi"}`);
+          // Bio and username are placeholders for now as they are not in schema
+          setBio("A passionate SMK student exploring career opportunities.");
+          setUsername(result.data.email?.split("@")[0] || "");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          name: displayName,
+          image: avatarUrl
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        toast.success("Profil berhasil diperbarui!");
+        update(); // Refresh session
+      } else {
+        toast.error(result.error || "Gagal memperbarui profil");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan sistem");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Password baru dan konfirmasi tidak cocok");
+      return;
+    }
+
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        toast.success("Password berhasil diubah!");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast.error(result.error || "Gagal mengubah password");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan sistem");
+    } finally {
       setIsLoading(false);
-      toast.success("Pengaturan berhasil disimpan.");
-    }, 1000);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -135,7 +216,7 @@ export default function SettingsPage() {
                           <div className="relative group shrink-0">
                              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
                                 <img 
-                                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`} 
+                                  src={avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`} 
                                   alt="Avatar" 
                                   className="w-full h-full object-cover" 
                                 />
@@ -152,7 +233,7 @@ export default function SettingsPage() {
                              <p className="text-sm text-gray-500 mb-4">Direkomendasikan 400x400px. Max 2MB.</p>
                              <div className="flex justify-center sm:justify-start gap-2">
                                 <Button 
-                                  onClick={() => toast.info("Fitur upload foto segera hadir!")}
+                                  onClick={() => setAvatarUrl(`https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`)}
                                   variant="outline" 
                                   className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold border-gray-100"
                                 >
@@ -169,17 +250,24 @@ export default function SettingsPage() {
                           </div>
                        </div>
 
-                       {/* Bio Info */}
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                           <div className="space-y-2">
                              <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">NAMA DISPLAY</Label>
-                             <Input defaultValue="Budi Santoso" className="h-12 sm:h-14 rounded-2xl border-gray-100 focus:border-teal" />
+                             <Input 
+                               value={displayName} 
+                               onChange={(e) => setDisplayName(e.target.value)}
+                               className="h-12 sm:h-14 rounded-2xl border-gray-100 focus:border-teal" 
+                             />
                           </div>
                           <div className="space-y-2">
                              <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">USERNAME AI</Label>
                              <div className="relative">
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 font-bold font-mono">@</span>
-                                <Input defaultValue="budisantoso" className="h-12 sm:h-14 pl-10 rounded-2xl border-gray-100 focus:border-teal" />
+                                <Input 
+                                  value={username}
+                                  onChange={(e) => setUsername(e.target.value)}
+                                  className="h-12 sm:h-14 pl-10 rounded-2xl border-gray-100 focus:border-teal" 
+                                />
                              </div>
                           </div>
                           <div className="md:col-span-2 space-y-2">
@@ -187,7 +275,8 @@ export default function SettingsPage() {
                              <textarea 
                                className="w-full h-28 sm:h-32 p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-gray-100 focus:border-teal focus:ring-0 outline-none text-black font-medium resize-none text-sm"
                                placeholder="Tuliskan tentang dirimu..."
-                               defaultValue="A passionate Front-end developer based in Jakarta, specializing in building modern user experiences."
+                               value={bio}
+                               onChange={(e) => setBio(e.target.value)}
                              />
                           </div>
                        </div>
@@ -213,8 +302,8 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="pt-6 sm:pt-8 border-t border-gray-100 flex justify-end">
-                       <Button onClick={handleSave} disabled={isLoading} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
-                          {isLoading ? <LoadingSpinner size="sm" /> : <>Simpan Profil <Save className="w-4 h-4 ml-2" /></>}
+                       <Button onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
+                          {isSaving ? <LoadingSpinner size="sm" /> : <>Simpan Profil <Save className="w-4 h-4 ml-2" /></>}
                        </Button>
                     </div>
                  </motion.div>
@@ -237,18 +326,36 @@ export default function SettingsPage() {
                           <div className="space-y-2">
                              <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">EMAIL ADDRESS</Label>
                              <div className="flex flex-col sm:flex-row gap-3">
-                                <Input disabled defaultValue="budi.santoso@email.com" className="h-12 sm:h-14 flex-1 rounded-2xl border-gray-100 bg-gray-50 opacity-60 text-sm" />
-                                <Button variant="outline" className="h-12 sm:h-14 px-6 rounded-2xl border-gray-100 font-bold text-xs">Ganti Email</Button>
+                                <Input disabled value={email} className="h-12 sm:h-14 flex-1 rounded-2xl border-gray-100 bg-gray-50 opacity-60 text-sm" />
+                                <Button variant="outline" onClick={() => toast.info("Email tidak dapat diubah secara mandiri.")} className="h-12 sm:h-14 px-6 rounded-2xl border-gray-100 font-bold text-xs">Ganti Email</Button>
                              </div>
                           </div>
                           
                           <div className="space-y-5 sm:space-y-6 pt-4">
                              <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">UPDATE PASSWORD</Label>
                              <div className="space-y-3 sm:space-y-4">
-                                <Input type="password" placeholder="Password Saat Ini" className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" />
+                                <Input 
+                                  type="password" 
+                                  placeholder="Password Saat Ini" 
+                                  value={currentPassword}
+                                  onChange={(e) => setCurrentPassword(e.target.value)}
+                                  className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" 
+                                />
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                   <Input type="password" placeholder="Password Baru" className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" />
-                                   <Input type="password" placeholder="Ulangi Password Baru" className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" />
+                                   <Input 
+                                     type="password" 
+                                     placeholder="Password Baru" 
+                                     value={newPassword}
+                                     onChange={(e) => setNewPassword(e.target.value)}
+                                     className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" 
+                                   />
+                                   <Input 
+                                     type="password" 
+                                     placeholder="Ulangi Password Baru" 
+                                     value={confirmPassword}
+                                     onChange={(e) => setConfirmPassword(e.target.value)}
+                                     className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" 
+                                   />
                                 </div>
                              </div>
                           </div>
@@ -273,7 +380,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="pt-6 sm:pt-8 border-t border-gray-100 flex justify-end">
-                       <Button onClick={handleSave} disabled={isLoading} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
+                       <Button onClick={handleChangePassword} disabled={isLoading} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
                           {isLoading ? <LoadingSpinner size="sm" /> : "Update Password"}
                        </Button>
                     </div>
