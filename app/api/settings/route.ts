@@ -15,7 +15,12 @@ export async function GET() {
         id: true, 
         name: true, 
         email: true, 
-        image: true 
+        image: true,
+        username: true,
+        bio: true,
+        linkedin: true,
+        github: true,
+        twitter: true
       }
     });
 
@@ -34,13 +39,18 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { name, image } = body;
+    const { name, image, username, bio, linkedin, github, twitter } = body;
 
     const updatedUser = await db.user.update({
       where: { id: session.user.id },
       data: {
         name,
-        image
+        image,
+        username,
+        bio,
+        linkedin,
+        github,
+        twitter
       }
     });
 
@@ -49,7 +59,12 @@ export async function PUT(req: Request) {
       message: "Profil berhasil diperbarui",
       data: {
         name: updatedUser.name,
-        image: updatedUser.image
+        image: updatedUser.image,
+        username: updatedUser.username,
+        bio: updatedUser.bio,
+        linkedin: updatedUser.linkedin,
+        github: updatedUser.github,
+        twitter: updatedUser.twitter
       }
     });
   } catch (error) {

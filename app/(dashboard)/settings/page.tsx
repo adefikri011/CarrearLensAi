@@ -44,6 +44,9 @@ export default function SettingsPage() {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [github, setGithub] = useState("");
+  const [twitter, setTwitter] = useState("");
 
   // Password States
   const [currentPassword, setCurrentPassword] = useState("");
@@ -60,9 +63,11 @@ export default function SettingsPage() {
           setDisplayName(result.data.name || "");
           setEmail(result.data.email || "");
           setAvatarUrl(result.data.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${result.data.id || "Budi"}`);
-          // Bio and username are placeholders for now as they are not in schema
-          setBio("A passionate SMK student exploring career opportunities.");
-          setUsername(result.data.email?.split("@")[0] || "");
+          setBio(result.data.bio || "");
+          setUsername(result.data.username || result.data.email?.split("@")[0] || "");
+          setLinkedin(result.data.linkedin || "");
+          setGithub(result.data.github || "");
+          setTwitter(result.data.twitter || "");
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -80,7 +85,12 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           name: displayName,
-          image: avatarUrl
+          image: avatarUrl,
+          username,
+          bio,
+          linkedin,
+          github,
+          twitter
         }),
       });
       const result = await res.json();
@@ -287,15 +297,30 @@ export default function SettingsPage() {
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                              <div className="relative">
                                 <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                <Input className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" placeholder="LinkedIn" />
+                                <Input 
+                                  value={linkedin}
+                                  onChange={(e) => setLinkedin(e.target.value)}
+                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" 
+                                  placeholder="LinkedIn" 
+                                />
                              </div>
                              <div className="relative">
                                 <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                <Input className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" placeholder="GitHub" />
+                                <Input 
+                                  value={github}
+                                  onChange={(e) => setGithub(e.target.value)}
+                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" 
+                                  placeholder="GitHub" 
+                                />
                              </div>
                              <div className="relative">
                                 <Twitter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                <Input className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" placeholder="Twitter" />
+                                <Input 
+                                  value={twitter}
+                                  onChange={(e) => setTwitter(e.target.value)}
+                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" 
+                                  placeholder="Twitter" 
+                                />
                              </div>
                           </div>
                        </div>

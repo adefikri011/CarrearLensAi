@@ -17,6 +17,11 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  username      String?   @unique
+  bio           String?
+  linkedin      String?
+  github        String?
+  twitter       String?
   role          UserRole  @default(STUDENT)
   accounts      Account[]
   sessions      Session[]
