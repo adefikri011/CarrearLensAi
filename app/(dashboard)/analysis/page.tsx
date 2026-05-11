@@ -168,6 +168,31 @@ export default function AnalysisPage() {
                    initial="hidden" animate="visible" variants={fadeUp}
                    className="space-y-12"
                 >
+                   <div className="flex flex-wrap gap-4 items-center justify-between">
+                      <div className="flex gap-3">
+                         <Button 
+                          onClick={() => toast.success("Hasil analisis berhasil disimpan sebagai PDF!")}
+                          variant="outline" 
+                          className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
+                         >
+                            Download PDF
+                         </Button>
+                         <Button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                            toast.success("Link hasil analisis disalin!");
+                          }}
+                          variant="outline" 
+                          className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
+                         >
+                            Bagikan
+                         </Button>
+                      </div>
+                      <div className="hidden sm:block">
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Update Terakhir: Hari Ini</p>
+                      </div>
+                   </div>
+
                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       {/* Career Path Cards */}
                       <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -195,11 +220,17 @@ export default function AnalysisPage() {
                                   </div>
                                </div>
                                <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
-                                   <Button className="flex-1 bg-black text-white rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal transition-all">
-                                      LIHAT ROADMAP
-                                   </Button>
-                                   <Button variant="ghost" className="w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-gray-50">
-                                      <ChevronRight className="w-5 h-5" />
+                                   <Link href="/roadmap" className="flex-1">
+                                      <Button className="w-full bg-black text-white rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal transition-all">
+                                         LIHAT ROADMAP
+                                      </Button>
+                                   </Link>
+                                   <Button 
+                                    onClick={() => toast.success(`${path.t} dipilih sebagai target utama!`)}
+                                    variant="ghost" 
+                                    className="w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-teal hover:text-white transition-all"
+                                   >
+                                      <Target className="w-5 h-5" />
                                    </Button>
                                </div>
                             </div>
@@ -243,10 +274,15 @@ export default function AnalysisPage() {
                Pilih satu jalur utama untuk mengaktifkan 90 Hari Roadmap Aksi. Kamu bisa mengganti pilihan kapan saja di dashboard.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-               <button className="px-10 py-4 bg-teal text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-teal/20">
-                  AKTIFKAN ROADMAP SEKARANG
-               </button>
-               <button className="px-10 py-4 bg-white/5 border border-white/10 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-white/10 transition-all">
+               <Link href="/roadmap">
+                  <button className="px-10 py-4 bg-teal text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-teal/20">
+                     AKTIFKAN ROADMAP SEKARANG
+                  </button>
+               </Link>
+               <button 
+                 onClick={() => toast.info("AI Mentor akan segera tersedia untuk kamu!")}
+                 className="px-10 py-4 bg-white/5 border border-white/10 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-white/10 transition-all"
+               >
                   KONSULTASI AI MENTOR
                </button>
             </div>

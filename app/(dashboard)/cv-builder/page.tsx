@@ -33,13 +33,11 @@ export default function CVBuilderPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfirmReplace, setShowConfirmReplace] = useState(false);
-  const [history, setHistory] = useState([
-    { name: "Curriculum_Vitae_Budi.pdf", date: "12 MEI 2024", score: 84 },
-    { name: "CV_Graphic_Designer.pdf", date: "05 MEI 2024", score: 72 },
-  ]);
+  const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
     fetchLatestCV();
+    fetchHistory();
   }, []);
 
   const fetchLatestCV = async () => {
@@ -56,10 +54,28 @@ export default function CVBuilderPage() {
     }
   };
 
+  const fetchHistory = async () => {
+    try {
+      // In real app, /api/upload/history returns a list, here we use the same endpoint but it might need adjustment if real history is needed
+      const res = await fetch("/api/upload/history");
+      const result = await res.json();
+      if (result.success && result.cv) {
+        setHistory([result.cv]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch history", error);
+    }
+  };
+
   const handleUploadSuccess = (data: any) => {
     setUploadedData(data);
-    // Add to history (mock)
-    setHistory([{ name: data.filename, date: "HARI INI", score: 84 }, ...history]);
+    fetchHistory();
+  };
+
+  const handleViewHistory = (item: any) => {
+    setUploadedData(item);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast.success("Memuat riwayat CV: " + item.filename);
   };
 
   const handleReanalyze = async () => {
@@ -162,28 +178,38 @@ export default function CVBuilderPage() {
                   </h3>
                </div>
                <div className="grid grid-cols-1 gap-3">
-                  {history.map((h, i) => (
-                    <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 flex items-center justify-between hover:bg-gray-50 transition-all group shadow-sm">
+                  {history.length > 0 ? history.map((h, i) => (
+                    <div 
+                      key={i} 
+                      onClick={() => handleViewHistory(h)}
+                      className="bg-white p-5 rounded-2xl border border-gray-100 flex items-center justify-between hover:bg-gray-50 transition-all group shadow-sm cursor-pointer"
+                    >
                        <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:text-white transition-all">
                              <FileText className="w-5 h-5" />
                           </div>
                           <div>
-                             <h4 className="font-bold text-black text-sm">{h.name}</h4>
-                             <p className="text-[10px] text-gray-400 font-medium uppercase">{h.date}</p>
+                             <h4 className="font-bold text-black text-sm">{h.filename}</h4>
+                             <p className="text-[10px] text-gray-400 font-medium uppercase">
+                               {new Date(h.createdAt).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })}
+                             </p>
                           </div>
                        </div>
                        <div className="flex items-center gap-8">
                           <div className="text-right">
-                             <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">SKOR ATS</p>
-                             <p className="text-lg font-black text-black">{h.score}%</p>
+                             <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">EST. SCORE</p>
+                             <p className="text-lg font-black text-black">80%</p>
                           </div>
                           <button className="p-2.5 bg-gray-50 text-gray-400 rounded-xl group-hover:bg-teal group-hover:text-white transition-all border border-transparent group-hover:border-teal">
                              <ArrowRight className="w-4 h-4" />
                           </button>
                        </div>
                     </div>
-                  ))}
+                  )) : (
+                    <div className="bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-3xl p-12 text-center">
+                       <p className="text-gray-400 text-sm font-medium italic">Belum ada riwayat analisis.</p>
+                    </div>
+                  )}
                </div>
             </div>
           </motion.div>

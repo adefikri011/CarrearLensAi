@@ -6,12 +6,20 @@ import {
   CheckCircle2, Circle, Target, 
   Map as RoadmapIcon, ChevronRight, Sparkles,
   ArrowUpRight, Info, Layers, Trophy, Calendar,
-  Clock, Link as LinkIcon
+  Clock, Link as LinkIcon, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PageLoader from "@/components/shared/PageLoader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },
@@ -25,24 +33,24 @@ const phases = [
 ];
 
 const roadmapContent = [
-  { week: 1, phase: "fondasi", title: "Self-Discovery & Goal Setting", tasks: ["Lengkapi Profil CareerLens", "Analisis Potensi Karier via AI", "Pilih Jalur Karier Utama"], hours: "4-6h", resource: "Panduan Karier SMK" },
-  { week: 2, phase: "fondasi", title: "CV & Portfolio Bootcamp", tasks: ["Upload Audit CV Pertama", "Revisi Deskripsi Pengalaman", "Buat Link Portfolio"], hours: "5-8h", resource: "Template CV ATS" },
-  { week: 3, phase: "fondasi", title: "Digital Presence (LinkedIn)", tasks: ["Update Foto Profesional", "Tulis Summary Menarik", "Connect 10 Alumni"], hours: "3-5h", resource: "LinkedIn Checklist" },
-  { week: 4, phase: "fondasi", title: "Market Research", tasks: ["Cek Gaji Rata-rata", "List 5 Perusahaan Target", "Pelajari Job Desks"], hours: "4h", resource: "Portal Kerja" },
-  { week: 5, phase: "pengembangan", title: "Skill Hardening Phase 1", tasks: ["Ikuti Kursus Rekomendasi", "Kerjakan Mini Project", "Sertifikasi Kompetensi"], hours: "10-15h", resource: "List Kursus Gratis" },
-  { week: 6, phase: "pengembangan", title: "Real World Simulation", tasks: ["Handle Brief Proyek Nyata", "Networking Industry", "Review Mentoring"], hours: "8-10h", resource: "Case Study Guide" },
-  { week: 7, phase: "pengembangan", title: "Technical Deep Dive", tasks: ["Advanced Frameworks", "Algorithm Mastery", "Code Review Session"], hours: "12h", resource: "Advanced Docs" },
-  { week: 8, phase: "pengembangan", title: "Portfolio Polish", tasks: ["Case Study Writing", "Visual Design Refine", "Project Deployment"], hours: "8h", resource: "Deployment Guide" },
-  { week: 9, phase: "persiapan", title: "The Interview Game", tasks: ["STAR Method Mastery", "Mock Interview AI", "Body Language Training"], hours: "6h", resource: "Interview Questions" },
-  { week: 10, phase: "persiapan", title: "Application Strategy", tasks: ["Custom CV per Job", "Cover Letter Automation", "Application Tracker Setup"], hours: "5h", resource: "Tracker Template" },
-  { week: 11, phase: "persiapan", title: "Salary Negotiation", tasks: ["Benefit Comparison", "Contract Reading Tips", "Psychological Prep"], hours: "4h", resource: "Negotiation Script" },
-  { week: 12, phase: "persiapan", title: "Closing the Deal", tasks: ["First Day Prep", "Equipment Setup", "Mental Shift to Office"], hours: "3h", resource: "Onboarding Kit" },
+  { week: 1, phase: "fondasi", title: "Self-Discovery & Goal Setting", tasks: ["Lengkapi Profil CareerLens", "Analisis Potensi Karier via AI", "Pilih Jalur Karier Utama"], hours: "4-6h", resource: "Panduan Karier SMK", resourceLink: "https://www.gramedia.com/best-seller/perencanaan-karier-masa-depan/" },
+  { week: 2, phase: "fondasi", title: "CV & Portfolio Bootcamp", tasks: ["Upload Audit CV Pertama", "Revisi Deskripsi Pengalaman", "Buat Link Portfolio"], hours: "5-8h", resource: "Template CV ATS", resourceLink: "https://www.canva.com/resumes/templates/ats-friendly/" },
+  { week: 3, phase: "fondasi", title: "Digital Presence (LinkedIn)", tasks: ["Update Foto Profesional", "Tulis Summary Menarik", "Connect 10 Alumni"], hours: "3-5h", resource: "LinkedIn Checklist", resourceLink: "https://business.linkedin.com/talent-solutions/blog/linkedin-best-practices/2016/the-ultimate-linkedin-profile-checklist" },
+  { week: 4, phase: "fondasi", title: "Market Research", tasks: ["Cek Gaji Rata-rata", "List 5 Perusahaan Target", "Pelajari Job Desks"], hours: "4h", resource: "Portal Kerja", resourceLink: "https://www.jobstreet.co.id/" },
+  { week: 5, phase: "pengembangan", title: "Skill Hardening Phase 1", tasks: ["Ikuti Kursus Rekomendasi", "Kerjakan Mini Project", "Sertifikasi Kompetensi"], hours: "10-15h", resource: "List Kursus Gratis", resourceLink: "https://www.dicoding.com/blog/belajar-pemrograman-gratis-untuk-pemula/" },
+  { week: 6, phase: "pengembangan", title: "Real World Simulation", tasks: ["Handle Brief Proyek Nyata", "Networking Industry", "Review Mentoring"], hours: "8-10h", resource: "Case Study Guide", resourceLink: "https://www.interaction-design.org/literature/article/how-to-write-a-ux-case-study" },
+  { week: 7, phase: "pengembangan", title: "Technical Deep Dive", tasks: ["Advanced Frameworks", "Algorithm Mastery", "Code Review Session"], hours: "12h", resource: "Advanced Docs", resourceLink: "https://nextjs.org/docs" },
+  { week: 8, phase: "pengembangan", title: "Portfolio Polish", tasks: ["Case Study Writing", "Visual Design Refine", "Project Deployment"], hours: "8h", resource: "Deployment Guide", resourceLink: "https://vercel.com/docs" },
+  { week: 9, phase: "persiapan", title: "The Interview Game", tasks: ["STAR Method Mastery", "Mock Interview AI", "Body Language Training"], hours: "6h", resource: "Interview Questions", resourceLink: "https://prakerja.go.id/blog/tips-wawancara-kerja" },
+  { week: 10, phase: "persiapan", title: "Application Strategy", tasks: ["Custom CV per Job", "Cover Letter Automation", "Application Tracker Setup"], hours: "5h", resource: "Tracker Template", resourceLink: "https://www.notion.so/templates/job-search-tracker" },
+  { week: 11, phase: "persiapan", title: "Salary Negotiation", tasks: ["Benefit Comparison", "Contract Reading Tips", "Psychological Prep"], hours: "4h", resource: "Negotiation Script", resourceLink: "https://glints.com/id/lowongan/cara-negosiasi-gaji/" },
+  { week: 12, phase: "persiapan", title: "Closing the Deal", tasks: ["First Day Prep", "Equipment Setup", "Mental Shift to Office"], hours: "3h", resource: "Onboarding Kit", resourceLink: "https://www.hibob.com/guides/new-hire-onboarding-checklist/" },
 ];
 
 export default function RoadmapPage() {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [selectedResource, setSelectedResource] = useState<any>(null);
 
   useEffect(() => {
     fetchProgress();
@@ -70,7 +78,6 @@ export default function RoadmapPage() {
     const taskId = `w${week}-t${taskIdx}`;
     const newStatus = !completedTasks[taskId];
     
-    // Optimistic update
     setCompletedTasks(prev => ({ ...prev, [taskId]: newStatus }));
 
     try {
@@ -81,7 +88,6 @@ export default function RoadmapPage() {
       });
       const result = await res.json();
       if (!result.success) {
-        // Revert on failure
         setCompletedTasks(prev => ({ ...prev, [taskId]: !newStatus }));
         toast.error("Gagal menyimpan progres.");
       }
@@ -102,7 +108,7 @@ export default function RoadmapPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* --- Sticky Progress Header --- */}
+      {/* Sticky Progress Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100 py-4 px-6 md:px-10">
         <div className="max-w-3xl mx-auto w-full">
            <div className="flex items-center justify-between mb-2">
@@ -130,13 +136,10 @@ export default function RoadmapPage() {
         </div>
       </div>
 
-      {/* --- Main Content --- */}
+      {/* Main Content */}
       <main className="max-w-3xl mx-auto px-6 py-12 space-y-16">
-         
-         {/* Phase Sections */}
          {phases.map((phase) => (
            <section key={phase.id} className="space-y-8">
-              {/* Phase Header */}
               <div className="bg-gray-50 rounded-[32px] p-8 border border-gray-100">
                  <div className="flex items-center gap-4 mb-3">
                     <h2 className="text-xl font-black text-black">{phase.title}</h2>
@@ -149,7 +152,6 @@ export default function RoadmapPage() {
                  </p>
               </div>
 
-              {/* Weeks in Phase */}
               <div className="space-y-6">
                  {roadmapContent.filter(w => w.phase === phase.id).map((weekData) => {
                     const isFullyCompleted = weekData.tasks.every((_, i) => completedTasks[`w${weekData.week}-t${i}`]);
@@ -186,7 +188,6 @@ export default function RoadmapPage() {
                              )}
                           </div>
 
-                          {/* Task List */}
                           <div className="space-y-3">
                              {weekData.tasks.map((task, tidx) => {
                                 const taskId = `w${weekData.week}-t${tidx}`;
@@ -218,10 +219,12 @@ export default function RoadmapPage() {
                              })}
                           </div>
 
-                          {/* Footer Info */}
                           <div className="mt-8 pt-6 border-t border-gray-100/50 flex flex-wrap items-center gap-6">
                              {weekData.resource && (
-                                <button className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-teal transition-all">
+                                <button 
+                                  onClick={() => setSelectedResource(weekData)}
+                                  className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-teal transition-all"
+                                >
                                    <LinkIcon className="w-3.5 h-3.5" /> Resource: {weekData.resource}
                                 </button>
                              )}
@@ -236,7 +239,6 @@ export default function RoadmapPage() {
            </section>
          ))}
 
-         {/* Final Destination */}
          <motion.div 
            variants={fadeUp}
            initial="hidden"
@@ -256,12 +258,45 @@ export default function RoadmapPage() {
                   Selesaikan roadmap ini dan jadilah talenta SMK yang paling dicari oleh industri.
                </p>
             </div>
-            <button className="h-14 px-10 bg-teal text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-105 transition-all shadow-xl shadow-teal/20">
+            <button 
+              onClick={() => toast.success("Selamat! Kamu dalam jalur yang benar. Tetap konsisten!")}
+              className="h-14 px-10 bg-teal text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-105 transition-all shadow-xl shadow-teal/20"
+            >
                LIHAT CAPAIAN SAYA
             </button>
          </motion.div>
-
       </main>
+
+      <Dialog open={!!selectedResource} onOpenChange={() => setSelectedResource(null)}>
+        <DialogContent className="rounded-[32px] p-8 max-w-md">
+           <DialogHeader>
+              <div className="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center text-teal mb-4">
+                 <LinkIcon className="w-6 h-6" />
+              </div>
+              <DialogTitle className="text-xl font-black text-black">Materi Pendukung</DialogTitle>
+              <DialogDescription className="pt-2 text-gray-500 font-medium">
+                 Klik tombol di bawah untuk membuka materi <span className="text-black font-bold">&quot;{selectedResource?.resource}&quot;</span> guna membantu kamu menyelesaikan Minggu {selectedResource?.week}.
+              </DialogDescription>
+           </DialogHeader>
+           <div className="mt-8 space-y-4">
+              <a 
+                href={selectedResource?.resourceLink || "#"} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full h-14 bg-black text-white rounded-2xl flex items-center justify-center font-black uppercase text-[10px] tracking-widest hover:bg-teal transition-all"
+              >
+                BUKA SUMBER MATERI <ArrowUpRight className="ml-2 w-4 h-4" />
+              </a>
+              <Button 
+                variant="ghost" 
+                onClick={() => setSelectedResource(null)}
+                className="w-full h-12 text-gray-400 font-bold"
+              >
+                Tutup
+              </Button>
+           </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

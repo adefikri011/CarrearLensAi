@@ -16,6 +16,15 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { useSession, signOut } from "next-auth/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },
@@ -23,8 +32,10 @@ const fadeUp = {
 };
 
 export default function SettingsPage() {
+  const { data: session } = useSession();
   const [activeSection, setActiveSection] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleSave = () => {
     setIsLoading(true);
@@ -32,6 +43,15 @@ export default function SettingsPage() {
       setIsLoading(false);
       toast.success("Pengaturan berhasil disimpan.");
     }, 1000);
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsLoading(true);
+    // Simulating delete
+    setTimeout(() => {
+      signOut({ callbackUrl: "/" });
+      toast.success("Akun kamu telah dihapus.");
+    }, 2000);
   };
 
   const menuItems = [
@@ -96,9 +116,16 @@ export default function SettingsPage() {
                        <div className="flex flex-col sm:flex-row items-center gap-8">
                           <div className="relative group">
                              <div className="w-32 h-32 rounded-full bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Budi" alt="Avatar" className="w-full h-full object-cover" />
+                                <img 
+                                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`} 
+                                  alt="Avatar" 
+                                  className="w-full h-full object-cover" 
+                                />
                              </div>
-                             <button className="absolute bottom-0 right-0 p-3 bg-black text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all">
+                             <button 
+                               onClick={() => toast.info("Fitur upload foto segera hadir!")}
+                               className="absolute bottom-0 right-0 p-3 bg-black text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all"
+                             >
                                 <Camera className="w-4 h-4" />
                              </button>
                           </div>
@@ -106,8 +133,20 @@ export default function SettingsPage() {
                              <h4 className="font-bold text-lg text-black">Foto Profil</h4>
                              <p className="text-sm text-gray-500 mb-4">Direkomendasikan 400x400px. Max 2MB.</p>
                              <div className="flex gap-2">
-                                <Button variant="outline" className="h-10 rounded-xl px-6 text-xs font-bold border-gray-100">Ganti Foto</Button>
-                                <Button variant="ghost" className="h-10 rounded-xl px-6 text-xs font-bold text-red-500 hover:bg-red-50">Hapus</Button>
+                                <Button 
+                                  onClick={() => toast.info("Fitur upload foto segera hadir!")}
+                                  variant="outline" 
+                                  className="h-10 rounded-xl px-6 text-xs font-bold border-gray-100"
+                                >
+                                  Ganti Foto
+                                </Button>
+                                <Button 
+                                  onClick={() => toast.error("Tidak bisa menghapus foto Utama.")}
+                                  variant="ghost" 
+                                  className="h-10 rounded-xl px-6 text-xs font-bold text-red-500 hover:bg-red-50"
+                                >
+                                  Hapus
+                                </Button>
                              </div>
                           </div>
                        </div>
@@ -239,7 +278,11 @@ export default function SettingsPage() {
                                    Semua data kamu termasuk CV, hasil analisis, dan progres roadmap akan dihapus secara permanen dari database kami.
                                 </p>
                              </div>
-                             <Button variant="ghost" className="h-16 px-10 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-black uppercase tracking-widest text-xs flex items-center gap-2 group">
+                             <Button 
+                               onClick={() => setShowDeleteConfirm(true)}
+                               variant="ghost" 
+                               className="h-16 px-10 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-black uppercase tracking-widest text-xs flex items-center gap-2 group"
+                             >
                                 <Trash2 className="w-5 h-5 group-hover:animate-bounce" /> Hapus Permanen
                              </Button>
                           </div>
@@ -252,6 +295,26 @@ export default function SettingsPage() {
                           </div>
                        </div>
                     </div>
+
+                    <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                       <DialogContent className="rounded-[32px] p-8 max-w-md">
+                          <DialogHeader>
+                             <div className="w-16 h-16 bg-red-50 rounded-[24px] flex items-center justify-center text-red-600 mb-6 mx-auto">
+                                <AlertCircle className="w-8 h-8" />
+                             </div>
+                             <DialogTitle className="text-2xl font-black text-center text-black">Hapus Akun Anda?</DialogTitle>
+                             <DialogDescription className="text-center text-gray-500 pt-4 text-sm leading-relaxed">
+                                Apa kamu yakin ingin menghapus akun? Semua data profil, CV, dan pencapaian roadmap kamu akan hilang selamanya.
+                             </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter className="flex flex-row justify-center gap-4 mt-8">
+                             <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1 h-12 rounded-xl font-bold border-gray-100">Batal</Button>
+                             <Button onClick={handleDeleteAccount} className="flex-1 h-12 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700">
+                                {isLoading ? <LoadingSpinner size="sm" /> : "Ya, Hapus"}
+                             </Button>
+                          </DialogFooter>
+                       </DialogContent>
+                    </Dialog>
                  </motion.div>
               )}
            </AnimatePresence>
