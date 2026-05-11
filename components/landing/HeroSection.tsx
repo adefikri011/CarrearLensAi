@@ -1,13 +1,44 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import React, { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { Check, Target, Layout, BrainCircuit, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const DashboardMockup = ({ progress, highlightScore }: { progress: number, highlightScore: boolean }) => {
+const Ticker = ({ value }: { value: any }) => {
+  const [display, setDisplay] = useState(0);
+  useMotionValueEvent(value, "change", (v: any) => setDisplay(Math.round(v)));
+  
+  // Initialize with the current value
+  useEffect(() => {
+    if (typeof value.get === 'function') {
+      setDisplay(Math.round(value.get()));
+    }
+  }, [value]);
+
+  return <>{display}</>;
+};
+
+const DashboardMockup = ({ 
+  progress, 
+  highlightScoreValue, 
+  isMobile = false 
+}: { 
+  progress: any, 
+  highlightScoreValue: any, 
+  isMobile?: boolean 
+}) => {
+  // We use motion.div and style props to ensure reactivity with MotionValues
+  const scoreBorder = useTransform(highlightScoreValue, [0, 1], ["rgba(239, 239, 239, 1)", "rgba(29, 158, 117, 1)"]);
+  const scoreShadow = useTransform(highlightScoreValue, [0, 1], ["0 0 0 0 rgba(0,0,0,0)", "0 0 40px -10px rgba(29, 158, 117, 0.4)"]);
+  
+  const strokeOffset = useTransform(progress, (v: number) => 282.6 - (282.6 * v) / 100);
+
   return (
-    <div className="w-full max-w-[1000px] aspect-[16/10] bg-white rounded-[24px] lg:rounded-[32px] border border-[#EFEFEF] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden relative">
+    <div className={cn(
+      "w-full max-w-[1000px] aspect-[16/10] bg-white rounded-[24px] lg:rounded-[32px] border border-[#EFEFEF] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden relative",
+      isMobile && "max-w-[90vw] mx-auto"
+    )}>
       {/* Sidebar */}
       <div className="absolute left-0 top-0 bottom-0 w-12 lg:w-16 border-r border-[#EFEFEF] bg-[#F8F8F8] hidden sm:flex flex-col items-center py-6 gap-6">
         <div className="w-8 h-8 rounded-lg bg-[#0A0A0A] flex items-center justify-center">
@@ -21,7 +52,10 @@ const DashboardMockup = ({ progress, highlightScore }: { progress: number, highl
       </div>
 
       {/* Main Content */}
-      <div className="absolute left-0 sm:left-12 lg:left-16 top-0 right-0 bottom-0 p-4 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-white">
+      <div className={cn(
+        "absolute top-0 right-0 bottom-0 p-4 lg:p-8 flex flex-col gap-4 lg:gap-8 bg-white",
+        "left-0 sm:left-12 lg:left-16"
+      )}>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="h-4 w-24 lg:w-32 bg-[#F8F8F8] rounded-full" />
@@ -31,12 +65,11 @@ const DashboardMockup = ({ progress, highlightScore }: { progress: number, highl
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
-          {/* Left Card: Score */}
-          <div className={cn(
-            "p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-[#EFEFEF] transition-all duration-500 flex flex-col items-center justify-center text-center",
-            highlightScore ? "border-[#1D9E75] shadow-[0_0_40px_-10px_rgba(29,158,117,0.2)]" : "bg-white"
-          )}>
-            <div className="relative w-24 h-24 lg:w-32 lg:h-32 flex items-center justify-center">
+          <motion.div 
+            style={{ borderColor: scoreBorder, boxShadow: scoreShadow }}
+            className="p-6 lg:p-8 rounded-2xl lg:rounded-3xl border transition-colors duration-300 flex flex-col items-center justify-center text-center bg-white"
+          >
+            <div className="relative w-20 h-20 lg:w-32 lg:h-32 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
                 <circle
                   cx="50%"
@@ -54,21 +87,24 @@ const DashboardMockup = ({ progress, highlightScore }: { progress: number, highl
                   stroke="#1D9E75"
                   strokeWidth="8"
                   strokeDasharray="282.6"
-                  animate={{ strokeDashoffset: 282.6 - (282.6 * progress) / 100 }}
-                  transition={{ duration: 1, ease: "easeOut" }}
+                  style={{ 
+                    strokeDashoffset: strokeOffset
+                  }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl lg:text-3xl font-bold tracking-tighter text-[#0A0A0A]">{Math.round(progress)}%</span>
+                <span className="text-xl lg:text-3xl font-bold tracking-tighter text-[#0A0A0A]">
+                  <Ticker value={progress} />%
+                </span>
                 <span className="text-[8px] lg:text-[10px] font-bold text-[#888888] uppercase tracking-widest">ATS Score</span>
               </div>
             </div>
             <p className="mt-4 text-[10px] lg:text-xs font-medium text-[#888888] max-w-[120px]">CV kamu sudah cukup baik untuk industri modern.</p>
-          </div>
+          </motion.div>
 
-          {/* Right Card: Career Mapping */}
+
           <div className="p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-[#EFEFEF] bg-[#F8F8F8] space-y-4">
-             <div className="h-3 w-20 lg:w-24 bg-white rounded-full" />
+             <div className="h-3 w-16 lg:w-24 bg-white rounded-full" />
              <div className="space-y-2">
                 {[
                   { label: "Frontend Developer", percent: 92 },
@@ -84,20 +120,19 @@ const DashboardMockup = ({ progress, highlightScore }: { progress: number, highl
           </div>
         </div>
 
-        {/* Bottom Timeline Mockup */}
         <div className="flex-1 p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-[#EFEFEF] bg-white hidden sm:block">
            <div className="flex items-center gap-4 mb-4 lg:mb-6">
               <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl bg-[#1D9E75]/10 flex items-center justify-center text-[#1D9E75]">
-                <Target size={20} />
+                <Target size={18} />
               </div>
               <div className="space-y-1">
-                 <div className="h-3 w-24 lg:w-32 bg-[#F8F8F8] rounded-full" />
+                 <div className="h-3 w-20 lg:w-32 bg-[#F8F8F8] rounded-full" />
                  <div className="h-2 w-16 lg:w-20 bg-[#F8F8F8] rounded-full opacity-50" />
               </div>
            </div>
-           <div className="grid grid-cols-4 gap-3 lg:gap-4">
+           <div className="grid grid-cols-4 gap-2 lg:gap-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-16 lg:h-20 bg-[#F8F8F8] rounded-xl lg:rounded-2xl border border-dashed border-[#EFEFEF] flex items-center justify-center">
+                <div key={i} className="h-12 lg:h-20 bg-[#F8F8F8] rounded-xl lg:rounded-2xl border border-dashed border-[#EFEFEF] flex items-center justify-center">
                   <Check className="text-[#EFEFEF] w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
               ))}
@@ -110,128 +145,154 @@ const DashboardMockup = ({ progress, highlightScore }: { progress: number, highl
 
 export const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end end"],
+    layoutEffect: false
   });
 
-  // Smooth transitions
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 50, damping: 20 });
-
-  // Phase transformations - Strictly non-overlapping range steps
-  // P1: 0 - 0.2
-  // P2: 0.25 - 0.45
-  // P3: 0.55 - 0.75
-  // P4: 0.85 - 1.0
-
-  // Phase 1 (0-0.2)
-  const h1Opacity = useTransform(smoothProgress, [0, 0.15, 0.2], [0, 1, 0]);
-  const h1Y = useTransform(smoothProgress, [0, 0.1], [40, 0]);
+  const smoothProgress = useSpring(scrollYProgress, { 
+    stiffness: 70, 
+    damping: 30, 
+    restDelta: 0.001 
+  });
   
-  // Phase 2 (0.25-0.45)
-  const h2Opacity = useTransform(smoothProgress, [0.25, 0.35, 0.45], [0, 1, 0]);
+  // Overlapping ranges to prevent blank gaps
+  const h1Opacity = useTransform(smoothProgress, [0, 0.1, 0.2], [1, 1, 0]);
+  const h1Y = useTransform(smoothProgress, [0, 0.1], [0, -30]);
   
-  // Phase 3 (0.55-0.75)
-  const h3Opacity = useTransform(smoothProgress, [0.55, 0.65, 0.75], [0, 1, 0]);
-  const h3X = useTransform(smoothProgress, [0.55, 0.65], [-30, 0]);
-
-  // Phase 4 (0.85-1.0)
-  const h4Opacity = useTransform(smoothProgress, [0.85, 0.95], [0, 1]);
-
-  // Mockup Animations
-  const mockupScale = useTransform(smoothProgress, [0, 0.15], [0.75, 1]);
-  const mockupX = useTransform(smoothProgress, [0.5, 0.65, 0.8, 0.95], ["0%", "28%", "28%", "0%"]);
+  const h2Opacity = useTransform(smoothProgress, [0.15, 0.25, 0.4], [0, 1, 0]);
   
-  const progressBarValue = useTransform(smoothProgress, [0.25, 0.4], [0, 78]);
-  const scoreHighlight = useTransform(smoothProgress, [0.3, 0.45], [false, true] as any);
+  const h3Opacity = useTransform(smoothProgress, [0.35, 0.55, 0.72], [0, 1, 0]);
+  const h3X = useTransform(smoothProgress, [0.4, 0.55], [-40, 0]);
+  
+  const h4Opacity = useTransform(smoothProgress, [0.68, 0.85, 1], [0, 1, 1]);
+  
+  const mockupScale = useTransform(smoothProgress, [0, 0.15], [0.85, 1]);
+  const mockupX = useTransform(smoothProgress, [0, 0.4, 0.55, 0.7, 0.85], ["0%", "0%", "28%", "28%", "0%"]);
+  const mockupY = useTransform(smoothProgress, [0, 0.1], [100, 0]);
+
+  const progressBarValue = useTransform(smoothProgress, [0, 0.35, 0.5], [0, 0, 78]);
+  const scoreHighlightValue = useTransform(smoothProgress, [0, 0.4, 0.55], [0, 0, 1]);
+  const ctaOpacity = useTransform(smoothProgress, [0, 0.05, 0.1], [1, 1, 0]);
+
+  // Mobile persistent values
+  const mobileProgress = useMotionValue(78);
+  const mobileHighlight = useMotionValue(1);
+
+  if (!isMounted) return <div className="h-screen bg-white" />;
+
+  if (isMobile) {
+    return (
+      <section className="bg-white px-5 pt-32 pb-20 overflow-hidden flex flex-col items-center relative">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
+             style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+        
+        <div className="text-center mb-16 z-10 w-full">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[clamp(36px,10vw,56px)] font-bold tracking-[-2px] leading-[1.1] text-[#0A0A0A] mb-6"
+          >
+            Karier Impianmu.<br />
+            Dimulai dari Sini.
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-[15px] sm:text-[16px] text-[#888888] font-medium max-w-sm mx-auto mb-10 leading-relaxed"
+          >
+            AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.
+          </motion.p>
+          <motion.button 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="h-16 w-full max-w-[280px] bg-[#0A0A0A] text-white rounded-full font-bold text-[14px] tracking-[1px] uppercase hover:bg-[#1D9E75] transition-all shadow-xl active:scale-95"
+          >
+             Analisis CV Sekarang
+           </motion.button>
+        </div>
+        
+        <div className="w-full max-w-[90vw] z-0">
+          <DashboardMockup progress={mobileProgress} highlightScoreValue={mobileHighlight} isMobile={true} />
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section ref={containerRef} className="h-[250vh] lg:h-[300vh] relative bg-white">
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center px-4 md:px-6">
+    <section ref={containerRef} className="h-[400vh] relative bg-white">
+       <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
+             style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center px-6">
         
-        {/* Phase 1: Welcome Headline */}
-        <motion.div 
-          style={{ opacity: h1Opacity, y: h1Y, zIndex: 10 }}
-          className="absolute top-[18%] lg:top-[15%] text-center pointer-events-none w-full px-6"
-        >
-          <h1 className="text-[44px] lg:text-[80px] font-bold tracking-[-2px] lg:tracking-[-3px] leading-[1] text-[#0A0A0A] mb-4">
-            Karier Impianmu.
-          </h1>
-          <p className="text-[15px] lg:text-[17px] text-[#888888] font-medium max-w-sm lg:max-w-lg mx-auto">
-            AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.
-          </p>
+        {/* Texts */}
+        <motion.div style={{ opacity: h1Opacity, y: h1Y, zIndex: 10 }} className="absolute top-[18%] text-center pointer-events-none w-full px-10">
+          <h1 className="text-[90px] font-bold tracking-[-4px] leading-[0.95] text-[#0A0A0A] mb-6">Karier Impianmu.</h1>
+          <p className="text-[19px] text-[#888888] font-medium max-w-lg mx-auto">AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.</p>
         </motion.div>
 
-        {/* Phase 2: Morph Headline */}
-        <motion.div 
-          style={{ opacity: h2Opacity, zIndex: 11 }}
-          className="absolute top-[18%] lg:top-[15%] text-center pointer-events-none w-full"
-        >
-          <h2 className="text-[44px] lg:text-[80px] font-bold tracking-[-2px] lg:tracking-[-3px] leading-[1] text-[#0A0A0A]">
-            Dimulai dari Sini.
-          </h2>
+        <motion.div style={{ opacity: h2Opacity, zIndex: 11 }} className="absolute top-[18%] text-center pointer-events-none w-full">
+          <h2 className="text-[90px] font-bold tracking-[-4px] leading-[0.95] text-[#0A0A0A]">Dimulai dari Sini.</h2>
         </motion.div>
 
-        {/* Phase 3: Feature Detail Text */}
-        <motion.div 
-          style={{ opacity: h3Opacity, x: h3X, zIndex: 12 }}
-          className="absolute left-6 lg:left-[15%] top-[15%] lg:top-1/2 lg:-translate-y-1/2 max-w-sm pointer-events-none"
-        >
-          <span className="text-[10px] lg:text-[12px] font-bold tracking-[2px] lg:tracking-[3px] uppercase text-[#1D9E75] mb-4 block">01 / ANALISIS PREISI</span>
-          <h3 className="text-3xl lg:text-5xl font-bold tracking-[-1px] lg:tracking-[-2px] leading-[1.1] text-[#0A0A0A] mb-6">
-            Analisis CV <br className="hidden lg:block" /> dalam Detik.
-          </h3>
-          <ul className="space-y-4">
+        <motion.div style={{ opacity: h3Opacity, x: h3X, zIndex: 12 }} className="absolute left-[12%] top-1/2 -translate-y-1/2 max-w-md pointer-events-none">
+          <span className="text-[13px] font-bold tracking-[4px] uppercase text-[#1D9E75] mb-8 block">01 / ANALISIS PRESISI</span>
+          <h3 className="text-6xl font-bold tracking-[-3px] leading-[1.05] text-[#0A0A0A] mb-10">Analisis CV <br /> dalam Detik.</h3>
+          <ul className="space-y-6">
             {["Skor standar ATS industri.", "Rekomendasi keyword relevan.", "Optimasi profil profesional."].map((t, i) => (
-              <li key={i} className="flex items-center gap-3 text-[14px] lg:text-[17px] text-[#888888]">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#1D9E75]" />
+              <li key={i} className="flex items-center gap-4 text-[19px] text-[#888888]">
+                <div className="w-2 h-2 rounded-full bg-[#1D9E75] shrink-0" />
                 {t}
               </li>
             ))}
           </ul>
         </motion.div>
 
-        {/* Phase 4: Final Roadmap Headline */}
-        <motion.div 
-          style={{ opacity: h4Opacity, zIndex: 13 }}
-          className="absolute top-[18%] lg:top-[15%] text-center pointer-events-none w-full"
-        >
-          <h2 className="text-[44px] lg:text-[80px] font-bold tracking-[-2px] lg:tracking-[-3px] leading-[1] text-[#0A0A0A]">
+        <motion.div style={{ opacity: h4Opacity, zIndex: 13 }} className="absolute top-[18%] text-center pointer-events-none w-full">
+          <h2 className="text-[90px] font-bold tracking-[-4px] leading-[0.95] text-[#0A0A0A]">
             Roadmap 90 Hari.<br />
             <span className="text-[#1D9E75] italic">Langkah Pasti.</span>
           </h2>
         </motion.div>
 
-        {/* Central Visual: Mockup */}
+        {/* Mockup Container */}
         <motion.div 
           style={{ 
             scale: mockupScale, 
-            x: mockupX,
-            willChange: "transform",
-            zIndex: 5
-          }}
-          className="relative w-full flex justify-center px-4"
+            x: mockupX, 
+            y: mockupY,
+            willChange: "transform, opacity", 
+            zIndex: 5 
+          }} 
+          className="relative w-full max-w-[1100px] flex justify-center mt-20"
         >
-            <DashboardMockup 
-              progress={progressBarValue.get()} 
-              highlightScore={scoreHighlight.get() as boolean} 
-            />
+            <DashboardMockup progress={progressBarValue} highlightScoreValue={scoreHighlightValue} />
         </motion.div>
 
-        {/* CTA Button */}
-        <motion.div 
-          style={{ 
-            opacity: h1Opacity, 
-            zIndex: 15,
-            display: useTransform(smoothProgress, (v) => v > 0.2 ? "none" : "block")
-          }}
-          className="absolute bottom-[12%] lg:bottom-[10%]"
-        >
-           <button className="h-14 lg:h-16 px-8 lg:px-12 bg-[#0A0A0A] text-white rounded-full font-bold text-[12px] lg:text-[14px] tracking-[1px] lg:tracking-[2px] uppercase hover:bg-[#1D9E75] transition-all shadow-xl active:scale-95">
+        {/* Floating CTA */}
+        <motion.div style={{ opacity: ctaOpacity, zIndex: 15 }} className="absolute bottom-[8%]">
+           <button className="h-20 px-14 bg-[#0A0A0A] text-white rounded-full font-bold text-[14px] tracking-[2px] uppercase hover:bg-[#1D9E75] transition-all shadow-2xl active:scale-95">
              Analisis CV Sekarang
            </button>
         </motion.div>
+
       </div>
     </section>
   );
 };
+

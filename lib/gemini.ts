@@ -32,7 +32,7 @@ export const getGeminiModel = () => {
  */
 export function buildCareerAnalysisPrompt(profile: any, cvText: string) {
   return `
-Kamu adalah career counselor AI ahli untuk pelajar SMK Indonesia.
+Kamu adalah career counselor AI ahli yang membantu talenta muda Indonesia membangun karier masa depan.
 Analisis profil berikut dan kembalikan response dalam JSON valid.
 
 PROFIL PENGGUNA:

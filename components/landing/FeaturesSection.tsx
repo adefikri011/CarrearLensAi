@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, Target, BrainCircuit, Sparkles, Map } from "lucide-react";
+import { Check, Target, Sparkles, Map } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CVScoreVisual = () => (
@@ -115,65 +115,55 @@ export const FeaturesSection = () => {
   ];
 
   return (
-    <section id="fitur" className="py-20 lg:py-48 px-5 md:px-10 bg-white overflow-hidden">
-      <div className="container max-w-7xl mx-auto space-y-24 lg:space-y-60">
+    <section id="fitur" className="py-24 lg:py-48 px-5 lg:px-10 bg-white overflow-hidden">
+      <div className="container max-w-7xl mx-auto space-y-16 lg:space-y-60">
         
         {/* Header Section */}
-        <div className="max-w-3xl">
-           <span className="text-[10px] lg:text-[12px] font-bold tracking-[3px] uppercase text-[#1D9E75] mb-4 lg:mb-6 block">02 / FITUR UTAMA</span>
-           <h2 className="text-4xl lg:text-7xl font-bold tracking-[-2px] lg:tracking-[-3px] text-[#0A0A0A] leading-[1]">
-             Setiap Detail <br />Dirancang untuk Suksesmu.
+        <div className="max-w-3xl text-left lg:text-left">
+           <span className="text-[12px] font-bold tracking-[3px] uppercase text-[#1D9E75] mb-4 block">02 / FITUR UTAMA</span>
+           <h2 className="text-[clamp(32px,8vw,64px)] font-bold tracking-[-1px] lg:tracking-[-3px] text-[#0A0A0A] leading-[1.1]">
+             Setiap Detail Dirancang <br className="hidden lg:block" />untuk Suksesmu.
            </h2>
         </div>
 
         {/* Feature List */}
-        {features.map((feature, i) => (
-          <div 
-            key={i} 
-            className={cn(
-              "flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-32",
-              feature.align === "right" && "lg:flex-row-reverse"
-            )}
-          >
-            {/* Text Side */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="flex-1 space-y-6 lg:space-y-8"
+        <div className="space-y-24 lg:space-y-60">
+          {features.map((feature, i) => (
+            <div 
+              key={i} 
+              className={cn(
+                "flex flex-col gap-10 lg:gap-32 lg:flex-row items-center justify-between",
+                feature.align === "right" && "lg:flex-row-reverse"
+              )}
             >
-              <div className="space-y-3 lg:space-y-4">
-                 <span className="text-[10px] lg:text-[12px] font-bold tracking-[2px] uppercase text-[#888888]">{feature.label}</span>
-                 <h3 className="text-3xl lg:text-5xl font-bold tracking-[-1px] lg:tracking-[-2px] text-[#0A0A0A] leading-[1.1]">
-                   {feature.title}
-                 </h3>
+              {/* Text Side */}
+              <div className="flex-1 space-y-6 lg:space-y-8 w-full">
+                <div className="space-y-4">
+                   <span className="text-[12px] font-bold tracking-[2px] uppercase text-[#888888]">{feature.label}</span>
+                   <h3 className="text-[clamp(28px,6vw,48px)] font-bold tracking-[-1px] text-[#0A0A0A] leading-[1.1]">
+                     {feature.title}
+                   </h3>
+                </div>
+                <p className="text-[16px] lg:text-[18px] text-[#888888] leading-relaxed font-medium lg:max-w-md">
+                  {feature.desc}
+                </p>
+                <div className="pt-2">
+                   <button className="flex items-center gap-3 text-[14px] font-bold text-[#0A0A0A] group tracking-tight min-h-[44px]">
+                      Lihat detail fitur
+                      <div className="w-10 h-10 rounded-full border border-[#EFEFEF] flex items-center justify-center group-hover:bg-[#0A0A0A] group-hover:text-white transition-all">
+                         <Target size={16} className="group-hover:rotate-45 transition-transform" />
+                      </div>
+                   </button>
+                </div>
               </div>
-              <p className="text-[16px] lg:text-[18px] text-[#888888] leading-relaxed font-medium max-w-md">
-                {feature.desc}
-              </p>
-              <div className="pt-2 lg:pt-4">
-                 <button className="flex items-center gap-3 text-[13px] lg:text-[14px] font-bold text-[#0A0A0A] group tracking-tight">
-                    Lihat detail fitur
-                    <div className="w-8 h-8 rounded-full border border-[#EFEFEF] flex items-center justify-center group-hover:bg-[#0A0A0A] group-hover:text-white transition-all">
-                       <Target size={14} className="group-hover:rotate-45 transition-transform" />
-                    </div>
-                 </button>
-              </div>
-            </motion.div>
 
-            {/* Visual Side */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="flex-1 flex justify-center w-full"
-            >
-               {feature.visual}
-            </motion.div>
-          </div>
-        ))}
+              {/* Visual Side */}
+              <div className="flex-1 flex justify-center w-full">
+                 {feature.visual}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -45,16 +45,16 @@ export const Navbar = () => {
           "fixed top-0 left-0 right-0 z-[100] transition-all duration-300",
           isScrolled 
             ? "bg-white/90 backdrop-blur-xl border-b border-[#EFEFEF] py-4" 
-            : "bg-transparent py-6"
+            : "bg-transparent py-4 lg:py-6"
         )}
       >
-        <div className="container max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="container max-w-7xl mx-auto px-5 lg:px-6 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group relative z-[101]">
             <div className="w-8 h-8 rounded-lg bg-[#0A0A0A] flex items-center justify-center transition-transform group-hover:rotate-[10deg]">
               <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
             </div>
-            <span className="text-xl font-bold tracking-[-1px] text-[#0A0A0A]">
+            <span className="text-xl lg:text-xl font-bold tracking-[-1px] text-[#0A0A0A]">
               CareerLens <span className="text-[#1D9E75]">AI</span>
             </span>
           </Link>
@@ -90,7 +90,7 @@ export const Navbar = () => {
 
           {/* Mobile Toggle */}
           <button 
-            className="md:hidden p-2 text-[#0A0A0A] relative z-[101]"
+            className="md:hidden p-2 text-[#0A0A0A] relative z-[101] min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -102,13 +102,13 @@ export const Navbar = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[90] bg-white pt-24 px-6 md:hidden"
+            className="fixed inset-0 z-[90] bg-white pt-24 px-6 md:hidden overflow-y-auto"
           >
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6 py-10">
               {navLinks.map((link) => (
                 <button 
                   key={link.name} 
@@ -119,20 +119,20 @@ export const Navbar = () => {
                 </button>
               ))}
               
-              <div className="h-px bg-[#EFEFEF]" />
+              <div className="h-px bg-[#EFEFEF] my-4" />
               
               <div className="flex flex-col gap-4">
                 <Link 
                   href="/login" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-4 text-center text-lg font-semibold border border-[#EFEFEF] rounded-2xl"
+                  className="w-full py-5 text-center text-lg font-semibold border border-[#EFEFEF] rounded-2xl active:scale-[0.98] transition-transform"
                 >
                   Masuk
                 </Link>
                 <Link 
                   href="/register" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-4 text-center text-lg font-semibold bg-[#0A0A0A] text-white rounded-2xl"
+                  className="w-full py-5 text-center text-lg font-semibold bg-[#0A0A0A] text-white rounded-2xl active:scale-[0.98] transition-transform"
                 >
                   Mulai Sekarang
                 </Link>
