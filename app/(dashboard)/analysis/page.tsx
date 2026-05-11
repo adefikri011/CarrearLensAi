@@ -13,6 +13,7 @@ import PageLoader from "@/components/shared/PageLoader";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, 
   ResponsiveContainer 
@@ -25,6 +26,7 @@ const fadeUp = {
 };
 
 export default function AnalysisPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -193,6 +195,27 @@ ${result.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\
         </div>
       ) : (
         <>
+          {/* Sync Warning Banner */}
+          {result?.syncScore < 70 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-amber-800 font-bold flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" />
+                  Profil & CV Kurang Sinkron
+                </p>
+                <p className="text-amber-600 text-sm mt-1 font-medium italic">
+                  Skor sinkronisasi: {result.syncScore}% — {result.syncIssues?.[0] || "Beberapa data di profil kamu tidak sesuai dengan isi CV."}
+                </p>
+              </div>
+              <button 
+                onClick={() => router.push('/profile')} 
+                className="bg-amber-100 hover:bg-amber-200 text-amber-800 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+              >
+                Perbarui Profil →
+              </button>
+            </div>
+          )}
+
           {/* Tabs */}
           <div className="flex items-center gap-1 p-1.5 bg-gray-50 w-fit rounded-2xl border border-gray-100">
              {["overview", "detail", "compare"].map((tab) => (

@@ -6,14 +6,16 @@ import {
 } from "framer-motion";
 import { 
   Sparkles, CheckCircle2, History, FileText, 
-  ArrowRight, RefreshCcw, Trash2, AlertCircle
+  ArrowRight, RefreshCcw, Trash2, AlertCircle, BrainCircuit
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UploadZone from "@/components/cv/UploadZone";
 import CVPreview from "@/components/cv/CVPreview";
 import PageLoader from "@/components/shared/PageLoader";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -29,10 +31,12 @@ const fadeUp = {
 };
 
 export default function CVBuilderPage() {
+  const router = useRouter();
   const [uploadedData, setUploadedData] = useState<any>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showConfirmReplace, setShowConfirmReplace] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
 
@@ -84,23 +88,7 @@ export default function CVBuilderPage() {
   const handleUploadSuccess = async (data: any) => {
     setUploadedData(data);
     fetchHistory();
-    
-    // Automatically trigger analysis
-    toast.promise(
-      fetch("/api/analyze", { method: "POST" }).then(async res => {
-        if (!res.ok) throw new Error('Analysis failed');
-        const result = await res.json();
-        if (result.success && result.data?.result) {
-          setAnalysisResult(result.data.result);
-        }
-        return result;
-      }),
-      {
-        loading: 'Mencerahkan potensi karier kamu...',
-        success: 'Analisis selesai! Silakan lihat hasil karier kamu.',
-        error: 'Gagal menganalisis secara otomatis. Silakan klik "Analisis CV" secara manual.',
-      }
-    );
+    toast.success("CV berhasil diunggah! Klik 'Mulai Analisis' untuk melihat potensi karier kamu.");
   };
 
   const handleViewHistory = (item: any) => {
@@ -109,27 +97,32 @@ export default function CVBuilderPage() {
     toast.success("Memuat riwayat CV: " + item.filename);
   };
 
-  const handleReanalyze = async () => {
-    if (!uploadedData) return;
-    setIsProcessing(true);
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
     try {
-      // Re-trigger analysis logic
-      const res = await fetch("/api/analyze", {
-        method: "POST"
-      });
-      const result = await res.json();
-      if (result.success) {
-        if (result.data?.result) {
-          setAnalysisResult(result.data.result);
+      const res = await fetch("/api/analyze", { method: "POST" });
+      const data = await res.json();
+      
+      if (!data.success) {
+        if (data.error === "PROFILE_MISSING") {
+          toast.error("Lengkapi Profil Karier dulu!");
+          router.push("/profile");
+          return;
         }
-        toast.success("Analisis ulang berhasil!");
-      } else {
-        toast.error(result.error || "Gagal melakukan analisis");
+        if (data.error === "CV_MISSING") {
+          toast.error("Upload CV dulu!");
+          return;
+        }
+        toast.error(data.message || "Analisis gagal");
+        return;
       }
+      
+      toast.success("Analisis selesai! Redirecting...");
+      router.push("/analysis");
     } catch (error) {
       toast.error("Terjadi kesalahan sistem");
     } finally {
-      setIsProcessing(false);
+      setIsAnalyzing(false);
     }
   };
 
@@ -262,11 +255,13 @@ export default function CVBuilderPage() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <Button 
-                      onClick={handleReanalyze}
+                      onClick={handleAnalyze}
+                      disabled={isAnalyzing}
                       variant="outline" 
-                      className="w-full sm:w-auto h-11 sm:h-12 rounded-xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest border-gray-100 bg-white hover:bg-gray-50"
+                      className="w-full sm:w-auto h-11 sm:h-12 rounded-xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest border-teal bg-teal/5 text-teal hover:bg-teal hover:text-white transition-all shadow-lg shadow-teal/10"
                     >
-                      <RefreshCcw className="w-4 h-4 mr-2" /> Analisis Ulang
+                      {isAnalyzing ? <LoadingSpinner size="sm" className="mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />} 
+                      Mulai Analisis Karier
                     </Button>
                     <Button 
                       onClick={handleResetCV}

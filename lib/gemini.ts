@@ -29,23 +29,43 @@ export const getGeminiModel = () => {
 
 /**
  * Builds the career analysis prompt for Gemini
+ * Analisis SINKRONISASI antara profil yang diisi user DAN isi CV mereka.
  */
-export function buildCareerAnalysisPrompt(profile: any, cvText: string) {
+export function buildAnalysisPrompt(profile: any, cvText: string): string {
   return `
-Kamu adalah career counselor AI ahli yang membantu talenta muda Indonesia membangun karier masa depan.
-Analisis profil berikut dan kembalikan response dalam JSON valid.
+Kamu adalah career counselor AI expert. Analisis SINKRONISASI antara 
+profil yang diisi user DAN isi CV mereka.
 
-PROFIL PENGGUNA:
-${JSON.stringify(profile, null, 2)}
+PROFIL YANG DIISI USER:
+- Nama: ${profile.nama || 'Tidak diisi'}
+- Pendidikan: ${profile.lulusan || '-'} - ${profile.jurusan || '-'}
+- Hard Skills: ${profile.hardSkills?.join(', ') || 'Tidak ada'}
+- Soft Skills: ${profile.softSkills?.join(', ') || 'Tidak ada'}
+- Minat Industri: ${profile.minat?.join(', ') || 'Tidak ada'}
+- Target Gaji: Rp${profile.targetGaji?.toLocaleString('id-ID') || '0'}
+- Preferensi Kerja: ${profile.preferensiKerja || '-'}
 
-ISI CV:
+ISI CV USER:
 ${cvText}
 
-Kembalikan HANYA JSON dengan struktur berikut (tanpa teks lain):
+INSTRUKSI ANALISIS:
+1. Bandingkan skills di profil vs skills yang terdeteksi di CV
+2. Jika ada INKONSISTENSI (misal: profil bilang programmer tapi CV berisi 
+   pekerjaan admin), TETAP analisis berdasarkan KOMBINASI keduanya
+3. Berikan career path yang realistis berdasarkan KEDUANYA
+4. Dalam rekomendasiUtama, sebutkan jika ada gap antara profil dan CV
+5. cvScore harus mencerminkan kualitas CV yang sebenarnya
+
+PENTING: Jangan asal-asalan. Berikan analisis yang jujur dan akurat.
+Jika profil dan CV tidak sinkron, rekomendasikan cara menyeleraskannya.
+
+Kembalikan HANYA JSON valid dengan struktur ini:
 {
   "overallReadiness": number (0-100),
+  "syncScore": number (0-100, seberapa sinkron profil vs CV),
+  "syncIssues": string[] (list masalah sinkronisasi jika ada),
   "cvScore": {
-    "total": number (0-100),
+    "total": number,
     "atsCompatibility": number,
     "completeness": number,
     "actionVerbs": number,
@@ -55,7 +75,7 @@ Kembalikan HANYA JSON dengan struktur berikut (tanpa teks lain):
     {
       "id": string,
       "nama": string,
-      "matchScore": number (0-100),
+      "matchScore": number,
       "deskripsi": string,
       "estimasiGajiMin": number,
       "estimasiGajiMax": number,
@@ -78,7 +98,7 @@ Kembalikan HANYA JSON dengan struktur berikut (tanpa teks lain):
   },
   "roadmap90Hari": [
     {
-      "minggu": number (1-12),
+      "minggu": number,
       "fase": "fondasi"|"pengembangan"|"persiapan",
       "tugas": string,
       "kategori": "belajar"|"praktek"|"networking"|"portofolio",
@@ -86,8 +106,8 @@ Kembalikan HANYA JSON dengan struktur berikut (tanpa teks lain):
       "resource": { "judul": string, "url": string, "platform": string }
     }
   ],
-  "rekomendasiUtama": string[],  // 3 poin paling penting
-  "pesan": string  // pesan motivasi personal dari AI
+  "rekomendasiUtama": string[],
+  "pesan": string
 }
 `;
 }
