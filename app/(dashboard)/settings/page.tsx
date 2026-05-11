@@ -61,15 +61,15 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 sm:space-y-12">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 sm:space-y-12">
       {/* Mobile Navigation Tabs */}
-      <div className="flex overflow-x-auto gap-2 pb-2 mb-6 md:hidden no-scrollbar">
+      <div className="flex overflow-x-auto gap-2 pb-3 mb-6 -mx-4 px-4 md:hidden no-scrollbar">
         {menuItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveSection(item.id)}
             className={cn(
-              "rounded-full px-4 py-2 text-sm whitespace-nowrap font-bold transition-all",
+              "flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
               activeSection === item.id
                 ? "bg-black text-white shadow-lg shadow-black/10"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
