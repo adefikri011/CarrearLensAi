@@ -385,23 +385,6 @@ export default function SettingsPage() {
                              </div>
                           </div>
                        </div>
-
-                       <div className="p-6 sm:p-8 bg-black rounded-[24px] sm:rounded-[40px] text-white relative overflow-hidden group">
-                          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
-                             <div className="space-y-2 text-center lg:text-left">
-                                <h4 className="text-lg sm:text-xl font-bold flex items-center justify-center lg:justify-start gap-2">
-                                   Two-Factor Authentication <ShieldAlert className="w-5 h-5 text-teal" />
-                                </h4>
-                                <p className="text-gray-400 text-xs sm:text-sm font-medium">Lindungi akunmu dengan kode OTP tambahan setiap kali login.</p>
-                             </div>
-                             <Button className="w-full sm:w-auto h-11 sm:h-12 px-8 bg-teal text-white font-black uppercase tracking-widest text-[9px] sm:text-[10px] rounded-xl hover:scale-105 transition-all">
-                                AKTIFKAN SEKARANG
-                             </Button>
-                          </div>
-                          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform hidden sm:block">
-                             <Lock className="w-24 sm:w-32 h-24 sm:h-32 text-white" />
-                          </div>
-                       </div>
                     </div>
 
                     <div className="pt-6 sm:pt-8 border-t border-gray-100 flex justify-end">
