@@ -75,47 +75,48 @@ export default function UploadZone({ onUploadSuccess }: UploadZoneProps) {
   });
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-1 sm:px-0">
       <div 
         {...getRootProps()} 
         className={cn(
           "relative group cursor-pointer transition-all duration-500",
-          "rounded-[48px] border-4 border-dashed p-12 lg:p-20 flex flex-col items-center text-center",
-          isDragActive ? "border-teal bg-teal-light/30 scale-[1.02]" : "border-[#F3F4F6] bg-white hover:border-teal/30 hover:bg-surface",
+          "min-h-[260px] sm:min-h-[320px] lg:min-h-[400px]",
+          "rounded-[32px] sm:rounded-[48px] border-4 border-dashed p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center text-center",
+          isDragActive ? "border-teal bg-teal-light/30 scale-[1.01] sm:scale-[1.02]" : "border-[#F3F4F6] bg-white hover:border-teal/30 hover:bg-surface",
           isUploading && "pointer-events-none opacity-80"
         )}
       >
         <input {...getInputProps()} />
 
-        <div className="relative mb-10">
+        <div className="relative mb-6 sm:mb-10 shrink-0">
            <div className={cn(
-             "w-24 h-24 lg:w-32 lg:h-32 rounded-[32px] flex items-center justify-center transition-all duration-500",
+             "w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32 rounded-[20px] sm:rounded-[32px] flex items-center justify-center transition-all duration-500",
              isDragActive ? "bg-teal text-white scale-110" : "bg-teal-light text-teal group-hover:scale-110 group-hover:bg-teal group-hover:text-white"
            )}>
              {isUploading ? (
-               <Loader2 className="w-10 h-10 lg:w-12 lg:h-12 animate-spin" />
+               <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 animate-spin" />
              ) : (
-               <Upload className="w-10 h-10 lg:w-12 lg:h-12" />
+               <Upload className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
              )}
            </div>
            
            {/* Animated Pulse Ring */}
-           <div className="absolute inset-0 rounded-[32px] border-4 border-teal animate-ping opacity-20 scale-125" />
+           <div className="absolute inset-0 rounded-[20px] sm:rounded-[32px] border-4 border-teal animate-ping opacity-20 scale-125" />
         </div>
 
-        <div className="space-y-4 max-w-md">
-           <h3 className="text-2xl lg:text-3xl font-black text-[#030712] tracking-tight">
+        <div className="space-y-3 sm:space-y-4 max-w-sm sm:max-w-md">
+           <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#030712] tracking-tight leading-tight">
              {isDragActive ? "Lepaskan File Sekarang" : "Tarik & Lepas CV Kamu"}
            </h3>
-           <p className="text-text-secondary font-medium leading-relaxed">
+           <p className="text-xs sm:text-sm lg:text-base text-text-secondary font-medium leading-relaxed">
              Seret file PDF kamu ke sini, atau <span className="text-teal font-bold underline cursor-pointer">pilih dari folder</span>. AI kami akan menganalisisnya secara instan.
            </p>
         </div>
 
-        <div className="mt-12 flex items-center gap-6 text-[10px] font-black text-text-faint uppercase tracking-[0.2em]">
-           <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal" /> MAX 5MB</div>
-           <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal" /> PDF ONLY</div>
-           <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal" /> ATS FRIENDLY</div>
+        <div className="mt-8 sm:mt-12 flex flex-wrap justify-center items-center gap-4 sm:gap-6 text-[8px] sm:text-[10px] font-black text-text-faint uppercase tracking-widest sm:tracking-[0.2em]">
+           <div className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-teal" /> MAX 5MB</div>
+           <div className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-teal" /> PDF ONLY</div>
+           <div className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-teal" /> ATS FRIENDLY</div>
         </div>
 
         {/* Progress Overlay */}

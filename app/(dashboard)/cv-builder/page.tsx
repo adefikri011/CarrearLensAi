@@ -55,7 +55,6 @@ export default function CVBuilderPage() {
   };
 
   const fetchLatestCV = async () => {
-// ... existing fetchLatestCV ...
     try {
       const res = await fetch("/api/upload/history");
       const result = await res.json();
@@ -147,24 +146,24 @@ export default function CVBuilderPage() {
   if (isLoading) return <PageLoader isLoading={true} text="Memeriksa Data CV..." />;
 
   return (
-    <div className="space-y-16 pb-20">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-10 lg:space-y-16 pb-20">
       <PageLoader isLoading={isProcessing} text="Sedang Menganalisis CV..." />
 
       {/* Header Section */}
-      <motion.section variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="max-w-2xl">
-           <div className="flex items-center gap-2 text-teal font-bold text-[12px] uppercase tracking-[0.1em] mb-4">
+      <motion.section variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
+        <div className="max-w-2xl text-center sm:text-left">
+           <div className="flex items-center justify-center sm:justify-start gap-2 text-teal font-bold text-[10px] sm:text-[12px] uppercase tracking-[0.1em] mb-3 sm:mb-4">
               <Sparkles className="w-4 h-4" />
               CV ANALYTICS
            </div>
-           <h1 className="text-3xl font-black text-black mb-4">Optimalkan CV-mu untuk Masa Depan.</h1>
-           <p className="text-base text-gray-500 leading-relaxed max-w-xl">
+           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-black mb-3 sm:mb-4">Optimalkan CV-mu untuk Masa Depan.</h1>
+           <p className="text-sm sm:text-base text-gray-500 leading-relaxed mx-auto sm:mx-0 max-w-xl">
              Gunakan kecerdasan buatan untuk memastikan CV kamu memenuhi standar ATS dan siap bersaing di pasar kerja global.
            </p>
         </div>
         
         {uploadedData && (
-          <div className="hidden lg:flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+          <div className="hidden sm:flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm self-center sm:self-auto">
              <div className="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center text-teal">
                 <CheckCircle2 className="w-5 h-5" />
              </div>
@@ -177,22 +176,22 @@ export default function CVBuilderPage() {
       </motion.section>
 
       {/* Steps Indicator (Progressive) */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row items-center gap-12 sm:gap-24 relative px-10">
-         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-100 -translate-y-1/2 z-0 hidden sm:block" />
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex items-center justify-center gap-4 sm:gap-8 mb-8 relative">
+         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-100 -translate-y-1/2 z-0 hidden sm:block opacity-50" />
          
          {[
            { step: "01", label: "UPLOAD", active: !uploadedData },
            { step: "02", label: "ANALYZE", active: !!uploadedData },
          ].map((s, i) => (
-           <div key={i} className="flex flex-col items-center gap-3 relative z-10">
+           <div key={i} className="flex flex-col items-center gap-2 sm:gap-3 relative z-10 w-24">
               <div className={cn(
-                "w-10 h-10 rounded-full border-2 flex items-center justify-center font-black text-[10px] transition-all duration-500",
+                "w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 flex items-center justify-center font-black text-[9px] sm:text-[10px] transition-all duration-500",
                 s.active ? "bg-black border-black text-white shadow-xl shadow-black/10" : "bg-white border-gray-100 text-gray-300"
               )}>
                 {s.step}
               </div>
               <span className={cn(
-                "text-[9px] font-black tracking-[0.15em] uppercase",
+                "text-[8px] sm:text-[9px] font-black tracking-[0.1em] sm:tracking-[0.15em] uppercase text-center",
                 s.active ? "text-black" : "text-gray-300"
               )}>{s.label}</span>
            </div>
@@ -205,9 +204,9 @@ export default function CVBuilderPage() {
             <UploadZone onUploadSuccess={handleUploadSuccess} />
 
             {/* History Section */}
-            <div className="mt-24 max-w-4xl mx-auto">
-               <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
+            <div className="mt-16 lg:mt-24 w-full">
+               <div className="flex items-center justify-between mb-6 sm:mb-8">
+                  <h3 className="text-[10px] sm:text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
                      <History className="w-4 h-4" />
                      RIWAYAT ANALISIS
                   </h3>
@@ -217,31 +216,31 @@ export default function CVBuilderPage() {
                     <div 
                       key={i} 
                       onClick={() => handleViewHistory(h)}
-                      className="bg-white p-5 rounded-2xl border border-gray-100 flex items-center justify-between hover:bg-gray-50 transition-all group shadow-sm cursor-pointer"
+                      className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-gray-50 transition-all group shadow-sm cursor-pointer gap-4"
                     >
-                       <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:text-white transition-all">
+                       <div className="flex items-center gap-4 w-full sm:w-auto">
+                          <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:text-white transition-all shrink-0">
                              <FileText className="w-5 h-5" />
                           </div>
-                          <div>
-                             <h4 className="font-bold text-black text-sm">{h.filename}</h4>
+                          <div className="min-w-0">
+                             <h4 className="font-bold text-black text-sm truncate">{h.filename}</h4>
                              <p className="text-[10px] text-gray-400 font-medium uppercase">
                                {new Date(h.createdAt).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })}
                              </p>
                           </div>
                        </div>
-                       <div className="flex items-center gap-8">
-                          <div className="text-right">
+                       <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto mt-2 sm:mt-0">
+                          <div className="text-left sm:text-right">
                              <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">EST. SCORE</p>
                              <p className="text-lg font-black text-black">80%</p>
                           </div>
-                          <button className="p-2.5 bg-gray-50 text-gray-400 rounded-xl group-hover:bg-teal group-hover:text-white transition-all border border-transparent group-hover:border-teal">
+                          <button className="p-2 sm:p-2.5 bg-gray-50 text-gray-400 rounded-xl group-hover:bg-teal group-hover:text-white transition-all border border-transparent group-hover:border-teal">
                              <ArrowRight className="w-4 h-4" />
                           </button>
                        </div>
                     </div>
                   )) : (
-                    <div className="bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-3xl p-12 text-center">
+                    <div className="bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-3xl p-8 sm:p-12 text-center">
                        <p className="text-gray-400 text-sm font-medium italic">Belum ada riwayat analisis.</p>
                     </div>
                   )}
@@ -249,29 +248,29 @@ export default function CVBuilderPage() {
             </div>
           </motion.div>
         ) : (
-          <motion.div key="preview" variants={fadeUp} initial="hidden" animate="visible" className="space-y-12">
+          <motion.div key="preview" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-12">
             {/* CV Details Banner */}
-            <div className="bg-white border border-gray-100 rounded-[32px] p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-                <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-teal">
-                        <FileText className="w-8 h-8" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                <div className="flex items-center gap-4 sm:gap-6">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-teal shrink-0">
+                        <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
-                    <div>
-                        <h3 className="text-xl font-bold text-black">{uploadedData.filename}</h3>
-                        <p className="text-xs text-gray-400 font-medium uppercase mt-1">Diunggah pada: {new Date(uploadedData.createdAt || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    <div className="min-w-0">
+                        <h3 className="text-lg sm:text-xl font-bold text-black truncate">{uploadedData.filename}</h3>
+                        <p className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase mt-1">Diunggah: {new Date(uploadedData.createdAt || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <Button 
                       onClick={handleReanalyze}
                       variant="outline" 
-                      className="h-12 rounded-xl px-8 font-black text-[10px] uppercase tracking-widest border-gray-100 bg-white hover:bg-gray-50"
+                      className="w-full sm:w-auto h-11 sm:h-12 rounded-xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest border-gray-100 bg-white hover:bg-gray-50"
                     >
                       <RefreshCcw className="w-4 h-4 mr-2" /> Analisis Ulang
                     </Button>
                     <Button 
                       onClick={handleResetCV}
-                      className="h-12 rounded-xl px-8 font-black text-[10px] uppercase tracking-widest bg-black text-white hover:bg-red-600"
+                      className="w-full sm:w-auto h-11 sm:h-12 rounded-xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest bg-black text-white hover:bg-red-600"
                     >
                       <Trash2 className="w-4 h-4 mr-2" /> Ganti CV
                     </Button>

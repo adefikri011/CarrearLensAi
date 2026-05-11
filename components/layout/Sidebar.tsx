@@ -54,12 +54,12 @@ export default function Sidebar() {
         animate={{ 
           width: isSidebarOpen ? 260 : 72,
           x: (typeof window !== "undefined" && window.innerWidth < 1024) 
-            ? (isSidebarOpen ? 0 : -300) 
+            ? (isSidebarOpen ? 0 : -280) 
             : 0
         }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "fixed left-0 top-0 h-screen z-50 bg-white border-r border-gray-100 flex flex-col",
+          "fixed left-0 top-0 h-screen z-50 bg-white border-r border-gray-100 flex flex-col shadow-2xl lg:shadow-none",
           "lg:translate-x-0"
         )}
       >
