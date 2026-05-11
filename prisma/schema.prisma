@@ -106,3 +106,13 @@ model Profile {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model RoadmapProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  taskId    String   // Identifier like "w1-t0"
+  completed Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, taskId])
+}
