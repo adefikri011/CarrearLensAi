@@ -9,6 +9,10 @@ export interface AnalysisResult {
       matched: string[];
       missing: string[];
     };
+    sections: {
+      title: string;
+      detected: boolean;
+    }[];
   };
   careerPaths: CareerPath[];
   skillRadar: {

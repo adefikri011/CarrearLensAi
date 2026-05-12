@@ -73,7 +73,15 @@ Kembalikan HANYA JSON valid dengan struktur ini:
     "atsCompatibility": number,
     "completeness": number,
     "actionVerbs": number,
-    "keywords": { "matched": string[], "missing": string[] }
+    "keywords": { "matched": string[], "missing": string[] },
+    "sections": [
+      { "title": "Data Pribadi", "detected": boolean },
+      { "title": "Ringkasan Profil", "detected": boolean },
+      { "title": "Pengalaman Kerja", "detected": boolean },
+      { "title": "Pendidikan", "detected": boolean },
+      { "title": "Skill Teknis", "detected": boolean },
+      { "title": "Proyek & Sertifikat", "detected": boolean }
+    ]
   },
   "careerPaths": [
     {

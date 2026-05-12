@@ -128,9 +128,12 @@ ${analysisResult?.careerPaths?.map((p: any) =>
     { title: "Proyek & Sertifikat", detected: false },
   ];
 
-  const keywords = analysisResult?.cvScore?.keywords?.matched?.map((k: string) => ({ t: k, m: true })) || [
-    { t: "Communikation", m: true }, { t: "Teamwork", m: true }
-  ];
+  const keywords = analysisResult?.cvScore?.keywords?.matched?.map((k: string) => ({ t: k, m: true })) || [];
+
+  const missingKeywords = analysisResult?.cvScore?.keywords?.missing || [];
+  const aiSuggestion = missingKeywords.length > 0 
+    ? `Tambahkan keyword "${missingKeywords[0]}" untuk meningkatkan relevansi.`
+    : analysisResult?.rekomendasiUtama?.[0] || "CV kamu sudah sangat baik dan relevan.";
 
   return (
     <div className="space-y-12">
@@ -251,7 +254,7 @@ ${analysisResult?.careerPaths?.map((p: any) =>
                </h3>
             </div>
             <div className="flex flex-wrap gap-2">
-               {keywords.map((k: any, i: number) => (
+               {keywords.length > 0 ? keywords.map((k: any, i: number) => (
                   <Badge 
                     key={i} 
                     className={cn(
@@ -261,37 +264,65 @@ ${analysisResult?.careerPaths?.map((p: any) =>
                   >
                      {k.t}
                   </Badge>
-               ))}
+               )) : (
+                 <p className="text-xs text-gray-400 italic">Menganalisis keyword...</p>
+               )}
             </div>
             <div className="mt-8 sm:mt-10 pt-6 border-t border-gray-100">
                <p className="text-[10px] sm:text-[11px] text-gray-400 leading-relaxed font-bold">
-                  <span className="font-black text-black">SARAN AI:</span> Tambahkan keyword <span className="text-teal font-black tracking-tight">&quot;TypeScript&quot;</span> untuk meningkatkan relevansi.
+                  <span className="font-black text-black">SARAN AI:</span> {aiSuggestion}
                </p>
             </div>
          </motion.div>
       </div>
 
-      {/* --- Detailed Analysis / Extracted Text --- */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white rounded-[32px] sm:rounded-[48px] border border-gray-100 shadow-sm overflow-hidden">
-         <div className="bg-gray-50 p-6 sm:p-8 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-gray-400" />
-               </div>
-               <div className="min-w-0">
-                  <h4 className="font-bold text-black text-sm truncate">{data.filename}</h4>
-                  <p className="text-[9px] sm:text-[10px] text-gray-400 font-black uppercase tracking-widest">HASIL EKSTRAKSI TEKS</p>
-               </div>
-            </div>
-            <Badge className="bg-white text-gray-400 border border-gray-100 font-bold text-[9px] sm:text-[10px] tracking-widest uppercase px-4 py-1">PDF FILE</Badge>
+      {/* --- Detailed Analysis / Career Paths --- */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="space-y-8">
+         <div className="flex items-center justify-between">
+            <h3 className="text-[10px] sm:text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
+               <Target className="w-4 h-4 text-teal" />
+               REKOMENDASI JALUR KARIER (BERDASARKAN CV)
+            </h3>
          </div>
-         <div className="p-6 sm:p-10 max-h-[300px] sm:max-h-[400px] overflow-y-auto no-scrollbar bg-white whitespace-pre-wrap text-gray-500 text-xs sm:text-sm leading-relaxed sm:leading-loose">
-            {analyzing ? (
-               <div className="flex flex-col items-center justify-center py-16 sm:py-20 gap-4">
-                  <LoadingSpinner size="sm" />
-                  <p className="text-[10px] font-black text-teal tracking-widest uppercase">Mengekstrak informasi...</p>
-               </div>
-            ) : data.extractedText}
+         
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {analysisResult?.careerPaths?.length > 0 ? (
+              analysisResult.careerPaths.map((path: any, i: number) => (
+                <motion.div 
+                  key={i}
+                  whileHover={{ scale: 1.01 }}
+                  className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm relative overflow-hidden group"
+                >
+                   <div className="flex justify-between items-start mb-6">
+                      <div className="space-y-1">
+                         <h4 className="text-xl font-black text-black group-hover:text-teal transition-colors tracking-tight">{path.nama}</h4>
+                         <p className="text-xs text-gray-500 leading-relaxed max-w-[200px]">{path.deskripsi}</p>
+                      </div>
+                      <div className="bg-teal-light text-teal px-4 py-2 rounded-2xl flex flex-col items-center">
+                         <span className="text-lg font-black">{path.matchScore}%</span>
+                         <span className="text-[8px] font-black uppercase">MATCH</span>
+                      </div>
+                   </div>
+                   
+                   <div className="flex flex-wrap gap-2 mb-8">
+                      {path.requiredSkills?.slice(0, 3).map((s: any, j: number) => (
+                        <span key={j} className="text-[9px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-lg uppercase tracking-wider">{s.skill}</span>
+                      ))}
+                   </div>
+                   
+                   <Button 
+                    variant="link" 
+                    className="p-0 h-auto text-teal font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group/btn"
+                   >
+                      Lihat Roadmap Detail <ArrowLeft className="w-4 h-4 rotate-180 group-hover/btn:translate-x-1 transition-transform" />
+                   </Button>
+                </motion.div>
+              ))
+            ) : (
+              <div className="md:col-span-2 bg-gray-50 border-2 border-dashed border-gray-100 rounded-[40px] p-12 text-center">
+                 <p className="text-gray-400 text-sm italic">Analisis kecocokan karier sedang disiapkan...</p>
+              </div>
+            )}
          </div>
       </motion.div>
     </div>
