@@ -22,7 +22,7 @@ export const getAI = () => {
 };
 
 // Recommended model for text tasks
-export const GEMINI_MODEL = "gemini-1.5-flash-latest";
+export const GEMINI_MODEL = "gemini-1.5-flash";
 
 /**
  * Builds the career analysis prompt for Gemini
