@@ -24,19 +24,20 @@ export async function performCareerAnalysis() {
     const { profile, cvUpload } = dataResult.data;
 
     // 2. Call Gemini AI
-    const ai = getAI();
-    const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
-    
-    const response = await ai.models.generateContent({
+    const genAI = getAI();
+    const model = genAI.getGenerativeModel({ 
       model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        temperature: 0.3,
+      generationConfig: {
         responseMimeType: "application/json",
+        temperature: 0.3,
       }
     });
 
-    const responseText = response.text;
+    const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const responseText = response.text();
+    
     if (!responseText) throw new Error("AI tidak memberikan respon (Empty Response)");
 
     // Clean and parse JSON
