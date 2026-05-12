@@ -101,11 +101,11 @@ export default function RoadmapPage() {
     }
   };
 
-  const totalTasks = roadmapContent.reduce((acc, r) => acc + r.tasks.length, 0);
+  const totalTasks = roadmapContent.reduce((acc, r) => acc + (r.tasks?.length || 0), 0);
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
   const progressPercent = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
   const completedWeeks = roadmapContent.filter(w => 
-    w.tasks.every((_, i) => completedTasks[`w${w.week}-t${i}`])
+    w.tasks?.every((_: any, i: number) => completedTasks[`w${w.minggu}-t${i}`])
   ).length;
 
   if (isLoading) return <PageLoader isLoading={true} text="Menyiapkan Roadmap..." />;
@@ -156,13 +156,13 @@ export default function RoadmapPage() {
                  </p>
               </div>
 
-              <div className="space-y-6">
-                 {roadmapContent.filter(w => w.phase === phase.id).map((weekData) => {
-                    const isFullyCompleted = weekData.tasks.every((_, i) => completedTasks[`w${weekData.week}-t${i}`]);
+               <div className="space-y-6">
+                 {roadmapContent.filter(w => w.fase === phase.id).map((weekData) => {
+                    const isFullyCompleted = weekData.tasks?.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
                     
                     return (
                        <motion.div 
-                         key={weekData.week}
+                         key={weekData.minggu}
                          variants={fadeUp}
                          initial="hidden"
                          whileInView="visible"
@@ -180,7 +180,7 @@ export default function RoadmapPage() {
                                    "px-4 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-colors",
                                    isFullyCompleted ? "bg-teal text-white" : "bg-gray-100 text-gray-400"
                                 )}>
-                                   MGG {weekData.week}
+                                   MGG {weekData.minggu}
                                 </div>
                                 <h3 className="text-lg font-black text-black">{weekData.title}</h3>
                              </div>
@@ -193,14 +193,14 @@ export default function RoadmapPage() {
                           </div>
 
                           <div className="space-y-3">
-                             {weekData.tasks.map((task, tidx) => {
-                                const taskId = `w${weekData.week}-t${tidx}`;
+                             {weekData.tasks?.map((task: string, tidx: number) => {
+                                const taskId = `w${weekData.minggu}-t${tidx}`;
                                 const isDone = completedTasks[taskId];
                                 
                                 return (
                                    <div 
                                      key={tidx}
-                                     onClick={() => toggleTask(weekData.week, tidx)}
+                                     onClick={() => toggleTask(weekData.minggu, tidx)}
                                      className={cn(
                                        "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer",
                                        isDone 
@@ -278,9 +278,9 @@ export default function RoadmapPage() {
                  <LinkIcon className="w-6 h-6" />
               </div>
               <DialogTitle className="text-xl font-black text-black">Materi Pendukung</DialogTitle>
-              <DialogDescription className="pt-2 text-gray-500 font-medium">
-                 Klik tombol di bawah untuk membuka materi <span className="text-black font-bold">&quot;{selectedResource?.resource}&quot;</span> guna membantu kamu menyelesaikan Minggu {selectedResource?.week}.
-              </DialogDescription>
+            <DialogDescription className="pt-2 text-gray-500 font-medium">
+               Klik tombol di bawah untuk membuka materi <span className="text-black font-bold">&quot;{selectedResource?.resource}&quot;</span> guna membantu kamu menyelesaikan Minggu {selectedResource?.minggu}.
+            </DialogDescription>
            </DialogHeader>
            <div className="mt-8 space-y-4">
               <a 

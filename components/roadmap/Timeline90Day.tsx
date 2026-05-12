@@ -38,8 +38,9 @@ export default function Timeline90Day({ items }: Timeline90DayProps) {
   return (
     <div className="relative pl-8 space-y-12 before:absolute before:left-[11px] before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-100">
       {items.map((item, index) => {
-        const Icon = categoryIcons[item.kategori] || BookOpen;
-        const colorClass = categoryColors[item.kategori] || "bg-slate-50 text-slate-600 border-slate-100";
+        // Fallback or heuristic for icons if category is missing
+        const Icon = BookOpen;
+        const colorClass = "bg-teal-light text-teal border-teal/10";
 
         return (
           <motion.div
@@ -65,34 +66,41 @@ export default function Timeline90Day({ items }: Timeline90DayProps) {
                     <Badge variant="outline" className={cn("uppercase tracking-wider text-[10px] font-bold py-0.5", colorClass)}>
                       {item.fase}
                     </Badge>
-                    <h4 className="text-lg font-bold text-slate-800">{item.tugas}</h4>
+                    <h4 className="text-lg font-bold text-slate-800">{item.title}</h4>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-none font-medium text-[11px] px-3">
-                    <Icon className="w-3.5 h-3.5 mr-1.5" />
-                    {item.kategori}
-                  </Badge>
                   <span className="text-xs font-semibold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg">
-                    ~{item.estimasiJam} Jam
+                    ~{item.hours}
                   </span>
                 </div>
               </div>
 
+              {item.tasks && item.tasks.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {item.tasks.map((task, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm text-gray-500">
+                      <div className="w-1.5 h-1.5 rounded-full bg-teal mt-1.5 shrink-0" />
+                      <span>{task}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {item.resource && (
                 <div className="flex items-center gap-4 pt-4 border-t border-slate-50 mt-4">
                   <a 
-                    href={item.resource.url} 
+                    href={item.resourceLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 group cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
-                      {item.resource.platform.toLowerCase().includes('youtube') ? <Youtube className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
+                    <div className="w-8 h-8 rounded-lg bg-[#1D9E75]/10 flex items-center justify-center text-[#1D9E75] group-hover:bg-[#1D9E75] group-hover:text-white transition-colors">
+                      <LinkIcon className="w-4 h-4" />
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-400 font-bold uppercase leading-none mb-0.5">Resources</p>
-                      <p className="text-sm font-bold text-slate-700 group-hover:text-[#1D9E75] transition-colors">{item.resource.judul}</p>
+                      <p className="text-sm font-bold text-slate-700 group-hover:text-[#1D9E75] transition-colors">{item.resource}</p>
                     </div>
                   </a>
                 </div>

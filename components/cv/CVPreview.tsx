@@ -338,7 +338,7 @@ ${analysisResult?.careerPaths?.map((p: any) =>
                     className="p-0 h-auto text-teal font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group/btn"
                    >
                       {isRedirecting === path.nama ? (
-                        <LoadingSpinner size="xs" />
+                        <LoadingSpinner size="sm" />
                       ) : (
                         <>Lihat Roadmap Detail <ArrowLeft className="w-4 h-4 rotate-180 group-hover/btn:translate-x-1 transition-transform" /></>
                       )}
