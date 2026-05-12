@@ -16,6 +16,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { performCareerAnalysis } from "@/lib/analysis-service";
 import {
   Dialog,
   DialogContent,
@@ -100,27 +101,21 @@ export default function CVBuilderPage() {
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
     try {
-      const res = await fetch("/api/analyze", { method: "POST" });
-      const data = await res.json();
+      const result = await performCareerAnalysis();
       
-      if (!data.success) {
-        if (data.error === "PROFILE_MISSING") {
-          toast.error("Lengkapi Profil Karier dulu!");
-          router.push("/profile");
-          return;
-        }
-        if (data.error === "CV_MISSING") {
-          toast.error("Upload CV dulu!");
-          return;
-        }
-        toast.error(data.message || "Analisis gagal");
-        return;
+      if (result.success) {
+        toast.success("Analisis selesai! Redirecting...");
+        router.push("/analysis");
       }
-      
-      toast.success("Analisis selesai! Redirecting...");
-      router.push("/analysis");
-    } catch (error) {
-      toast.error("Terjadi kesalahan sistem");
+    } catch (error: any) {
+      if (error.error === "PROFILE_MISSING") {
+        toast.error(error.message);
+        router.push("/profile");
+      } else if (error.error === "CV_MISSING") {
+        toast.error(error.message);
+      } else {
+        toast.error(error.message || "Analisis gagal");
+      }
     } finally {
       setIsAnalyzing(false);
     }

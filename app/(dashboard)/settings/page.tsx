@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import Image from "next/image";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { useSession, signOut } from "next-auth/react";
 import { useAppStore } from "@/store/useAppStore";
@@ -227,11 +228,13 @@ export default function SettingsPage() {
                        {/* Avatar Section */}
                        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
                           <div className="relative group shrink-0">
-                             <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
-                                <img 
+                             <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center relative">
+                                <Image 
                                   src={avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`} 
                                   alt="Avatar" 
-                                  className="w-full h-full object-cover" 
+                                  fill
+                                  className="object-cover"
+                                  referrerPolicy="no-referrer"
                                 />
                              </div>
                              <button 

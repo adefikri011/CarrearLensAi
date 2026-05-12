@@ -19,6 +19,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { toast } from "sonner";
+import { performCareerAnalysis } from "@/lib/analysis-service";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -53,18 +54,20 @@ export default function AnalysisPage() {
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
     try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-      });
-      const result = await res.json();
+      const result = await performCareerAnalysis();
       if (result.success) {
         setAnalysis(result.data);
         toast.success("Analisis berhasil diperbarui!");
-      } else {
-        toast.error(result.error || "Gagal melakukan analisis");
       }
-    } catch (error) {
-      toast.error("Terjadi kesalahan sistem");
+    } catch (error: any) {
+      if (error.error === "PROFILE_MISSING") {
+        toast.error(error.message);
+        router.push("/profile");
+      } else if (error.error === "CV_MISSING") {
+        toast.error(error.message);
+      } else {
+        toast.error(error.message || "Terjadi kesalahan saat analisis");
+      }
     } finally {
       setIsAnalyzing(false);
     }

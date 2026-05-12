@@ -1,31 +1,28 @@
-import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 /**
  * Gemini AI Client configuration and prompt builder
  * for CareerLens AI.
+ * 
+ * NOTE: As per system instructions, Gemini API MUST be called 
+ * from the client-side. This library provides helpers for that.
  */
 
-let genAI: GoogleGenerativeAI | null = null;
-let model: GenerativeModel | null = null;
+let aiInstance: GoogleGenAI | null = null;
 
-export const getGeminiModel = () => {
-  if (!model) {
+export const getAI = () => {
+  if (!aiInstance) {
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
     if (!apiKey) {
       console.warn("NEXT_PUBLIC_GEMINI_API_KEY is missing.");
     }
-    genAI = new GoogleGenerativeAI(apiKey);
-    model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      generationConfig: {
-        temperature: 0.3,
-        responseMimeType: "application/json",
-        maxOutputTokens: 4096,
-      },
-    });
+    aiInstance = new GoogleGenAI({ apiKey });
   }
-  return model;
+  return aiInstance;
 };
+
+// Recommended model for text tasks
+export const GEMINI_MODEL = "gemini-3-flash-preview";
 
 /**
  * Builds the career analysis prompt for Gemini

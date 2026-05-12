@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 
 const menuItems = [
@@ -112,9 +113,15 @@ export default function Sidebar({
           "flex items-center gap-3 p-3 rounded-2xl border border-gray-100 bg-gray-50/50",
           !isSidebarOpen && !inDrawer && "justify-center"
         )}>
-          <div className="w-8 h-8 shrink-0 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
+          <div className="w-8 h-8 shrink-0 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center relative">
             {session?.user?.id ? (
-               <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`} alt="Avatar" className="w-full h-full object-cover" />
+               <Image 
+                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`} 
+                 alt="Avatar" 
+                 fill
+                 className="object-cover" 
+                 referrerPolicy="no-referrer"
+               />
             ) : (
               <User className="w-4 h-4 text-gray-400" />
             )}
