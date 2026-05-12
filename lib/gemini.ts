@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 /**
  * Gemini AI Client configuration and prompt builder
@@ -8,21 +8,21 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
  * from the client-side. This library provides helpers for that.
  */
 
-let genAI: GoogleGenerativeAI | null = null;
+let aiInstance: GoogleGenAI | null = null;
 
 export const getAI = () => {
-  if (!genAI) {
+  if (!aiInstance) {
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
     if (!apiKey) {
       console.warn("NEXT_PUBLIC_GEMINI_API_KEY is missing.");
     }
-    genAI = new GoogleGenerativeAI(apiKey);
+    aiInstance = new GoogleGenAI({ apiKey });
   }
-  return genAI;
+  return aiInstance;
 };
 
 // Recommended model for text tasks
-export const GEMINI_MODEL = "gemini-1.5-flash";
+export const GEMINI_MODEL = "gemini-3-flash-preview";
 
 /**
  * Builds the career analysis prompt for Gemini
