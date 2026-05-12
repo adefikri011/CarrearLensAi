@@ -49,7 +49,7 @@ export const TestimonialsSection = () => {
            <div className="max-w-2xl">
               <span className="text-[12px] font-bold tracking-[3px] uppercase text-[#888888] mb-4 block">03 / TESTIMONI</span>
               <h3 className="text-[clamp(32px,8vw,64px)] font-bold tracking-[-1px] lg:tracking-[-3px] text-[#0A0A0A] leading-[1.1]">
-                Kisah Mereka yang Menemukan Jalannya.
+                Kisah Mereka yang Menemukan Jalannyaaa.
               </h3>
            </div>
            
