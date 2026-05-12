@@ -536,7 +536,7 @@ const Testimonials = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-gray-500 font-medium text-lg"
           >
-            Bergabunglah dengan mereka yang telah menemukan jalannyahhhhh.
+            Bergabunglah dengan mereka yang telah menemukan jalannya.
           </motion.p>
         </div>
 
