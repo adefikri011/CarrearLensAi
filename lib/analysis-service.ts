@@ -75,3 +75,51 @@ export async function performCareerAnalysis() {
     throw error;
   }
 }
+
+/**
+ * Generates a detailed 12-week roadmap for a specific path.
+ */
+export async function generateRoadmapForPath(pathName: string) {
+  try {
+    // 1. Prepare data
+    const dataRes = await fetch("/api/analyze/prepare");
+    const dataResult = await dataRes.json();
+    if (!dataResult.success) throw new Error("Gagal menyiapkan data.");
+
+    const { profile, cvUpload, analysis } = dataResult.data;
+    const result = analysis.result as AnalysisResult;
+    const path = result.careerPaths.find(p => p.nama === pathName) || result.careerPaths[0];
+
+    // 2. Call Gemini
+    const { getAI, GEMINI_MODEL, buildRoadmapGenerationPrompt } = await import("@/lib/gemini");
+    const ai = getAI();
+    const prompt = buildRoadmapGenerationPrompt(profile, cvUpload.extractedText || "", path);
+
+    const generativeModel = (ai as any).getGenerativeModel({ model: GEMINI_MODEL });
+    const response = await generativeModel.generateContent(prompt);
+    const responseText = response.response.text();
+
+    const cleanJson = responseText.replace(/```json|```/g, "").trim();
+    const roadmap = JSON.parse(cleanJson);
+
+    // 3. Save to DB
+    // We update the existing analysis result
+    const updatedPaths = result.careerPaths.map(p => {
+      if (p.nama === pathName) return { ...p, roadmap };
+      return p;
+    });
+
+    const updatedResult = { ...result, careerPaths: updatedPaths };
+
+    await fetch("/api/roadmap/select", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pathName, fullResult: updatedResult })
+    });
+
+    return { success: true, data: roadmap };
+  } catch (error) {
+    console.error("Roadmap Generation Error:", error);
+    throw error;
+  }
+}

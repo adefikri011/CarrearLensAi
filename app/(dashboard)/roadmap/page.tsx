@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import PageLoader from "@/components/shared/PageLoader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { toast } from "sonner";
+import { generateRoadmapForPath } from "@/lib/analysis-service";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,7 @@ export default function RoadmapPage() {
   const [selectedResource, setSelectedResource] = useState<any>(null);
   const [roadmapContent, setRoadmapContent] = useState<any[]>([]);
   const [pathName, setPathName] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -53,8 +55,27 @@ export default function RoadmapPage() {
       const res = await fetch("/api/roadmap/content");
       const result = await res.json();
       if (result.success && result.data) {
-        setRoadmapContent(result.data.roadmap);
+        const roadmap = result.data.roadmap || [];
         setPathName(result.data.pathName);
+        
+        if (roadmap.length === 0) {
+          // If empty, try to generate it now
+          setIsGenerating(true);
+          try {
+            const genResult = await generateRoadmapForPath(result.data.pathName);
+            if (genResult.success) {
+              setRoadmapContent(genResult.data);
+              toast.success("Roadmap detail berhasil dibuat!");
+            }
+          } catch (err) {
+            console.error("Auto generation failed", err);
+            setRoadmapContent([]);
+          } finally {
+            setIsGenerating(false);
+          }
+        } else {
+          setRoadmapContent(roadmap);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch roadmap content", error);
@@ -109,6 +130,7 @@ export default function RoadmapPage() {
   ).length;
 
   if (isLoading) return <PageLoader isLoading={true} text="Menyiapkan Roadmap..." />;
+  if (isGenerating) return <PageLoader isLoading={true} text="Membangun Roadmap Detail Kamu..." subtitle="Gemini AI sedang menyusun strategi 90 hari terbaik untukmu." />;
 
   return (
     <div className="min-h-screen bg-white">
@@ -156,90 +178,109 @@ export default function RoadmapPage() {
                  </p>
               </div>
 
-               <div className="space-y-6">
-                 {roadmapContent.filter(w => w.fase === phase.id).map((weekData) => {
-                    const isFullyCompleted = weekData.tasks?.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
-                    
-                    return (
-                       <motion.div 
-                         key={weekData.minggu}
-                         variants={fadeUp}
-                         initial="hidden"
-                         whileInView="visible"
-                         viewport={{ once: true }}
-                         className={cn(
-                           "bg-white border rounded-[32px] p-6 md:p-8 transition-all duration-500 group",
-                           isFullyCompleted 
-                            ? "border-teal/30 bg-[#ECFDF5] shadow-lg shadow-teal/5" 
-                            : "border-gray-100 hover:border-gray-200 shadow-sm"
+                 <div className="space-y-6">
+                   {roadmapContent.filter(w => w.fase?.toLowerCase() === phase.id.toLowerCase()).map((weekData) => {
+                      const isFullyCompleted = weekData.tasks?.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
+                      
+                      return (
+                         <motion.div 
+                           key={weekData.minggu}
+                           variants={fadeUp}
+                           initial="hidden"
+                           whileInView="visible"
+                           viewport={{ once: true }}
+                           className={cn(
+                             "bg-white border rounded-[32px] p-6 md:p-8 transition-all duration-500 group",
+                             isFullyCompleted 
+                              ? "border-teal/30 bg-[#ECFDF5] shadow-lg shadow-teal/5" 
+                              : "border-gray-100 hover:border-gray-200 shadow-sm"
+                           )}
+                         >
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                               <div className="flex items-center gap-4">
+                                  <div className={cn(
+                                     "px-4 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-colors",
+                                     isFullyCompleted ? "bg-teal text-white" : "bg-gray-100 text-gray-400"
+                                  )}>
+                                     MGG {weekData.minggu}
+                                  </div>
+                                  <h3 className="text-lg font-black text-black">{weekData.title}</h3>
+                               </div>
+                               
+                               {isFullyCompleted && (
+                                  <div className="flex items-center gap-2 text-teal font-black text-[10px] uppercase tracking-widest">
+                                     <CheckCircle2 className="w-4 h-4" /> SELESAI
+                                  </div>
+                               )}
+                            </div>
+
+                            <div className="space-y-3">
+                               {weekData.tasks?.map((task: string, tidx: number) => {
+                                  const taskId = `w${weekData.minggu}-t${tidx}`;
+                                  const isDone = completedTasks[taskId];
+                                  
+                                  return (
+                                     <div 
+                                       key={tidx}
+                                       onClick={() => toggleTask(weekData.minggu, tidx)}
+                                       className={cn(
+                                         "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer",
+                                         isDone 
+                                           ? "bg-white/50 border-teal/20" 
+                                           : "bg-surface border-transparent hover:border-teal/20"
+                                       )}
+                                     >
+                                        <div className={cn(
+                                           "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0",
+                                           isDone ? "bg-teal border-teal" : "border-gray-200 bg-white"
+                                        )}>
+                                           {isDone && <CheckCircle2 className="w-4 h-4 text-white" />}
+                                        </div>
+                                        <span className={cn(
+                                           "text-sm font-bold flex-1 transition-all",
+                                           isDone ? "italic line-through opacity-40 text-gray-400" : "text-black"
+                                        )}>{task}</span>
+                                     </div>
+                                  );
+                               })}
+                            </div>
+
+                            <div className="mt-8 pt-6 border-t border-gray-100/50 flex flex-wrap items-center gap-6">
+                               {weekData.resource && (
+                                  <button 
+                                    onClick={() => setSelectedResource(weekData)}
+                                    className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-teal transition-all"
+                                  >
+                                     <LinkIcon className="w-3.5 h-3.5" /> Resource: {weekData.resource}
+                                  </button>
+                               )}
+                               <div className="flex items-center gap-1.5 text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                                  <Clock className="w-3.5 h-3.5" /> EST: {weekData.hours}
+                                </div>
+                             </div>
+                          </motion.div>
+                       );
+                    })}
+
+                    {roadmapContent.filter(w => w.fase?.toLowerCase() === phase.id.toLowerCase()).length === 0 && (
+                      <div className="p-12 border-2 border-dashed border-gray-100 rounded-[32px] text-center">
+                         <p className="text-gray-400 text-sm italic font-medium">
+                            {roadmapContent.length === 0 
+                              ? "Kamu perlu melakukan analisis CV ulang untuk mendapatkan roadmap detail ini."
+                              : `Tidak ada data roadmap untuk fase ini.`}
+                         </p>
+                         {roadmapContent.length === 0 && (
+                           <Button 
+                            variant="link" 
+                            onClick={() => window.location.href = '/analysis'}
+                            className="text-teal font-black text-xs uppercase tracking-widest mt-4"
+                           >
+                             Mulai Analisis CV Sekarang →
+                           </Button>
                          )}
-                       >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                             <div className="flex items-center gap-4">
-                                <div className={cn(
-                                   "px-4 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-colors",
-                                   isFullyCompleted ? "bg-teal text-white" : "bg-gray-100 text-gray-400"
-                                )}>
-                                   MGG {weekData.minggu}
-                                </div>
-                                <h3 className="text-lg font-black text-black">{weekData.title}</h3>
-                             </div>
-                             
-                             {isFullyCompleted && (
-                                <div className="flex items-center gap-2 text-teal font-black text-[10px] uppercase tracking-widest">
-                                   <CheckCircle2 className="w-4 h-4" /> SELESAI
-                                </div>
-                             )}
-                          </div>
-
-                          <div className="space-y-3">
-                             {weekData.tasks?.map((task: string, tidx: number) => {
-                                const taskId = `w${weekData.minggu}-t${tidx}`;
-                                const isDone = completedTasks[taskId];
-                                
-                                return (
-                                   <div 
-                                     key={tidx}
-                                     onClick={() => toggleTask(weekData.minggu, tidx)}
-                                     className={cn(
-                                       "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer",
-                                       isDone 
-                                         ? "bg-white/50 border-teal/20" 
-                                         : "bg-surface border-transparent hover:border-teal/20"
-                                     )}
-                                   >
-                                      <div className={cn(
-                                         "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0",
-                                         isDone ? "bg-teal border-teal" : "border-gray-200 bg-white"
-                                      )}>
-                                         {isDone && <CheckCircle2 className="w-4 h-4 text-white" />}
-                                      </div>
-                                      <span className={cn(
-                                         "text-sm font-bold flex-1 transition-all",
-                                         isDone ? "italic line-through opacity-40 text-gray-400" : "text-black"
-                                      )}>{task}</span>
-                                   </div>
-                                );
-                             })}
-                          </div>
-
-                          <div className="mt-8 pt-6 border-t border-gray-100/50 flex flex-wrap items-center gap-6">
-                             {weekData.resource && (
-                                <button 
-                                  onClick={() => setSelectedResource(weekData)}
-                                  className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-teal transition-all"
-                                >
-                                   <LinkIcon className="w-3.5 h-3.5" /> Resource: {weekData.resource}
-                                </button>
-                             )}
-                             <div className="flex items-center gap-1.5 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                                <Clock className="w-3.5 h-3.5" /> EST: {weekData.hours}
-                             </div>
-                          </div>
-                       </motion.div>
-                    );
-                 })}
-              </div>
+                      </div>
+                    )}
+                 </div>
            </section>
          ))}
 

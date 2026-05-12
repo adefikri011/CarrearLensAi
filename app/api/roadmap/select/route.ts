@@ -9,14 +9,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const { pathName } = await req.json();
+    const { pathName, fullResult } = await req.json();
     if (!pathName) {
       return NextResponse.json({ success: false, error: "Path name required" }, { status: 400 });
     }
 
-    await db.analysis.upsertLatest(session.user.id, {
-      selectedPath: pathName
-    });
+    const updateData: any = { selectedPath: pathName };
+    if (fullResult) {
+      updateData.result = fullResult;
+    }
+
+    await db.analysis.upsertLatest(session.user.id, updateData);
 
     return NextResponse.json({ success: true });
   } catch (error) {

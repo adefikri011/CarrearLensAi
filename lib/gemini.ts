@@ -22,12 +22,42 @@ export const getAI = () => {
 };
 
 // Recommended model for text tasks
-export const GEMINI_MODEL = "gemini-3-flash-preview";
+export const GEMINI_MODEL = "gemini-1.5-flash";
 
 /**
- * Builds the career analysis prompt for Gemini
- * Analisis SINKRONISASI antara profil yang diisi user DAN isi CV mereka.
+ * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.
  */
+export function buildRoadmapGenerationPrompt(profile: any, cvText: string, path: any): string {
+  return `
+Kamu adalah career mentor expert. Buatlah ROADMAP DETAIL 12 MINGGU untuk membantu user mencapai posisi: "${path.nama}".
+
+KONTEKS USER:
+- Background: ${profile.lulusan} ${profile.jurusan}
+- Skills Saat Ini: ${cvText.substring(0, 500)}... (ekstraksi ringkas)
+- Target: ${path.nama}
+
+INSTRUKSI:
+1. Buat 12 minggu langkah konkret.
+2. Bagi menjadi 3 fase: "fondasi" (minggu 1-4), "pengembangan" (minggu 5-8), "persiapan" (minggu 9-12).
+3. Setiap minggu, berikan minimal 3 "tasks" konkret.
+4. Berikan "resource" (bisa berupa dokumentasi resmi, kursus gratis di YouTube/Coursera, atau buku).
+5. Berikan "resourceLink" yang valid (atau link ke pencarian relevan).
+
+Kembalikan HANYA JSON array dengan struktur:
+[
+  {
+    "minggu": number,
+    "fase": "fondasi"|"pengembangan"|"persiapan",
+    "title": string,
+    "tasks": string[],
+    "hours": string,
+    "resource": string,
+    "resourceLink": string
+  },
+  ... (sampai minggu 12)
+]
+`;
+}
 export function buildAnalysisPrompt(profile: any, cvText: string): string {
   return `
 Kamu adalah career counselor AI expert. Analisis SINKRONISASI antara 
@@ -98,17 +128,7 @@ Kembalikan HANYA JSON valid dengan struktur ini:
       "sertifikasiRekomendasi": string[],
       "jobDemand": "tinggi"|"sedang"|"rendah",
       "trendArah": "naik"|"stabil"|"turun",
-      "roadmap": [
-        {
-          "minggu": number (1-12),
-          "fase": "fondasi"|"pengembangan"|"persiapan",
-          "title": string (Judul spesifik topik minggu ini),
-          "tasks": string[] (Minimal 3 tugas harian yang sangat konkret dan teknis sesuai profesi),
-          "hours": string (Estimasi total jam belajar/praktik minggu ini),
-          "resource": string (Nama spesifik buku, kursus online gratis, atau situs dokumentasi resmi),
-          "resourceLink": string (Link URL yang benar-benar aktif atau relevan ke sumber tersebut)
-        }
-      ]
+      "roadmapSummary": string (3 kalimat strategi utama)
     }
   ],
   "skillRadar": {

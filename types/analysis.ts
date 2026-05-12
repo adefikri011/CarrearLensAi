@@ -43,7 +43,8 @@ export interface CareerPath {
   sertifikasiRekomendasi: string[];
   jobDemand: "tinggi" | "sedang" | "rendah";
   trendArah: "naik" | "stabil" | "turun";
-  roadmap: RoadmapItem[];
+  roadmapSummary: string;
+  roadmap?: RoadmapItem[];
 }
 
 export interface RoadmapItem {

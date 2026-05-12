@@ -7,11 +7,13 @@ import LoadingSpinner from "./LoadingSpinner";
 interface PageLoaderProps {
   isLoading: boolean;
   text?: string;
+  subtitle?: string;
 }
 
 export default function PageLoader({ 
   isLoading, 
-  text = "Memuat..." 
+  text = "Memuat...",
+  subtitle
 }: PageLoaderProps) {
   return (
     <AnimatePresence>
@@ -33,11 +35,18 @@ export default function PageLoader({
              
              <LoadingSpinner size="lg" />
              
-             {text && (
-               <p className="text-gray-400 text-sm font-medium animate-pulse">
-                 {text}
-               </p>
-             )}
+             <div className="text-center space-y-1">
+               {text && (
+                 <p className="text-black text-lg font-bold">
+                   {text}
+                 </p>
+               )}
+               {subtitle && (
+                 <p className="text-gray-400 text-sm font-medium animate-pulse">
+                   {subtitle}
+                 </p>
+               )}
+             </div>
           </div>
         </motion.div>
       )}
