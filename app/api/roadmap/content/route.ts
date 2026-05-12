@@ -10,10 +10,7 @@ export async function GET() {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const analysis = await db.analysis.findFirst({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: 'desc' }
-    });
+    const analysis = await db.analysis.getLatest(session.user.id);
 
     if (!analysis) {
       return NextResponse.json({ success: false, error: "Analysis not found" }, { status: 404 });
