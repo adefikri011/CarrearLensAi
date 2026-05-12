@@ -97,7 +97,18 @@ Kembalikan HANYA JSON valid dengan struktur ini:
       ],
       "sertifikasiRekomendasi": string[],
       "jobDemand": "tinggi"|"sedang"|"rendah",
-      "trendArah": "naik"|"stabil"|"turun"
+      "trendArah": "naik"|"stabil"|"turun",
+      "roadmap": [
+        {
+          "minggu": number (1-12),
+          "fase": "fondasi"|"pengembangan"|"persiapan",
+          "title": string (Judul spesifik topik minggu ini),
+          "tasks": string[] (Minimal 3 tugas harian yang sangat konkret dan teknis sesuai profesi),
+          "hours": string (Estimasi total jam belajar/praktik minggu ini),
+          "resource": string (Nama spesifik buku, kursus online gratis, atau situs dokumentasi resmi),
+          "resourceLink": string (Link URL yang benar-benar aktif atau relevan ke sumber tersebut)
+        }
+      ]
     }
   ],
   "skillRadar": {
@@ -108,16 +119,6 @@ Kembalikan HANYA JSON valid dengan struktur ini:
     "kepemimpinan": number,
     "adaptabilitas": number
   },
-  "roadmap90Hari": [
-    {
-      "minggu": number,
-      "fase": "fondasi"|"pengembangan"|"persiapan",
-      "tugas": string,
-      "kategori": "belajar"|"praktek"|"networking"|"portofolio",
-      "estimasiJam": number,
-      "resource": { "judul": string, "url": string, "platform": string }
-    }
-  ],
   "rekomendasiUtama": string[],
   "pesan": string
 }

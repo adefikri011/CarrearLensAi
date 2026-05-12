@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { 
   FileText, Sparkles, AlertCircle, CheckCircle2, 
   ArrowLeft, Download, RefreshCcw, TrendingUp,
-  BrainCircuit, Gauge, Target, Search
+  BrainCircuit, Gauge, Target, Search, ArrowRight
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { cn } from "@/lib/utils";
@@ -30,9 +31,11 @@ const fadeUp = {
 };
 
 export default function CVPreview({ data, analysisResult, onReset }: CVPreviewProps) {
+  const router = useRouter();
   const [score, setScore] = useState(0);
   const [analyzing, setAnalyzing] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState<string | null>(null);
 
   useEffect(() => {
     if (analysisResult) {
@@ -98,12 +101,11 @@ ${analysisResult?.careerPaths?.map((p: any) =>
     if (!analysisResult) return
     setIsSaving(true)
     try {
-      const res = await fetch('/api/analyze', {
+      const res = await fetch('/api/analyze/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cvUploadId: data.id,
-          saveOnly: true,
           result: analysisResult
         })
       })
@@ -116,6 +118,25 @@ ${analysisResult?.careerPaths?.map((p: any) =>
       toast.error('Terjadi kesalahan saat menyimpan.')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleViewRoadmap = async (pathName: string) => {
+    setIsRedirecting(pathName);
+    try {
+      // 1. Simpan pilihan path ke latest analysis
+      await fetch('/api/roadmap/select', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pathName })
+      });
+      
+      // 2. Redirect ke halaman roadmap
+      router.push('/roadmap');
+    } catch (error) {
+      toast.error("Gagal menyiapkan roadmap.");
+    } finally {
+      setIsRedirecting(null);
     }
   }
 
@@ -312,9 +333,15 @@ ${analysisResult?.careerPaths?.map((p: any) =>
                    
                    <Button 
                     variant="link" 
+                    onClick={() => handleViewRoadmap(path.nama)}
+                    disabled={!!isRedirecting}
                     className="p-0 h-auto text-teal font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group/btn"
                    >
-                      Lihat Roadmap Detail <ArrowLeft className="w-4 h-4 rotate-180 group-hover/btn:translate-x-1 transition-transform" />
+                      {isRedirecting === path.nama ? (
+                        <LoadingSpinner size="xs" />
+                      ) : (
+                        <>Lihat Roadmap Detail <ArrowLeft className="w-4 h-4 rotate-180 group-hover/btn:translate-x-1 transition-transform" /></>
+                      )}
                    </Button>
                 </motion.div>
               ))

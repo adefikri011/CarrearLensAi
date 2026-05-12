@@ -32,29 +32,35 @@ const phases = [
   { id: "persiapan", title: "Fase 3: Persiapan", range: "Minggu 9-12", desc: "Simulasi dunia kerja dan strategi melamar." }
 ];
 
-const roadmapContent = [
-  { week: 1, phase: "fondasi", title: "Self-Discovery & Goal Setting", tasks: ["Lengkapi Profil CareerLens", "Analisis Potensi Karier via AI", "Pilih Jalur Karier Utama"], hours: "4-6h", resource: "Panduan Karier SMK", resourceLink: "https://www.gramedia.com/best-seller/perencanaan-karier-masa-depan/" },
-  { week: 2, phase: "fondasi", title: "CV & Portfolio Bootcamp", tasks: ["Upload Audit CV Pertama", "Revisi Deskripsi Pengalaman", "Buat Link Portfolio"], hours: "5-8h", resource: "Template CV ATS", resourceLink: "https://www.canva.com/resumes/templates/ats-friendly/" },
-  { week: 3, phase: "fondasi", title: "Digital Presence (LinkedIn)", tasks: ["Update Foto Profesional", "Tulis Summary Menarik", "Connect 10 Alumni"], hours: "3-5h", resource: "LinkedIn Checklist", resourceLink: "https://business.linkedin.com/talent-solutions/blog/linkedin-best-practices/2016/the-ultimate-linkedin-profile-checklist" },
-  { week: 4, phase: "fondasi", title: "Market Research", tasks: ["Cek Gaji Rata-rata", "List 5 Perusahaan Target", "Pelajari Job Desks"], hours: "4h", resource: "Portal Kerja", resourceLink: "https://www.jobstreet.co.id/" },
-  { week: 5, phase: "pengembangan", title: "Skill Hardening Phase 1", tasks: ["Ikuti Kursus Rekomendasi", "Kerjakan Mini Project", "Sertifikasi Kompetensi"], hours: "10-15h", resource: "List Kursus Gratis", resourceLink: "https://www.dicoding.com/blog/belajar-pemrograman-gratis-untuk-pemula/" },
-  { week: 6, phase: "pengembangan", title: "Real World Simulation", tasks: ["Handle Brief Proyek Nyata", "Networking Industry", "Review Mentoring"], hours: "8-10h", resource: "Case Study Guide", resourceLink: "https://www.interaction-design.org/literature/article/how-to-write-a-ux-case-study" },
-  { week: 7, phase: "pengembangan", title: "Technical Deep Dive", tasks: ["Advanced Frameworks", "Algorithm Mastery", "Code Review Session"], hours: "12h", resource: "Advanced Docs", resourceLink: "https://nextjs.org/docs" },
-  { week: 8, phase: "pengembangan", title: "Portfolio Polish", tasks: ["Case Study Writing", "Visual Design Refine", "Project Deployment"], hours: "8h", resource: "Deployment Guide", resourceLink: "https://vercel.com/docs" },
-  { week: 9, phase: "persiapan", title: "The Interview Game", tasks: ["STAR Method Mastery", "Mock Interview AI", "Body Language Training"], hours: "6h", resource: "Interview Questions", resourceLink: "https://prakerja.go.id/blog/tips-wawancara-kerja" },
-  { week: 10, phase: "persiapan", title: "Application Strategy", tasks: ["Custom CV per Job", "Cover Letter Automation", "Application Tracker Setup"], hours: "5h", resource: "Tracker Template", resourceLink: "https://www.notion.so/templates/job-search-tracker" },
-  { week: 11, phase: "persiapan", title: "Salary Negotiation", tasks: ["Benefit Comparison", "Contract Reading Tips", "Psychological Prep"], hours: "4h", resource: "Negotiation Script", resourceLink: "https://glints.com/id/lowongan/cara-negosiasi-gaji/" },
-  { week: 12, phase: "persiapan", title: "Closing the Deal", tasks: ["First Day Prep", "Equipment Setup", "Mental Shift to Office"], hours: "3h", resource: "Onboarding Kit", resourceLink: "https://www.hibob.com/guides/new-hire-onboarding-checklist/" },
-];
-
 export default function RoadmapPage() {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [selectedResource, setSelectedResource] = useState<any>(null);
+  const [roadmapContent, setRoadmapContent] = useState<any[]>([]);
+  const [pathName, setPathName] = useState("");
 
   useEffect(() => {
-    fetchProgress();
+    const init = async () => {
+      await fetchRoadmap();
+      await fetchProgress();
+      setIsLoading(false);
+    };
+    init();
   }, []);
+
+  const fetchRoadmap = async () => {
+    try {
+      const res = await fetch("/api/roadmap/content");
+      const result = await res.json();
+      if (result.success && result.data) {
+        setRoadmapContent(result.data.roadmap);
+        setPathName(result.data.pathName);
+      }
+    } catch (error) {
+      console.error("Failed to fetch roadmap content", error);
+      toast.error("Gagal memuat detail roadmap.");
+    }
+  };
 
   const fetchProgress = async () => {
     try {
@@ -69,8 +75,6 @@ export default function RoadmapPage() {
       }
     } catch (error) {
       console.error("Failed to fetch progress", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -116,7 +120,7 @@ export default function RoadmapPage() {
                  <div className="w-8 h-8 rounded-lg bg-teal/10 flex items-center justify-center text-teal">
                     <RoadmapIcon className="w-4 h-4" />
                  </div>
-                 <h2 className="text-sm font-black text-black uppercase tracking-widest italic">Roadmap Karier 90 Hari</h2>
+                 <h2 className="text-sm font-black text-black uppercase tracking-widest italic">{pathName || "Roadmap Karier 90 Hari"}</h2>
               </div>
               <span className="text-xs font-black text-teal">{progressPercent}%</span>
            </div>

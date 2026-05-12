@@ -23,7 +23,6 @@ export interface AnalysisResult {
     kepemimpinan: number;
     adaptabilitas: number;
   };
-  roadmap90Hari: RoadmapItem[];
   rekomendasiUtama: string[];
   pesan: string;
 }
@@ -44,17 +43,15 @@ export interface CareerPath {
   sertifikasiRekomendasi: string[];
   jobDemand: "tinggi" | "sedang" | "rendah";
   trendArah: "naik" | "stabil" | "turun";
+  roadmap: RoadmapItem[];
 }
 
 export interface RoadmapItem {
   minggu: number;
   fase: "fondasi" | "pengembangan" | "persiapan";
-  tugas: string;
-  kategori: "belajar" | "praktek" | "networking" | "portofolio";
-  estimasiJam: number;
-  resource: {
-    judul: string;
-    url: string;
-    platform: string;
-  };
+  title: string;
+  tasks: string[];
+  hours: string;
+  resource?: string;
+  resourceLink?: string;
 }
