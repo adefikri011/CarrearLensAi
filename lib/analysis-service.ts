@@ -27,7 +27,10 @@ export async function performCareerAnalysis() {
     const ai = getAI();
     const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
     
-    const model = ai.getGenerativeModel({ model: GEMINI_MODEL });
+    const model = ai.getGenerativeModel({ 
+      model: GEMINI_MODEL,
+      generationConfig: { responseMimeType: "application/json" }
+    });
     const aiResponse = await model.generateContent(prompt);
     const responseText = aiResponse.response.text();
     if (!responseText) throw new Error("AI tidak memberikan respon (Empty Response)");
@@ -82,44 +85,63 @@ export async function generateRoadmapForPath(pathName: string) {
     const { profile, cvUpload, analysis } = dataResult.data;
     const result = analysis.result as AnalysisResult;
     const path = result.careerPaths.find(p => p.nama === pathName) || result.careerPaths[0];
+    const actualPathName = path.nama;
 
     // 2. Call Gemini
     const { getAI, GEMINI_MODEL, buildRoadmapGenerationPrompt } = await import("@/lib/gemini");
     const ai = getAI();
     const prompt = buildRoadmapGenerationPrompt(profile, cvUpload.extractedText || "", path);
 
-    const model = ai.getGenerativeModel({ model: GEMINI_MODEL });
+    const model = ai.getGenerativeModel({ 
+      model: GEMINI_MODEL,
+      generationConfig: { responseMimeType: "application/json" }
+    });
     const roadmapAiResponse = await model.generateContent(prompt);
     const roadmapResponseText = roadmapAiResponse.response.text();
     
     if (!roadmapResponseText) throw new Error("AI tidak memberikan respon untuk roadmap");
 
     const cleanJson = roadmapResponseText.replace(/```json|```/g, "").trim();
-    let roadmap = JSON.parse(cleanJson);
+    let roadmapRaw = JSON.parse(cleanJson);
 
     // Safety check: if AI returns { roadmap: [] } instead of []
-    if (!Array.isArray(roadmap) && roadmap.roadmap) {
-      roadmap = roadmap.roadmap;
+    if (!Array.isArray(roadmapRaw) && roadmapRaw.roadmap) {
+      roadmapRaw = roadmapRaw.roadmap;
     }
     
-    if (!Array.isArray(roadmap)) {
+    if (!Array.isArray(roadmapRaw)) {
       throw new Error("Format roadmap dari AI tidak valid (Bukan Array)");
     }
 
+    // Normalize roadmap data structure before saving
+    const roadmap = roadmapRaw.map((item: any) => ({
+      minggu: item.minggu || item.week || 0,
+      fase: (item.fase || item.phase || "Fondasi").toLowerCase(),
+      title: item.title || item.judul || "Langkah Mingguan",
+      tasks: Array.isArray(item.tasks) ? item.tasks : (Array.isArray(item.tugas) ? item.tugas : []),
+      hours: item.hours || item.jam || "10-15",
+      resource: item.resource || item.sumber || "-",
+      resourceLink: item.resourceLink || item.resource_link || item.link || "#"
+    }));
+
     // 3. Save to DB
-    // We update the existing analysis result
     const updatedPaths = result.careerPaths.map(p => {
-      if (p.nama === pathName) return { ...p, roadmap };
+      if (p.nama === actualPathName) return { ...p, roadmap };
       return p;
     });
 
     const updatedResult = { ...result, careerPaths: updatedPaths };
 
-    await fetch("/api/roadmap/select", {
+    const selectRes = await fetch("/api/roadmap/select", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pathName, fullResult: updatedResult })
+      body: JSON.stringify({ pathName: actualPathName, fullResult: updatedResult })
     });
+
+    const selectResult = await selectRes.json();
+    if (!selectResult.success) {
+      throw new Error(selectResult.error || "Gagal menyimpan roadmap ke database");
+    }
 
     return { success: true, data: roadmap };
   } catch (error) {

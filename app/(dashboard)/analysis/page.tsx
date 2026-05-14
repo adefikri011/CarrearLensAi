@@ -138,6 +138,25 @@ ${result.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\
     toast.success("Hasil analisis berhasil diunduh!");
   };
 
+  const selectPath = async (pathName: string) => {
+    try {
+      const res = await fetch("/api/roadmap/select", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pathName })
+      });
+      const result = await res.json();
+      if (result.success) {
+        toast.success(`Target ${pathName} dipilih!`);
+        // Update local state if needed
+        setAnalysis((prev: any) => ({ ...prev, selectedPath: pathName }));
+      }
+    } catch (error) {
+      console.error("Failed to select path", error);
+      toast.error("Gagal memilih jalur target.");
+    }
+  };
+
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -290,15 +309,18 @@ ${result.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\
                                    </div>
                                 </div>
                                 <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
-                                    <Link href="/roadmap" className="flex-1">
+                                    <Link href="/roadmap" className="flex-1" onClick={() => selectPath(path.nama)}>
                                        <Button className="w-full bg-black text-white rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal transition-all">
                                           LIHAT ROADMAP
                                        </Button>
                                     </Link>
                                     <Button 
-                                     onClick={() => toast.success(`${path.nama} dipilih sebagai target utama!`)}
+                                     onClick={() => selectPath(path.nama)}
                                      variant="ghost" 
-                                     className="w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-teal hover:text-white transition-all"
+                                     className={cn(
+                                       "w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-teal hover:text-white transition-all",
+                                       analysis?.selectedPath === path.nama && "bg-teal text-white border-teal shadow-lg shadow-teal/20"
+                                     )}
                                     >
                                        <Target className="w-5 h-5" />
                                     </Button>

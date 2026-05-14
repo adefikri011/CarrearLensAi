@@ -63,7 +63,7 @@ export default function RoadmapPage() {
         const normalizedRoadmap = rawRoadmap.map((item: any) => ({
           ...item,
           minggu: item.minggu || item.week || 0,
-          fase: item.fase || item.phase || "Lainnya",
+          fase: (item.fase || item.phase || "Fondasi").toLowerCase(),
           title: item.title || item.judul || "Tanpa Judul",
           tasks: item.tasks || item.tugas || []
         }));
@@ -141,23 +141,30 @@ export default function RoadmapPage() {
   };
 
   const handleRegenerate = async () => {
-    if (!pathName) return;
     setIsGenerating(true);
     try {
+      // If pathName is missing, the service will fall back to the first available path
       const genResult = await generateRoadmapForPath(pathName);
       if (genResult.success) {
+        // Data is now normalized in the service, but we double check here
         const genRoadmap = genResult.data.map((item: any) => ({
           ...item,
           minggu: item.minggu || item.week || 0,
-          fase: item.fase || item.phase || "Lainnya",
+          fase: (item.fase || item.phase || "Fondasi").toLowerCase(),
           tasks: item.tasks || item.tugas || []
         }));
         setRoadmapContent(genRoadmap);
+        
+        // If we didn't have a pathName, let's try to fetch it now that it's updated
+        if (!pathName) {
+           await fetchRoadmap();
+        }
+        
         toast.success("Roadmap berhasil diperbarui dengan Gemini AI!");
       }
     } catch (err) {
       console.error("Regeneration failed", err);
-      toast.error("Gagal memperbarui roadmap detail.");
+      toast.error("Gagal memperbarui roadmap detail. Silakan coba lagi.");
     } finally {
       setIsGenerating(false);
     }

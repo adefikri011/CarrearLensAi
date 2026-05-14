@@ -9,9 +9,10 @@ export async function GET() {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const [profile, cvUpload] = await Promise.all([
+    const [profile, cvUpload, analysis] = await Promise.all([
       db.profile.get(session.user.id),
-      db.cvUpload.getLatest(session.user.id)
+      db.cvUpload.getLatest(session.user.id),
+      db.analysis.getLatest(session.user.id)
     ]);
 
     if (!profile) {
@@ -30,7 +31,7 @@ export async function GET() {
 
     return NextResponse.json({ 
       success: true, 
-      data: { profile, cvUpload } 
+      data: { profile, cvUpload, analysis } 
     });
   } catch (error) {
     console.error("Prepare Analysis Data Error:", error);
