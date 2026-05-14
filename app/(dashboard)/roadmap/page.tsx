@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   CheckCircle2, Circle, Target, 
@@ -34,6 +35,7 @@ const phases = [
 ];
 
 export default function RoadmapPage() {
+  const router = useRouter();
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [selectedResource, setSelectedResource] = useState<any>(null);
@@ -198,6 +200,13 @@ export default function RoadmapPage() {
                    {roadmapContent.filter(w => {
                       const weekFase = (w.fase || "").toLowerCase();
                       const targetPhase = phase.id.toLowerCase();
+                      const weekNum = w.minggu || 0;
+                      
+                      // Fallback: match by week number if phase text is missing or generic
+                      if (targetPhase === "fondasi" && weekNum >= 1 && weekNum <= 4) return true;
+                      if (targetPhase === "pengembangan" && weekNum >= 5 && weekNum <= 8) return true;
+                      if (targetPhase === "persiapan" && weekNum >= 9 && weekNum <= 12) return true;
+
                       return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
                    }).map((weekData) => {
                       const tasks = weekData.tasks || [];
@@ -288,6 +297,12 @@ export default function RoadmapPage() {
                     {roadmapContent.filter(w => {
                       const weekFase = (w.fase || "").toLowerCase();
                       const targetPhase = phase.id.toLowerCase();
+                      const weekNum = w.minggu || 0;
+                      
+                      if (targetPhase === "fondasi" && weekNum >= 1 && weekNum <= 4) return true;
+                      if (targetPhase === "pengembangan" && weekNum >= 5 && weekNum <= 8) return true;
+                      if (targetPhase === "persiapan" && weekNum >= 9 && weekNum <= 12) return true;
+
                       return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
                     }).length === 0 && (
                       <div className="p-12 border-2 border-dashed border-gray-100 rounded-[32px] text-center bg-gray-50/50">
