@@ -83,8 +83,12 @@ export async function generateRoadmapForPath(pathName: string) {
     if (!dataResult.success) throw new Error("Gagal menyiapkan data.");
 
     const { profile, cvUpload, analysis } = dataResult.data;
+    if (!analysis) throw new Error("Silakan lakukan analisis CV terlebih dahulu di halaman Analisis CV.");
+    
     const result = analysis.result as AnalysisResult;
-    const path = result.careerPaths.find(p => p.nama === pathName) || result.careerPaths[0];
+    const path = result.careerPaths.find((p: any) => p.nama === pathName) || result.careerPaths[0];
+    if (!path) throw new Error("Tidak ada jalur karier yang tersedia untuk dianalisis.");
+    
     const actualPathName = path.nama;
 
     // 2. Call Gemini
@@ -101,8 +105,15 @@ export async function generateRoadmapForPath(pathName: string) {
     
     if (!roadmapResponseText) throw new Error("AI tidak memberikan respon untuk roadmap");
 
-    const cleanJson = roadmapResponseText.replace(/```json|```/g, "").trim();
-    let roadmapRaw = JSON.parse(cleanJson);
+    let roadmapRaw;
+    try {
+      // With responseMimeType: "application/json", it might be a direct JSON string or wrapped in markdown
+      const cleanJson = roadmapResponseText.replace(/```json|```/g, "").trim();
+      roadmapRaw = JSON.parse(cleanJson);
+    } catch (e) {
+      console.error("Failed to parse roadmap JSON:", roadmapResponseText);
+      throw new Error("AI memberikan format data yang tidak bisa dibaca. Silakan coba lagi.");
+    }
 
     // Safety check: if AI returns { roadmap: [] } instead of []
     if (!Array.isArray(roadmapRaw) && roadmapRaw.roadmap) {

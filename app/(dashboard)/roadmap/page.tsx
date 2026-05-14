@@ -162,9 +162,10 @@ export default function RoadmapPage() {
         
         toast.success("Roadmap berhasil diperbarui dengan Gemini AI!");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Regeneration failed", err);
-      toast.error("Gagal memperbarui roadmap detail. Silakan coba lagi.");
+      const errorMessage = err.message || "Gagal memperbarui roadmap detail.";
+      toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
     }
