@@ -29,7 +29,7 @@ export async function performCareerAnalysis() {
     
     const response = await ai.models.generateContent({ 
       model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      contents: prompt,
       config: {
         temperature: 0.3,
         responseMimeType: "application/json",
@@ -97,7 +97,7 @@ export async function generateRoadmapForPath(pathName: string) {
 
     const response = await ai.models.generateContent({ 
       model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      contents: prompt,
       config: {
         temperature: 0.4,
         responseMimeType: "application/json"

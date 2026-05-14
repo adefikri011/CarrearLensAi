@@ -7,7 +7,7 @@ import {
   CheckCircle2, Circle, Target, 
   Map as RoadmapIcon, ChevronRight, Sparkles,
   ArrowUpRight, Info, Layers, Trophy, Calendar,
-  Clock, Link as LinkIcon, X
+  Clock, Link as LinkIcon, X, RefreshCcw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PageLoader from "@/components/shared/PageLoader";
@@ -140,11 +140,34 @@ export default function RoadmapPage() {
     }
   };
 
+  const handleRegenerate = async () => {
+    if (!pathName) return;
+    setIsGenerating(true);
+    try {
+      const genResult = await generateRoadmapForPath(pathName);
+      if (genResult.success) {
+        const genRoadmap = genResult.data.map((item: any) => ({
+          ...item,
+          minggu: item.minggu || item.week || 0,
+          fase: item.fase || item.phase || "Lainnya",
+          tasks: item.tasks || item.tugas || []
+        }));
+        setRoadmapContent(genRoadmap);
+        toast.success("Roadmap berhasil diperbarui dengan Gemini AI!");
+      }
+    } catch (err) {
+      console.error("Regeneration failed", err);
+      toast.error("Gagal memperbarui roadmap detail.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const totalTasks = roadmapContent.reduce((acc, r) => acc + (r.tasks?.length || 0), 0);
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
   const progressPercent = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
   const completedWeeks = roadmapContent.filter(w => 
-    w.tasks?.every((_: any, i: number) => completedTasks[`w${w.minggu}-t${i}`])
+    w.tasks?.length > 0 && w.tasks.every((_: any, i: number) => completedTasks[`w${w.minggu}-t${i}`])
   ).length;
 
   if (isLoading) return <PageLoader isLoading={true} text="Menyiapkan Roadmap..." />;
@@ -153,30 +176,51 @@ export default function RoadmapPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Sticky Progress Header */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100 py-4 px-6 md:px-10">
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 py-4 px-6 md:px-10">
         <div className="max-w-3xl mx-auto w-full">
            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                 <div className="w-8 h-8 rounded-lg bg-teal/10 flex items-center justify-center text-teal">
-                    <RoadmapIcon className="w-4 h-4" />
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center text-teal shadow-inner">
+                    <RoadmapIcon className="w-5 h-5" />
                  </div>
-                 <h2 className="text-sm font-black text-black uppercase tracking-widest italic">{pathName || "Roadmap Karier 90 Hari"}</h2>
+                 <div>
+                    <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-0.5">Target Karier</h2>
+                    <h1 className="text-sm font-black text-black uppercase tracking-widest italic">{pathName || "Roadmap Karier 90 Hari"}</h1>
+                 </div>
               </div>
-              <span className="text-xs font-black text-teal">{progressPercent}%</span>
+              <div className="text-right">
+                 <div className="text-xs font-black text-teal mb-0.5">{progressPercent}%</div>
+                 <div className="text-[9px] font-black text-gray-300 uppercase tracking-tighter">PROGRESS</div>
+              </div>
            </div>
            
-           <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden shadow-inner">
+           <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden shadow-inner">
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="h-full bg-teal" 
-              />
+                transition={{ duration: 1, ease: "circOut" }}
+                className="h-full bg-teal relative overflow-hidden" 
+              >
+                <motion.div 
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full h-full"
+                />
+              </motion.div>
            </div>
            
-           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-2">
-              {completedWeeks} DARI 12 MINGGU SELESAI
-           </p>
+           <div className="flex items-center justify-between mt-2">
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                 {completedWeeks} DARI 12 MINGGU SELESAI
+              </p>
+              <button 
+                onClick={handleRegenerate}
+                className="text-[9px] font-black text-gray-400 hover:text-teal uppercase tracking-widest flex items-center gap-1.5 transition-colors"
+                title="Generate ulang roadmap jika detail tidak muncul"
+              >
+                <RefreshCcw className="w-3 h-3" /> Update Analisis AI
+              </button>
+           </div>
         </div>
       </div>
 
@@ -315,10 +359,10 @@ export default function RoadmapPage() {
                            <div className="flex flex-col items-center gap-4 mt-6">
                               <Button 
                                 variant="default"
-                                onClick={() => fetchRoadmap()}
+                                onClick={() => handleRegenerate()}
                                 className="bg-teal text-white rounded-xl h-11 px-8 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-teal/10"
                               >
-                                Coba Muat Ulang Detail
+                                Bangun Roadmap Detail (AI)
                               </Button>
                               <Button 
                                 variant="link" 
