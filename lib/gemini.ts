@@ -22,7 +22,7 @@ export const getAI = () => {
 };
 
 // Recommended model for text tasks
-export const GEMINI_MODEL = "gemini-1.5-flash";
+export const GEMINI_MODEL = "gemini-3-flash-preview";
 
 /**
  * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.

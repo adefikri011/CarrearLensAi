@@ -27,16 +27,16 @@ export async function performCareerAnalysis() {
     const ai = getAI();
     const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
     
-    const response = await ai.models.generateContent({
+    const model = ai.getGenerativeModel({ 
       model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
+      generationConfig: {
         temperature: 0.3,
         responseMimeType: "application/json",
       }
     });
 
-    const responseText = response.text;
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
     if (!responseText) throw new Error("AI tidak memberikan respon (Empty Response)");
 
     // Clean and parse JSON
@@ -100,7 +100,16 @@ export async function generateRoadmapForPath(pathName: string) {
     const responseText = response.response.text();
 
     const cleanJson = responseText.replace(/```json|```/g, "").trim();
-    const roadmap = JSON.parse(cleanJson);
+    let roadmap = JSON.parse(cleanJson);
+
+    // Safety check: if AI returns { roadmap: [] } instead of []
+    if (!Array.isArray(roadmap) && roadmap.roadmap) {
+      roadmap = roadmap.roadmap;
+    }
+    
+    if (!Array.isArray(roadmap)) {
+      throw new Error("Format roadmap dari AI tidak valid (Bukan Array)");
+    }
 
     // 3. Save to DB
     // We update the existing analysis result

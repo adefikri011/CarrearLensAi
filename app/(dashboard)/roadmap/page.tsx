@@ -55,16 +55,32 @@ export default function RoadmapPage() {
       const res = await fetch("/api/roadmap/content");
       const result = await res.json();
       if (result.success && result.data) {
-        const roadmap = result.data.roadmap || [];
+        const rawRoadmap = result.data.roadmap || [];
+        
+        // Normalize roadmap data (handles potential AI property name variations)
+        const normalizedRoadmap = rawRoadmap.map((item: any) => ({
+          ...item,
+          minggu: item.minggu || item.week || 0,
+          fase: item.fase || item.phase || "Lainnya",
+          title: item.title || item.judul || "Tanpa Judul",
+          tasks: item.tasks || item.tugas || []
+        }));
+
         setPathName(result.data.pathName);
         
-        if (roadmap.length === 0) {
+        if (normalizedRoadmap.length === 0) {
           // If empty, try to generate it now
           setIsGenerating(true);
           try {
             const genResult = await generateRoadmapForPath(result.data.pathName);
             if (genResult.success) {
-              setRoadmapContent(genResult.data);
+              const genRoadmap = genResult.data.map((item: any) => ({
+                ...item,
+                minggu: item.minggu || item.week || 0,
+                fase: item.fase || item.phase || "Lainnya",
+                tasks: item.tasks || item.tugas || []
+              }));
+              setRoadmapContent(genRoadmap);
               toast.success("Roadmap detail berhasil dibuat!");
             }
           } catch (err) {
@@ -74,7 +90,7 @@ export default function RoadmapPage() {
             setIsGenerating(false);
           }
         } else {
-          setRoadmapContent(roadmap);
+          setRoadmapContent(normalizedRoadmap);
         }
       }
     } catch (error) {
@@ -179,8 +195,13 @@ export default function RoadmapPage() {
               </div>
 
                  <div className="space-y-6">
-                   {roadmapContent.filter(w => w.fase?.toLowerCase() === phase.id.toLowerCase()).map((weekData) => {
-                      const isFullyCompleted = weekData.tasks?.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
+                   {roadmapContent.filter(w => {
+                      const weekFase = (w.fase || "").toLowerCase();
+                      const targetPhase = phase.id.toLowerCase();
+                      return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
+                   }).map((weekData) => {
+                      const tasks = weekData.tasks || [];
+                      const isFullyCompleted = tasks.length > 0 && tasks.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
                       
                       return (
                          <motion.div 
@@ -215,7 +236,7 @@ export default function RoadmapPage() {
                             </div>
 
                             <div className="space-y-3">
-                               {weekData.tasks?.map((task: string, tidx: number) => {
+                               {tasks.length > 0 ? tasks.map((task: string, tidx: number) => {
                                   const taskId = `w${weekData.minggu}-t${tidx}`;
                                   const isDone = completedTasks[taskId];
                                   
@@ -242,7 +263,9 @@ export default function RoadmapPage() {
                                         )}>{task}</span>
                                      </div>
                                   );
-                               })}
+                               }) : (
+                                 <p className="text-xs text-gray-400 italic">Tidak ada tugas spesifik minggu ini.</p>
+                               )}
                             </div>
 
                             <div className="mt-8 pt-6 border-t border-gray-100/50 flex flex-wrap items-center gap-6">
@@ -262,21 +285,34 @@ export default function RoadmapPage() {
                        );
                     })}
 
-                    {roadmapContent.filter(w => w.fase?.toLowerCase() === phase.id.toLowerCase()).length === 0 && (
-                      <div className="p-12 border-2 border-dashed border-gray-100 rounded-[32px] text-center">
+                    {roadmapContent.filter(w => {
+                      const weekFase = (w.fase || "").toLowerCase();
+                      const targetPhase = phase.id.toLowerCase();
+                      return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
+                    }).length === 0 && (
+                      <div className="p-12 border-2 border-dashed border-gray-100 rounded-[32px] text-center bg-gray-50/50">
                          <p className="text-gray-400 text-sm italic font-medium">
                             {roadmapContent.length === 0 
-                              ? "Kamu perlu melakukan analisis CV ulang untuk mendapatkan roadmap detail ini."
-                              : `Tidak ada data roadmap untuk fase ini.`}
+                              ? "Kamu perlu melakukan analisis CV ulang atau tunggu sebentar selagi kami membangun roadmap ini."
+                              : `Detail langkah untuk ${phase.title} belum tersedia. Silakan klik "Analisis Ulang" di dashboard jika ini terus terjadi.`}
                          </p>
-                         {roadmapContent.length === 0 && (
-                           <Button 
-                            variant="link" 
-                            onClick={() => window.location.href = '/analysis'}
-                            className="text-teal font-black text-xs uppercase tracking-widest mt-4"
-                           >
-                             Mulai Analisis CV Sekarang →
-                           </Button>
+                         {roadmapContent.length === 0 && !isGenerating && (
+                           <div className="flex flex-col items-center gap-4 mt-6">
+                              <Button 
+                                variant="default"
+                                onClick={() => fetchRoadmap()}
+                                className="bg-teal text-white rounded-xl h-11 px-8 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-teal/10"
+                              >
+                                Coba Muat Ulang Detail
+                              </Button>
+                              <Button 
+                                variant="link" 
+                                onClick={() => router.push('/analysis')}
+                                className="text-teal font-black text-xs uppercase tracking-widest"
+                              >
+                                Ke Halaman Analisis →
+                              </Button>
+                           </div>
                          )}
                       </div>
                     )}
