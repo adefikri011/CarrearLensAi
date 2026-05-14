@@ -16,13 +16,15 @@ export const getAI = () => {
     if (!apiKey) {
       console.warn("NEXT_PUBLIC_GEMINI_API_KEY is missing.");
     }
+    const now = new Date().toISOString();
+    console.log(`[${now}] Initializing Gemini with model:`, GEMINI_MODEL);
     aiInstance = new GoogleGenAI({ apiKey });
   }
   return aiInstance;
 };
 
 // Recommended model for text tasks
-export const GEMINI_MODEL = "gemini-3-flash-preview";
+export const GEMINI_MODEL = "gemini-1.5-flash-latest";
 
 /**
  * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.
