@@ -27,12 +27,15 @@ export async function performCareerAnalysis() {
     const ai = getAI();
     const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
     
-    const model = ai.getGenerativeModel({ 
+    const response = await ai.models.generateContent({
       model: GEMINI_MODEL,
-      generationConfig: { responseMimeType: "application/json" }
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json"
+      }
     });
-    const aiResponse = await model.generateContent(prompt);
-    const responseText = aiResponse.response.text();
+
+    const responseText = response.text;
     if (!responseText) throw new Error("AI tidak memberikan respon (Empty Response)");
 
     // Clean and parse JSON
@@ -96,12 +99,15 @@ export async function generateRoadmapForPath(pathName: string) {
     const ai = getAI();
     const prompt = buildRoadmapGenerationPrompt(profile, cvUpload.extractedText || "", path);
 
-    const model = ai.getGenerativeModel({ 
+    const roadmapResponse = await ai.models.generateContent({
       model: GEMINI_MODEL,
-      generationConfig: { responseMimeType: "application/json" }
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json"
+      }
     });
-    const roadmapAiResponse = await model.generateContent(prompt);
-    const roadmapResponseText = roadmapAiResponse.response.text();
+
+    const roadmapResponseText = roadmapResponse.text;
     
     if (!roadmapResponseText) throw new Error("AI tidak memberikan respon untuk roadmap");
 
