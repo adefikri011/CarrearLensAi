@@ -29,9 +29,9 @@ const fadeUp = {
 };
 
 const phases = [
-  { id: "fondasi", title: "Fase 1: Fondasi", range: "Minggu 1-4", desc: "Membangun identitas dan pemetaan kompetensi dasar." },
-  { id: "pengembangan", title: "Fase 2: Pengembangan", range: "Minggu 5-8", desc: "Akselerasi skill teknis dan pembangunan portofolio." },
-  { id: "persiapan", title: "Fase 3: Persiapan", range: "Minggu 9-12", desc: "Simulasi dunia kerja dan strategi melamar." }
+  { id: "fondasi", title: "Fase 1: Eksplorasi & Fondasi", range: "Minggu 1-4", desc: "Membangun identitas profesional dan pemetaan kompetensi dasar untuk role ini.", icon: Target },
+  { id: "pengembangan", title: "Fase 2: Pemantapan & Aksi", range: "Minggu 5-8", desc: "Akselerasi skill teknis spesifik dan pembangunan portofolio yang memikat rekruter.", icon: Layers },
+  { id: "persiapan", title: "Fase 3: Strategi & Penaklukan", range: "Minggu 9-12", desc: "Simulasi dunia kerja, optimalisasi CV/LinkedIn, dan strategi memenangkan interview.", icon: Trophy }
 ];
 
 export default function RoadmapPage() {
@@ -174,265 +174,312 @@ export default function RoadmapPage() {
   if (isGenerating) return <PageLoader isLoading={true} text="Membangun Roadmap Detail Kamu..." subtitle="Gemini AI sedang menyusun strategi 90 hari terbaik untukmu." />;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* Sticky Progress Header */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 py-4 px-6 md:px-10">
-        <div className="max-w-3xl mx-auto w-full">
-           <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center text-teal shadow-inner">
-                    <RoadmapIcon className="w-5 h-5" />
+      <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-100 py-5 px-6 md:px-10">
+        <div className="max-w-4xl mx-auto w-full">
+           <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 rounded-2xl bg-teal/10 flex items-center justify-center text-teal shadow-sm border border-teal/5">
+                    <RoadmapIcon className="w-6 h-6" />
                  </div>
                  <div>
-                    <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-0.5">Target Karier</h2>
-                    <h1 className="text-sm font-black text-black uppercase tracking-widest italic">{pathName || "Roadmap Karier 90 Hari"}</h1>
+                    <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em] mb-1">Target Roadmap Karier</h2>
+                    <h1 className="text-lg font-black text-black uppercase tracking-widest italic leading-tight">
+                       {pathName || "Membangun Karier Impian"}
+                    </h1>
                  </div>
               </div>
-              <div className="text-right">
-                 <div className="text-xs font-black text-teal mb-0.5">{progressPercent}%</div>
-                 <div className="text-[9px] font-black text-gray-300 uppercase tracking-tighter">PROGRESS</div>
+              <div className="text-right hidden sm:block">
+                 <div className="text-2xl font-black text-teal mb-0.5">{progressPercent}%</div>
+                 <div className="text-[9px] font-black text-gray-300 uppercase tracking-widest">MASTERED</div>
               </div>
            </div>
            
-           <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden shadow-inner">
+           <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden shadow-inner relative">
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 1, ease: "circOut" }}
-                className="h-full bg-teal relative overflow-hidden" 
+                transition={{ duration: 1.2, ease: "circOut" }}
+                className="h-full bg-gradient-to-r from-teal via-emerald-500 to-teal relative overflow-hidden" 
               >
                 <motion.div 
-                  animate={{ x: ["-100%", "100%"] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full h-full"
+                  animate={{ x: ["-100%", "200%"] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-full h-full"
                 />
               </motion.div>
            </div>
            
-           <div className="flex items-center justify-between mt-2">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                 {completedWeeks} DARI 12 MINGGU SELESAI
-              </p>
+           <div className="flex items-center justify-between mt-3 text-[10px] font-black uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-gray-400">
+                 <Calendar className="w-3 h-3" />
+                 <span>{completedWeeks} DARI 12 MINGGU SELESAI</span>
+              </div>
               <button 
                 onClick={handleRegenerate}
-                className="text-[9px] font-black text-gray-400 hover:text-teal uppercase tracking-widest flex items-center gap-1.5 transition-colors"
-                title="Generate ulang roadmap jika detail tidak muncul"
+                className="text-teal hover:text-teal/80 transition-all flex items-center gap-2 bg-teal/5 px-3 py-1.5 rounded-full border border-teal/10 hover:border-teal/30"
               >
-                <RefreshCcw className="w-3 h-3" /> Update Analisis AI
+                <RefreshCcw className={cn("w-3 h-3", isGenerating && "animate-spin")} />
+                <span>{isGenerating ? "GENERATING..." : "GENERATE ULANG"}</span>
               </button>
            </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-6 py-12 space-y-16">
-         {phases.map((phase) => (
-           <section key={phase.id} className="space-y-8">
-              <div className="bg-gray-50 rounded-[32px] p-8 border border-gray-100">
-                 <div className="flex items-center gap-4 mb-3">
-                    <h2 className="text-xl font-black text-black">{phase.title}</h2>
-                    <span className="px-3 py-1 rounded-full bg-teal/10 text-teal text-[10px] font-black uppercase tracking-widest border border-teal/10">
+      <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-16 pb-24">
+        {phases.map((phase) => (
+          <motion.div 
+            key={phase.id}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeUp}
+            className="space-y-8"
+          >
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-gray-100 pb-6">
+              <div className="space-y-2">
+                 <div className="flex items-center gap-3">
+                    <div className="px-3 py-1 bg-black text-white text-[9px] font-black uppercase tracking-widest rounded-md">
                        {phase.range}
+                    </div>
+                    <span className="text-teal font-black text-[10px] uppercase tracking-widest">
+                       {phase.id === 'fondasi' ? 'Start journey' : phase.id === 'pengembangan' ? 'Gaining momentum' : 'Ready to fly'}
                     </span>
                  </div>
-                 <p className="text-gray-500 text-sm leading-relaxed font-medium">
-                    {phase.desc}
-                 </p>
+                 <h2 className="text-3xl font-black text-black tracking-tighter uppercase italic">{phase.title}</h2>
+                 <p className="text-gray-500 text-sm max-w-xl font-medium leading-relaxed">{phase.desc}</p>
               </div>
+              <div className="flex -space-x-2">
+                 {[1,2,3,4].map(i => (
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-50 flex items-center justify-center overflow-hidden">
+                       <div className="w-full h-full bg-teal/5" />
+                    </div>
+                 ))}
+              </div>
+            </div>
 
-                 <div className="space-y-6">
-                   {roadmapContent.filter(w => {
-                      const weekFase = (w.fase || "").toLowerCase();
-                      const targetPhase = phase.id.toLowerCase();
-                      const weekNum = w.minggu || 0;
-                      
-                      // Fallback: match by week number if phase text is missing or generic
-                      if (targetPhase === "fondasi" && weekNum >= 1 && weekNum <= 4) return true;
-                      if (targetPhase === "pengembangan" && weekNum >= 5 && weekNum <= 8) return true;
-                      if (targetPhase === "persiapan" && weekNum >= 9 && weekNum <= 12) return true;
+            <div className="space-y-6">
+              {roadmapContent.filter(w => {
+                const weekFase = (w.fase || "").toLowerCase();
+                const targetPhase = phase.id.toLowerCase();
+                const weekNum = w.minggu || 0;
+                
+                if (targetPhase === "fondasi" && weekNum >= 1 && weekNum <= 4) return true;
+                if (targetPhase === "pengembangan" && weekNum >= 5 && weekNum <= 8) return true;
+                if (targetPhase === "persiapan" && weekNum >= 9 && weekNum <= 12) return true;
 
-                      return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
-                   }).map((weekData) => {
-                      const tasks = weekData.tasks || [];
-                      const isFullyCompleted = tasks.length > 0 && tasks.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
-                      
-                      return (
-                         <motion.div 
-                           key={weekData.minggu}
-                           variants={fadeUp}
-                           initial="hidden"
-                           whileInView="visible"
-                           viewport={{ once: true }}
-                           className={cn(
-                             "bg-white border rounded-[32px] p-6 md:p-8 transition-all duration-500 group",
-                             isFullyCompleted 
-                              ? "border-teal/30 bg-[#ECFDF5] shadow-lg shadow-teal/5" 
-                              : "border-gray-100 hover:border-gray-200 shadow-sm"
-                           )}
-                         >
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                               <div className="flex items-center gap-4">
-                                  <div className={cn(
-                                     "px-4 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-colors",
-                                     isFullyCompleted ? "bg-teal text-white" : "bg-gray-100 text-gray-400"
-                                  )}>
-                                     MGG {weekData.minggu}
-                                  </div>
-                                  <h3 className="text-lg font-black text-black">{weekData.title}</h3>
-                               </div>
-                               
-                               {isFullyCompleted && (
-                                  <div className="flex items-center gap-2 text-teal font-black text-[10px] uppercase tracking-widest">
-                                     <CheckCircle2 className="w-4 h-4" /> SELESAI
-                                  </div>
-                               )}
-                            </div>
+                return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
+              }).map((weekData, idx) => {
+                 const tasks = weekData.tasks || [];
+                 const isFullyCompleted = tasks.length > 0 && tasks.every((_: any, i: number) => completedTasks[`w${weekData.minggu}-t${i}`]);
+                 
+                 return (
+                    <motion.div 
+                      key={weekData.minggu}
+                      variants={fadeUp}
+                      className={cn(
+                        "group relative bg-white border border-gray-100 rounded-[32px] p-8 transition-all duration-500 hover:shadow-2xl hover:shadow-teal/5 hover:-translate-y-1",
+                        isFullyCompleted && "border-teal/20 bg-teal/[0.01]"
+                      )}
+                    >
+                       <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:scale-110 transition-transform">
+                          <Sparkles className="w-4 h-4" />
+                       </div>
+                       
+                       <div className="flex items-start gap-6">
+                          <div className="flex flex-col items-center">
+                             <div className={cn(
+                               "w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg transition-all duration-500 shadow-sm",
+                               isFullyCompleted ? "bg-teal text-white rotate-6" : "bg-gray-100 text-gray-400 group-hover:bg-black group-hover:text-white"
+                             )}>
+                               {weekData.minggu}
+                             </div>
+                             <div className="w-0.5 h-full min-h-[40px] bg-gray-100 mt-4 rounded-full" />
+                          </div>
 
-                            <div className="space-y-3">
-                               {tasks.length > 0 ? tasks.map((task: string, tidx: number) => {
-                                  const taskId = `w${weekData.minggu}-t${tidx}`;
-                                  const isDone = completedTasks[taskId];
-                                  
-                                  return (
-                                     <div 
-                                       key={tidx}
-                                       onClick={() => toggleTask(weekData.minggu, tidx)}
-                                       className={cn(
-                                         "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer",
-                                         isDone 
-                                           ? "bg-white/50 border-teal/20" 
-                                           : "bg-surface border-transparent hover:border-teal/20"
-                                       )}
-                                     >
-                                        <div className={cn(
-                                           "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0",
-                                           isDone ? "bg-teal border-teal" : "border-gray-200 bg-white"
-                                        )}>
-                                           {isDone && <CheckCircle2 className="w-4 h-4 text-white" />}
-                                        </div>
-                                        <span className={cn(
-                                           "text-sm font-bold flex-1 transition-all",
-                                           isDone ? "italic line-through opacity-40 text-gray-400" : "text-black"
-                                        )}>{task}</span>
-                                     </div>
-                                  );
-                               }) : (
-                                 <p className="text-xs text-gray-400 italic">Tidak ada tugas spesifik minggu ini.</p>
-                               )}
-                            </div>
-
-                            <div className="mt-8 pt-6 border-t border-gray-100/50 flex flex-wrap items-center gap-6">
-                               {weekData.resource && (
-                                  <button 
-                                    onClick={() => setSelectedResource(weekData)}
-                                    className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-teal transition-all"
-                                  >
-                                     <LinkIcon className="w-3.5 h-3.5" /> Resource: {weekData.resource}
-                                  </button>
-                               )}
-                               <div className="flex items-center gap-1.5 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                                  <Clock className="w-3.5 h-3.5" /> EST: {weekData.hours}
+                          <div className="flex-1 space-y-6">
+                             <div>
+                                <h3 className="text-xl font-black text-black tracking-tight mb-2 group-hover:text-teal transition-colors">
+                                   {weekData.title}
+                                </h3>
+                                <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                   <div className="flex items-center gap-1.5">
+                                      <Clock className="w-3 h-3" />
+                                      <span>Est. {weekData.hours || "10-15"} Jam / Minggu</span>
+                                   </div>
+                                   <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                   <div className="flex items-center gap-1.5">
+                                      <Calendar className="w-3 h-3" />
+                                      <span>Minggu {weekData.minggu}</span>
+                                   </div>
                                 </div>
                              </div>
-                          </motion.div>
-                       );
-                    })}
 
-                    {roadmapContent.filter(w => {
-                      const weekFase = (w.fase || "").toLowerCase();
-                      const targetPhase = phase.id.toLowerCase();
-                      const weekNum = w.minggu || 0;
-                      
-                      if (targetPhase === "fondasi" && weekNum >= 1 && weekNum <= 4) return true;
-                      if (targetPhase === "pengembangan" && weekNum >= 5 && weekNum <= 8) return true;
-                      if (targetPhase === "persiapan" && weekNum >= 9 && weekNum <= 12) return true;
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {tasks.length > 0 ? tasks.map((task: string, tidx: number) => {
+                                   const taskId = `w${weekData.minggu}-t${tidx}`;
+                                   const isDone = completedTasks[taskId];
+                                   
+                                   return (
+                                      <div 
+                                        key={tidx}
+                                        onClick={() => toggleTask(weekData.minggu, tidx)}
+                                        className={cn(
+                                          "flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border group/task",
+                                          isDone 
+                                            ? "bg-teal/5 border-teal/10 text-teal/70" 
+                                            : "bg-gray-50/50 border-transparent hover:border-teal/30 hover:bg-white"
+                                        )}
+                                      >
+                                         <div className={cn(
+                                            "w-5 h-5 rounded-md flex items-center justify-center transition-all",
+                                            isDone ? "bg-teal text-white" : "border-2 border-gray-200 bg-white"
+                                         )}>
+                                            {isDone && <CheckCircle2 className="w-3.5 h-3.5" />}
+                                         </div>
+                                         <span className={cn(
+                                            "text-xs font-bold transition-all",
+                                            isDone ? "line-through opacity-50" : "text-gray-700 font-medium"
+                                         )}>{task}</span>
+                                      </div>
+                                   );
+                                }) : (
+                                  <p className="text-xs text-gray-400 italic">Tidak ada tugas spesifik minggu ini.</p>
+                                )}
+                             </div>
 
-                      return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
-                    }).length === 0 && (
-                      <div className="p-12 border-2 border-dashed border-gray-100 rounded-[32px] text-center bg-gray-50/50">
-                         <p className="text-gray-400 text-sm italic font-medium">
-                            {roadmapContent.length === 0 
-                              ? "Kamu perlu melakukan analisis CV ulang atau tunggu sebentar selagi kami membangun roadmap ini."
-                              : `Detail langkah untuk ${phase.title} belum tersedia. Silakan klik "Analisis Ulang" di dashboard jika ini terus terjadi.`}
-                         </p>
-                         {roadmapContent.length === 0 && !isGenerating && (
-                           <div className="flex flex-col items-center gap-4 mt-6">
-                              <Button 
-                                variant="default"
-                                onClick={() => handleRegenerate()}
-                                className="bg-teal text-white rounded-xl h-11 px-8 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-teal/10"
-                              >
-                                Bangun Roadmap Detail (AI)
-                              </Button>
-                              <Button 
-                                variant="link" 
-                                onClick={() => router.push('/analysis')}
-                                className="text-teal font-black text-xs uppercase tracking-widest"
-                              >
-                                Ke Halaman Analisis →
-                              </Button>
-                           </div>
-                         )}
+                             <div className="pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                   <button 
+                                      onClick={() => weekData.resource && setSelectedResource({
+                                        title: weekData.resource,
+                                        link: weekData.resourceLink || weekData.link
+                                      })}
+                                      className="flex items-center gap-2 text-[10px] font-black text-black hover:text-teal uppercase tracking-widest transition-colors"
+                                   >
+                                      <LinkIcon className="w-3 h-3" />
+                                      <span>Resource: {weekData.resource}</span>
+                                   </button>
+                                </div>
+                                
+                                {isFullyCompleted && (
+                                   <div className="flex items-center gap-2 px-3 py-1.5 bg-teal/10 text-teal rounded-full text-[9px] font-black uppercase tracking-widest animate-in fade-in zoom-in duration-500">
+                                      <Trophy className="w-3 h-3" />
+                                      Completed Week {weekData.minggu}!
+                                   </div>
+                                )}
+                             </div>
+                          </div>
+                       </div>
+                    </motion.div>
+                 );
+              })}
+
+              {roadmapContent.filter(w => {
+                const weekFase = (w.fase || "").toLowerCase();
+                const targetPhase = phase.id.toLowerCase();
+                 const weekNum = w.minggu || 0;
+                 
+                 if (targetPhase === "fondasi" && weekNum >= 1 && weekNum <= 4) return true;
+                 if (targetPhase === "pengembangan" && weekNum >= 5 && weekNum <= 8) return true;
+                 if (targetPhase === "persiapan" && weekNum >= 9 && weekNum <= 12) return true;
+
+                return weekFase.includes(targetPhase) || targetPhase.includes(weekFase);
+              }).length === 0 && (
+                <div className="group p-16 border-2 border-dashed border-gray-100 rounded-[48px] text-center bg-gray-50/30 transition-all hover:bg-white hover:border-teal/20">
+                   <div className="w-16 h-16 bg-gray-100 rounded-3xl flex items-center justify-center text-gray-300 mx-auto mb-6 group-hover:scale-110 group-hover:bg-teal/5 group-hover:text-teal transition-all duration-500">
+                      <Sparkles className="w-8 h-8" />
+                   </div>
+                   <p className="text-gray-400 text-sm font-medium italic max-w-sm mx-auto">
+                      {roadmapContent.length === 0 
+                        ? "Roadmap detail sedang disiapkan. Klik tombol di bawah untuk meminta Gemini AI menyusun strategi 90 hari terbaik untukmu."
+                        : `Detail langkah untuk fase ini masih dalam proses sinkronisasi.`}
+                   </p>
+                   {roadmapContent.length === 0 && !isGenerating && (
+                     <div className="flex flex-col items-center gap-6 mt-10">
+                        <Button 
+                          variant="default"
+                          onClick={() => handleRegenerate()}
+                          className="bg-black hover:bg-teal text-white rounded-2xl h-14 px-10 font-black text-xs uppercase tracking-widest shadow-2xl shadow-black/10 transition-all hover:-translate-y-1 active:scale-95"
+                        >
+                          Bangun Roadmap Dengan Gemini AI
+                        </Button>
+                        <Button 
+                          variant="link" 
+                          onClick={() => router.push('/analysis')}
+                          className="text-gray-400 hover:text-black font-black text-[10px] uppercase tracking-widest"
+                        >
+                          ← Kembali Ke Analisis
+                        </Button>
+                     </div>
+                   )}
+                   {isGenerating && (
+                      <div className="mt-8 flex flex-col items-center gap-4">
+                         <LoadingSpinner size="lg" />
+                         <p className="text-teal font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">Consulting Gemini AI...</p>
                       </div>
-                    )}
-                 </div>
-           </section>
-         ))}
+                   )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ))}
 
-         <motion.div 
-           variants={fadeUp}
-           initial="hidden"
-           whileInView="visible"
-           viewport={{ once: true }}
-           className="bg-black rounded-[48px] p-12 text-center space-y-6 relative overflow-hidden"
-         >
-            <div className="absolute top-0 right-0 p-12 opacity-5">
-               <Trophy className="w-32 h-32 text-white" />
-            </div>
-            <div className="w-16 h-16 bg-teal rounded-[24px] flex items-center justify-center text-white mx-auto shadow-2xl shadow-teal/40">
-               <Trophy className="w-8 h-8" />
-            </div>
-            <div className="space-y-3">
-               <h3 className="text-2xl font-black text-white italic tracking-tight">Karier Impian Menantimu</h3>
-               <p className="text-gray-400 text-sm font-medium max-w-sm mx-auto">
-                  Selesaikan roadmap ini dan jadilah talenta SMK yang paling dicari oleh industri.
-               </p>
-            </div>
-            <button 
-              onClick={() => toast.success("Selamat! Kamu dalam jalur yang benar. Tetap konsisten!")}
-              className="h-14 px-10 bg-teal text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-105 transition-all shadow-xl shadow-teal/20"
-            >
-               LIHAT CAPAIAN SAYA
-            </button>
-         </motion.div>
-      </main>
+        <motion.div 
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="bg-black rounded-[48px] p-12 text-center space-y-6 relative overflow-hidden"
+        >
+           <div className="absolute top-0 right-0 p-12 opacity-5">
+              <Trophy className="w-32 h-32 text-white" />
+           </div>
+           <div className="w-16 h-16 bg-teal rounded-[24px] flex items-center justify-center text-white mx-auto shadow-2xl shadow-teal/40 transition-transform hover:scale-110 duration-500">
+              <Trophy className="w-8 h-8" />
+           </div>
+           <div className="space-y-3">
+              <h3 className="text-2xl font-black text-white italic tracking-tight uppercase">Karier Impian Menantimu</h3>
+              <p className="text-gray-400 text-sm font-medium max-w-sm mx-auto">
+                 Selesaikan roadmap 90 hari ini dan jadilah talenta yang paling dicari oleh industri global. Konsistensi adalah kunci.
+              </p>
+           </div>
+           <button 
+             onClick={() => toast.success("Selamat! Kamu dalam jalur yang benar. Tetap konsisten!")}
+             className="h-14 px-10 bg-teal text-white font-black uppercase tracking-widest text-[10px] rounded-2xl hover:scale-105 transition-all shadow-xl shadow-teal/20"
+           >
+              CEK PROGRES KESELURUHAN
+           </button>
+        </motion.div>
+      </div>
 
       <Dialog open={!!selectedResource} onOpenChange={() => setSelectedResource(null)}>
-        <DialogContent className="rounded-[32px] p-8 max-w-md">
+        <DialogContent className="rounded-[40px] p-10 max-w-md border-none shadow-2xl">
            <DialogHeader>
-              <div className="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center text-teal mb-4">
-                 <LinkIcon className="w-6 h-6" />
+              <div className="w-16 h-16 bg-teal/10 rounded-2xl flex items-center justify-center text-teal mb-6 shadow-inner">
+                 <LinkIcon className="w-8 h-8" />
               </div>
-              <DialogTitle className="text-xl font-black text-black">Materi Pendukung</DialogTitle>
-            <DialogDescription className="pt-2 text-gray-500 font-medium">
-               Klik tombol di bawah untuk membuka materi <span className="text-black font-bold">&quot;{selectedResource?.resource}&quot;</span> guna membantu kamu menyelesaikan Minggu {selectedResource?.minggu}.
+              <DialogTitle className="text-2xl font-black text-black tracking-tight uppercase italic leading-none">Materi Pendukung</DialogTitle>
+            <DialogDescription className="pt-4 text-gray-500 font-medium leading-relaxed">
+               Gunakan referensi ini untuk memperdalam pemahamanmu tentang <span className="text-black font-bold italic underline decoration-teal/30 underline-offset-4">&quot;{selectedResource?.title}&quot;</span>.
             </DialogDescription>
            </DialogHeader>
-           <div className="mt-8 space-y-4">
+           <div className="mt-10 space-y-4">
               <a 
-                href={selectedResource?.resourceLink || "#"} 
+                href={selectedResource?.link || "#"} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full h-14 bg-black text-white rounded-2xl flex items-center justify-center font-black uppercase text-[10px] tracking-widest hover:bg-teal transition-all"
+                className="w-full h-16 bg-black text-white rounded-2xl flex items-center justify-center font-black uppercase text-[10px] tracking-[0.2em] hover:bg-teal transition-all group shadow-xl shadow-black/10"
               >
-                BUKA SUMBER MATERI <ArrowUpRight className="ml-2 w-4 h-4" />
+                BUKA RESOURCE <ArrowUpRight className="ml-3 w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </a>
               <Button 
                 variant="ghost" 
                 onClick={() => setSelectedResource(null)}
-                className="w-full h-12 text-gray-400 font-bold"
+                className="w-full h-12 text-gray-400 font-black uppercase tracking-widest text-[9px] hover:text-black transition-colors"
               >
-                Tutup
+                Kembali Ke Roadmap
               </Button>
            </div>
         </DialogContent>
