@@ -30,8 +30,8 @@ export const getAI = () => {
   return aiInstance;
 };
 
-// Model specifically requested by user, using gemini-3-flash-preview as reliable fallback if requested one is not available
-export const GEMINI_MODEL = "gemini-2.5-flash-preview-05-20";
+// Recommended model for production tasks
+export const GEMINI_MODEL = "gemini-flash-latest";
 
 /**
  * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.
