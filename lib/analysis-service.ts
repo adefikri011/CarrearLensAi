@@ -1,74 +1,25 @@
-import { getAI, GEMINI_MODEL, buildAnalysisPrompt } from "@/lib/gemini";
-import { AnalysisResult } from "@/types/analysis";
-
 /**
- * Service to handle Career Analysis using Gemini AI on the client side.
- * This complies with the strict requirement of calling Gemini from the frontend.
+ * Service to handle Career Analysis calling server-side API.
+ * This is now more secure as it doesn't expose API keys or AI logic to the client.
  */
 export async function performCareerAnalysis() {
   try {
-    // 1. Prepare data (Profile & CV) from backend
-    const dataRes = await fetch("/api/analyze/prepare");
-    const dataResult = await dataRes.json();
+    const response = await fetch("/api/ai/analyze", {
+      method: "POST"
+    });
     
-    if (!dataResult.success) {
-      if (dataResult.error === "PROFILE_MISSING") {
+    const result = await response.json();
+    if (!result.success) {
+      if (result.error === "PROFILE_MISSING") {
         throw { error: "PROFILE_MISSING", message: "Lengkapi profil karier terlebih dahulu" };
       }
-      if (dataResult.error === "CV_MISSING") {
+      if (result.error === "CV_MISSING") {
         throw { error: "CV_MISSING", message: "Upload CV terlebih dahulu" };
       }
-      throw new Error(dataResult.error || "Gagal menyiapkan data analisis");
+      throw new Error(result.error || "Gagal melakukan analisis karier");
     }
 
-    const { profile, cvUpload } = dataResult.data;
-
-    // 2. Call Gemini AI
-    const ai = getAI();
-    const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
-    
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json"
-      }
-    });
-
-    const responseText = response.text;
-    if (!responseText) throw new Error("AI tidak memberikan respon (Empty Response)");
-
-    // Clean and parse JSON
-    const cleanJson = responseText.replace(/```json|```/g, "").trim();
-    let analysisResult: AnalysisResult;
-    
-    try {
-      analysisResult = JSON.parse(cleanJson);
-    } catch (e) {
-      console.error("Failed to parse Gemini response:", cleanJson);
-      throw new Error("Format respon AI tidak valid. Silakan coba lagi.");
-    }
-
-    // 3. Save result back to database
-    const saveRes = await fetch("/api/analyze/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        result: analysisResult,
-        cvUploadId: cvUpload.id
-      })
-    });
-
-    const saveResult = await saveRes.json();
-    if (!saveResult.success) {
-      throw new Error(saveResult.error || "Gagal menyimpan hasil analisis");
-    }
-
-    return { 
-      success: true, 
-      data: saveResult.data, // This is the saved database record
-      analysisResult // This is the raw JSON result from Gemini
-    };
+    return result;
   } catch (error: any) {
     console.error("Career Analysis Service Error:", error);
     throw error;
@@ -76,91 +27,22 @@ export async function performCareerAnalysis() {
 }
 
 /**
- * Generates a detailed 12-week roadmap for a specific path.
+ * Generates a detailed 12-week roadmap for a specific path via server-side API.
  */
 export async function generateRoadmapForPath(pathName: string) {
   try {
-    // 1. Prepare data
-    const dataRes = await fetch("/api/analyze/prepare");
-    const dataResult = await dataRes.json();
-    if (!dataResult.success) throw new Error("Gagal menyiapkan data.");
-
-    const { profile, cvUpload, analysis } = dataResult.data;
-    if (!analysis) throw new Error("Silakan lakukan analisis CV terlebih dahulu di halaman Analisis CV.");
-    
-    const result = analysis.result as AnalysisResult;
-    const path = result.careerPaths.find((p: any) => p.nama === pathName) || result.careerPaths[0];
-    if (!path) throw new Error("Tidak ada jalur karier yang tersedia untuk dianalisis.");
-    
-    const actualPathName = path.nama;
-
-    // 2. Call Gemini
-    const { getAI, GEMINI_MODEL, buildRoadmapGenerationPrompt } = await import("@/lib/gemini");
-    const ai = getAI();
-    const prompt = buildRoadmapGenerationPrompt(profile, cvUpload.extractedText || "", path);
-
-    const roadmapResponse = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json"
-      }
-    });
-
-    const roadmapResponseText = roadmapResponse.text;
-    
-    if (!roadmapResponseText) throw new Error("AI tidak memberikan respon untuk roadmap");
-
-    let roadmapRaw;
-    try {
-      // With responseMimeType: "application/json", it might be a direct JSON string or wrapped in markdown
-      const cleanJson = roadmapResponseText.replace(/```json|```/g, "").trim();
-      roadmapRaw = JSON.parse(cleanJson);
-    } catch (e) {
-      console.error("Failed to parse roadmap JSON:", roadmapResponseText);
-      throw new Error("AI memberikan format data yang tidak bisa dibaca. Silakan coba lagi.");
-    }
-
-    // Safety check: if AI returns { roadmap: [] } instead of []
-    if (!Array.isArray(roadmapRaw) && roadmapRaw.roadmap) {
-      roadmapRaw = roadmapRaw.roadmap;
-    }
-    
-    if (!Array.isArray(roadmapRaw)) {
-      throw new Error("Format roadmap dari AI tidak valid (Bukan Array)");
-    }
-
-    // Normalize roadmap data structure before saving
-    const roadmap = roadmapRaw.map((item: any) => ({
-      minggu: item.minggu || item.week || 0,
-      fase: (item.fase || item.phase || "Fondasi").toLowerCase(),
-      title: item.title || item.judul || "Langkah Mingguan",
-      tasks: Array.isArray(item.tasks) ? item.tasks : (Array.isArray(item.tugas) ? item.tugas : []),
-      hours: item.hours || item.jam || "10-15",
-      resource: item.resource || item.sumber || "-",
-      resourceLink: item.resourceLink || item.resource_link || item.link || "#"
-    }));
-
-    // 3. Save to DB
-    const updatedPaths = result.careerPaths.map(p => {
-      if (p.nama === actualPathName) return { ...p, roadmap };
-      return p;
-    });
-
-    const updatedResult = { ...result, careerPaths: updatedPaths };
-
-    const selectRes = await fetch("/api/roadmap/select", {
+    const response = await fetch("/api/ai/roadmap", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pathName: actualPathName, fullResult: updatedResult })
+      body: JSON.stringify({ pathName })
     });
 
-    const selectResult = await selectRes.json();
-    if (!selectResult.success) {
-      throw new Error(selectResult.error || "Gagal menyimpan roadmap ke database");
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error || "Gagal membangun roadmap");
     }
 
-    return { success: true, data: roadmap };
+    return result;
   } catch (error) {
     console.error("Roadmap Generation Error:", error);
     throw error;

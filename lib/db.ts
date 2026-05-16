@@ -31,6 +31,8 @@ export const db = {
       }),
     create: (userId: string, data: any) =>
       prisma.analysis.create({ data: { ...data, userId } }),
+    update: (id: string, data: any) =>
+      prisma.analysis.update({ where: { id }, data }),
     getAll: (userId: string) =>
       prisma.analysis.findMany({ where: { userId } }),
     upsertLatest: async (userId: string, data: any) => {

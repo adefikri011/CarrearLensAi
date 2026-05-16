@@ -4,27 +4,27 @@ import { GoogleGenAI } from "@google/genai";
  * Gemini AI Client configuration and prompt builder
  * for CareerLens AI.
  * 
- * NOTE: As per system instructions, Gemini API MUST be called 
- * from the client-side. This library provides helpers for that.
+ * IMPORTANT: Gemini API is called SERVER-SIDE for security.
  */
 
 let aiInstance: GoogleGenAI | null = null;
 
 export const getAI = () => {
   if (!aiInstance) {
-    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+    // Prefer server-side secret, fallback to (insecure) public key if absolutely necessary for backward compatibility
+    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+    
     if (!apiKey) {
-      console.warn("NEXT_PUBLIC_GEMINI_API_KEY is missing.");
+      console.error("GEMINI_API_KEY is missing in environment variables.");
     }
-    const now = new Date().toISOString();
-    console.log(`[${now}] Initializing Gemini with model:`, GEMINI_MODEL);
+    
     aiInstance = new GoogleGenAI({ apiKey });
   }
   return aiInstance;
 };
 
-// Recommended model for text tasks
-export const GEMINI_MODEL = "gemini-1.5-flash-latest";
+// Recommended model for production tasks
+export const GEMINI_MODEL = "gemini-1.5-flash";
 
 /**
  * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.
