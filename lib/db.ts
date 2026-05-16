@@ -51,9 +51,9 @@ export const db = {
   },
   roadmap: {
     getProgress: (userId: string) =>
-      (prisma as any).roadmapProgress.findMany({ where: { userId } }),
+      prisma.roadmapProgress.findMany({ where: { userId } }),
     upsertProgress: (userId: string, taskId: string, weekId: string, completed: boolean) =>
-      (prisma as any).roadmapProgress.upsert({
+      prisma.roadmapProgress.upsert({
         where: { userId_taskId: { userId, taskId } },
         create: { userId, taskId, weekId, completed },
         update: { completed }

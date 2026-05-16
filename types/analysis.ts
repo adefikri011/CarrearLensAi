@@ -15,6 +15,14 @@ export interface AnalysisResult {
     }[];
   };
   careerPaths: CareerPath[];
+  roadmap90Hari?: {
+    minggu: number;
+    fase: 'fondasi' | 'pengembangan' | 'persiapan';
+    judul: string;
+    tugas: { id: string; text: string; selesai: boolean; }[];
+    resource: { judul: string; url: string; platform: string; };
+    estimasiJam: number;
+  }[];
   skillRadar: {
     teknisDigital: number;
     komunikasi: number;

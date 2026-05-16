@@ -137,7 +137,19 @@ Kembalikan HANYA JSON valid dengan struktur ini:
       "sertifikasiRekomendasi": string[],
       "jobDemand": "tinggi"|"sedang"|"rendah",
       "trendArah": "naik"|"stabil"|"turun",
-      "roadmapSummary": string (3 kalimat strategi utama)
+      "roadmapSummary": string
+    }
+  ],
+  "roadmap90Hari": [
+    {
+      "minggu": number,
+      "fase": "fondasi"|"pengembangan"|"persiapan",
+      "judul": string,
+      "tugas": [
+        { "id": string, "text": string, "selesai": false }
+      ],
+      "resource": { "judul": string, "url": string, "platform": string },
+      "estimasiJam": number
     }
   ],
   "skillRadar": {
