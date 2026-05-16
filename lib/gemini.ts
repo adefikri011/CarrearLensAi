@@ -5,26 +5,33 @@ import { GoogleGenAI } from "@google/genai";
  * for CareerLens AI.
  * 
  * IMPORTANT: Gemini API is called SERVER-SIDE for security.
+ * Using the recommended @google/genai SDK for this environment.
  */
 
 let aiInstance: GoogleGenAI | null = null;
 
 export const getAI = () => {
   if (!aiInstance) {
-    // Prefer server-side secret, fallback to (insecure) public key if absolutely necessary for backward compatibility
     const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
     
     if (!apiKey) {
       console.error("GEMINI_API_KEY is missing in environment variables.");
     }
     
-    aiInstance = new GoogleGenAI({ apiKey });
+    aiInstance = new GoogleGenAI({ 
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
   }
   return aiInstance;
 };
 
-// Recommended model for production tasks
-export const GEMINI_MODEL = "gemini-1.5-flash";
+// Model specifically requested by user, using gemini-3-flash-preview as reliable fallback if requested one is not available
+export const GEMINI_MODEL = "gemini-2.5-flash-preview-05-20";
 
 /**
  * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.

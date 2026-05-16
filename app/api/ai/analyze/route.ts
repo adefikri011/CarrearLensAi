@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
       model: GEMINI_MODEL,
       contents: prompt,
       config: {
+        temperature: 0.3,
+        maxOutputTokens: 4096,
         responseMimeType: "application/json"
       }
     });
