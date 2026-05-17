@@ -99,7 +99,7 @@ export default function SettingsPage() {
       const result = await res.json();
       if (result.success) {
         toast.success("Profil berhasil diperbarui!");
-        update(); // Refresh session
+        await update({ image: avatarUrl, name: displayName }); // Refresh session with latest data
       } else {
         toast.error(result.error || "Gagal memperbarui profil");
       }
@@ -261,9 +261,10 @@ export default function SettingsPage() {
                                    const res = await fetch("/api/upload/avatar", { method: "POST", body: formData });
                                    const result = await res.json();
                                    if (result.success) {
-                                     setAvatarUrl(result.data.url);
+                                     const newUrl = result.data.url;
+                                     setAvatarUrl(newUrl);
                                      toast.success("Foto profil berhasil diperbarui!");
-                                     update();
+                                     await update({ image: newUrl, name: displayName });
                                    } else { toast.error(result.error || "Gagal mengunggah foto"); }
                                  } catch (err) { toast.error("Terjadi kesalahan saat mengunggah"); } finally { setIsSaving(false); }
                                }}
@@ -298,9 +299,10 @@ export default function SettingsPage() {
                                         body: JSON.stringify({ image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}` }),
                                       });
                                       if ((await res.json()).success) {
-                                        setAvatarUrl(`https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`);
+                                        const defaultUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`;
+                                        setAvatarUrl(defaultUrl);
                                         toast.success("Foto dihapus (kembali ke default)");
-                                        update();
+                                        await update({ image: defaultUrl, name: displayName });
                                       }
                                     } finally { setIsSaving(false); }
                                   }}
