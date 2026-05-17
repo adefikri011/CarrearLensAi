@@ -14,15 +14,19 @@ import {
   ChevronRight,
   Calendar,
   LayoutDashboard,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles,
+  Zap,
+  BookOpen,
+  ArrowUpRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import PageLoader from '@/components/shared/PageLoader'
 import { Button } from '@/components/ui/button'
 import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge"
 
-// Types based on the prompt
 interface RoadmapTask {
   id: string
   text: string
@@ -93,7 +97,6 @@ export default function RoadmapPage() {
   const toggleTask = async (taskId: string, weekNumber: number) => {
     const isCurrentlyCompleted = completedTasks.includes(taskId)
     
-    // Optimistic update
     setCompletedTasks(prev => 
       isCurrentlyCompleted 
         ? prev.filter(id => id !== taskId)
@@ -136,7 +139,7 @@ export default function RoadmapPage() {
     return { total, completed, remaining: total - completed, percentage }
   }, [roadmapData, completedTasks])
 
-  if (isLoading) return <PageLoader isLoading={true} text="Menyusun Roadmap Strategis..." />
+  if (isLoading) return <PageLoader isLoading={true} text="Menyiapkan Strategi Kariermu..." />
 
   if (!analysis || !analysis.result?.roadmap90Hari || analysis.result.roadmap90Hari.length === 0) {
     return (
@@ -146,21 +149,21 @@ export default function RoadmapPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md space-y-8"
         >
-          <div className="w-20 h-20 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-slate-50 border border-slate-100 rounded-[2rem] flex items-center justify-center mx-auto mb-4">
             <Search className="w-10 h-10 text-slate-300" />
           </div>
           <div className="space-y-4">
-            <h1 className="text-3xl font-black text-black uppercase italic tracking-tighter">Roadmap Kosong</h1>
-            <p className="text-slate-500 font-medium">
-              Selesaikan analisis CV terlebih dahulu untuk mendapatkan roadmap 12 minggu yang disesuaikan dengan profil SMK-mu.
+            <h1 className="text-3xl font-black text-black uppercase italic tracking-tighter">Peta Belum Terbuka</h1>
+            <p className="text-slate-500 font-medium text-sm leading-relaxed px-4">
+              Selesaikan analisis CV terlebih dahulu untuk merancang roadmap 90 hari yang disesuaikan dengan profil SMK-mu.
             </p>
           </div>
           <Button 
             onClick={() => router.push('/cv-builder')}
-            className="w-full h-14 bg-black hover:bg-[#1D9E75] text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg"
+            className="w-full h-14 bg-black hover:bg-[#1D9E75] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all shadow-xl shadow-black/10"
           >
             Mulai Analisis Sekarang
-            <ArrowRight className="ml-2 w-4 h-4" />
+            <ArrowRight className="ml-3 w-4 h-4" />
           </Button>
         </motion.div>
       </div>
@@ -168,169 +171,253 @@ export default function RoadmapPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <main className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12 space-y-10 md:space-y-16">
-        {/* Intro & Stats Section */}
-        <section className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-[#1D9E75] font-black text-[10px] uppercase tracking-[0.2em]">
-                <Calendar className="w-4 h-4" />
-                Roadmap 90 Hari
-              </div>
-              <h1 className="text-3xl md:text-5xl font-black text-black tracking-tight uppercase italic leading-[0.9]">
-                Misi Karier <br /> Strategis.
-              </h1>
-              <p className="text-slate-500 text-xs md:text-sm font-medium leading-relaxed max-w-md">
-                Didesain khusus untuk profil SMK-mu. Selesaikan setiap misi mingguan untuk membangun portofolio yang kompetitif.
-              </p>
+    <div className="min-h-screen bg-[#FDFDFD]">
+      {/* Header Section - Non-Sticky to avoid blocking */}
+      <div className="bg-white border-b border-slate-100">
+        <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+            <div className="space-y-6">
+               <div className="flex items-center gap-3">
+                  <div className="bg-[#1D9E75]/10 p-2 rounded-xl">
+                    <Zap className="w-5 h-5 text-[#1D9E75]" />
+                  </div>
+                  <span className="text-[10px] font-black text-[#1D9E75] uppercase tracking-[0.3em]">90 Hari Misi Transformasi</span>
+               </div>
+               <div className="space-y-2">
+                 <h1 className="text-4xl md:text-6xl font-black text-black tracking-tight uppercase italic leading-[0.85]">
+                   Roadmap <br /> <span className="text-[#1D9E75]">Arsitek</span> Karier.
+                 </h1>
+                 <p className="text-slate-500 text-xs md:text-sm font-bold uppercase tracking-widest max-w-xl leading-relaxed">
+                   Setiap langkah dirancang presisi untuk lulusan {analysis.selectedPath}. Selesaikan misi mingguan untuk membuka peluang kerja.
+                 </p>
+               </div>
             </div>
-            
-            <div className="bg-white border border-slate-100 p-6 rounded-3xl md:min-w-[300px] space-y-4 shadow-sm">
-              <div className="flex justify-between items-end">
-                <div className="space-y-1">
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">Total Progres</p>
-                  <p className="text-2xl font-black text-black italic tracking-tighter">{stats.percentage}%</p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-[#1D9E75]/10 flex items-center justify-center text-[#1D9E75]">
-                   <Trophy className="w-5 h-5" />
-                </div>
-              </div>
-              <Progress value={stats.percentage} className="h-1.5 bg-slate-100" />
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter flex items-center gap-2">
-                <CheckCircle2 className="w-3 h-3 text-[#1D9E75]" />
-                {stats.completed} dari {stats.total} misi selesai
-              </p>
+
+            {/* Stats Circular Card */}
+            <div className="bg-black text-white rounded-[2.5rem] p-8 md:p-10 md:min-w-[340px] shadow-2xl relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-[#1D9E75] opacity-20 blur-[60px] group-hover:opacity-30 transition-opacity" />
+               <div className="flex items-start justify-between relative z-10">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-[#1D9E75] uppercase tracking-widest">Total Mastery</p>
+                    <p className="text-4xl font-black italic tracking-tighter">{stats.percentage}%</p>
+                  </div>
+                  <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+                    <Trophy className="w-7 h-7 text-[#1D9E75]" />
+                  </div>
+               </div>
+               <div className="mt-8 space-y-4 relative z-10">
+                  <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${stats.percentage}%` }}
+                      className="h-full bg-[#1D9E75] transition-all duration-1000"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <span>{stats.completed} Misi Selesai</span>
+                    <span className="text-white">{stats.remaining} Tersisa</span>
+                  </div>
+               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Phase Selector */}
-          <div className="flex items-center gap-2 bg-slate-100/50 p-1.5 rounded-2xl w-fit">
-            {(['fondasi', 'pengembangan', 'persiapan'] as const).map((phase) => (
-              <button
-                key={phase}
-                onClick={() => setActivePhase(phase)}
-                className={cn(
-                  "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                  activePhase === phase 
-                    ? "bg-black text-white shadow-lg scale-105" 
-                    : "text-slate-400 hover:text-black"
-                )}
-              >
-                {phase}
-              </button>
-            ))}
-          </div>
-        </section>
+      <main className="max-w-6xl mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
+        
+        {/* Phase Navigation Sidebar (Desktop) */}
+        <aside className="lg:col-span-3 space-y-8 hidden lg:block">
+           <div className="sticky top-12 space-y-6">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-4">Pilih Tahapan</p>
+              <nav className="space-y-3">
+                {(['fondasi', 'pengembangan', 'persiapan'] as const).map((phase) => {
+                  const isActive = activePhase === phase;
+                  const phaseWeeks = roadmapData.filter(w => w.fase === phase);
+                  const isDone = phaseWeeks.every(w => w.tugas.every(t => completedTasks.includes(t.id)));
+                  
+                  return (
+                    <button
+                      key={phase}
+                      onClick={() => setActivePhase(phase)}
+                      className={cn(
+                        "w-full flex items-center justify-between p-5 rounded-[2rem] transition-all text-left group",
+                        isActive 
+                          ? "bg-black text-white shadow-2xl scale-105" 
+                          : "text-slate-400 hover:text-black hover:bg-slate-50"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-8 h-8 rounded-xl flex items-center justify-center transition-all",
+                          isActive ? "bg-[#1D9E75] text-white" : "bg-slate-100 text-slate-300 group-hover:bg-slate-200"
+                        )}>
+                          {isActive ? <Zap className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                        </div>
+                        <span className="font-black text-[11px] uppercase tracking-widest">{phase}</span>
+                      </div>
+                      {isDone && <CheckCircle2 className="w-4 h-4 text-[#1D9E75]" />}
+                    </button>
+                  );
+                })}
+              </nav>
 
-        {/* Weekly List */}
-        <div className="relative">
+              <div className="bg-[#1D9E75]/5 rounded-3xl p-6 border border-[#1D9E75]/10 space-y-4">
+                 <div className="flex items-center gap-3">
+                    <Sparkles className="w-5 h-5 text-[#1D9E75]" />
+                    <p className="font-black text-[10px] uppercase tracking-widest text-[#1D9E75]">AI Recommendation</p>
+                 </div>
+                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight leading-relaxed">
+                   Fokus pada fase <b>{activePhase}</b> minggu ini untuk mengoptimalkan persiapan teknismu.
+                 </p>
+              </div>
+           </div>
+        </aside>
+
+        {/* Phase Nav (Mobile) */}
+        <div className="lg:hidden flex gap-2 bg-slate-50 p-2 rounded-2xl overflow-x-auto no-scrollbar">
+           {(['fondasi', 'pengembangan', 'persiapan'] as const).map((phase) => (
+             <button
+               key={phase}
+               onClick={() => setActivePhase(phase)}
+               className={cn(
+                 "px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all",
+                 activePhase === phase ? "bg-black text-white shadow-lg" : "text-slate-400"
+               )}
+             >
+               {phase}
+             </button>
+           ))}
+        </div>
+
+        {/* Roadmap Timeline Content */}
+        <section className="lg:col-span-9">
           <AnimatePresence mode="wait">
             <motion.div
               key={activePhase}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-8 md:space-y-12"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12 md:space-y-20 relative"
             >
+              {/* Vertical Connector Line (Desktop) */}
+              <div className="absolute left-[39px] top-10 bottom-10 w-0.5 bg-slate-100 hidden md:block" />
+
               {roadmapData
                 .filter(w => w.fase === activePhase)
-                .map((week) => {
-                  const isWeekDone = week.tugas.every(t => completedTasks.includes(t.id))
+                .map((week, idx) => {
+                  const isWeekDone = week.tugas.every(t => completedTasks.includes(t.id));
+                  
                   return (
-                    <div key={week.minggu} className="space-y-6">
-                      <div className="flex items-center gap-4">
-                        <div className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center font-black italic shadow-sm",
-                          isWeekDone ? "bg-[#1D9E75] text-white" : "bg-black text-white"
-                        )}>
-                          {week.minggu}
-                        </div>
-                        <h3 className={cn(
-                          "text-xl font-black tracking-tight uppercase italic",
-                          isWeekDone ? "text-[#1D9E75]" : "text-black"
-                        )}>
-                          {week.judul}
-                        </h3>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {week.tugas.map((task) => (
-                          <button
-                            key={task.id}
-                            onClick={() => toggleTask(task.id, week.minggu)}
-                            className={cn(
-                              "flex items-start gap-4 p-4 rounded-2xl border text-left transition-all active:scale-95 group",
-                              completedTasks.includes(task.id) 
-                                ? "bg-slate-50 border-[#1D9E75]/20 text-[#1D9E75]/70" 
-                                : "bg-white border-slate-100 hover:border-black"
-                            )}
-                          >
-                            <div className={cn(
-                              "w-5 h-5 rounded-md border-2 mt-0.5 flex items-center justify-center shrink-0",
-                              completedTasks.includes(task.id) ? "bg-[#1D9E75] border-[#1D9E75] text-white" : "border-slate-200"
-                            )}>
-                              {completedTasks.includes(task.id) && <Check className="w-3 h-3 stroke-[4px]" />}
-                            </div>
-                            <span className="text-[11px] font-bold uppercase leading-tight tracking-tight">
-                              {task.text}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-
-                      {week.resource && (
-                        <a 
-                          href={week.resource.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 hover:border-[#1D9E75] transition-colors group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-[#1D9E75]">
-                              <ExternalLink className="w-4 h-4" />
-                            </div>
-                            <div className="space-y-0.5">
-                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Materi</p>
-                              <p className="text-[10px] font-black truncate max-w-[200px] md:max-w-md">{week.resource.judul}</p>
-                            </div>
+                    <div key={week.minggu} className="relative z-10 group">
+                      <div className="flex flex-col md:flex-row gap-8">
+                        
+                        {/* Week Indicator */}
+                        <div className="flex-shrink-0 flex md:block items-center gap-4">
+                          <div className={cn(
+                            "w-20 h-20 rounded-[2rem] flex flex-col items-center justify-center border-4 transition-all duration-500",
+                            isWeekDone ? "bg-[#1D9E75] border-[#1D9E75] text-white shadow-xl shadow-[#1D9E75]/20" : "bg-white border-slate-50 text-black group-hover:border-black"
+                          )}>
+                            <p className="text-[8px] font-black uppercase tracking-widest opacity-60">Week</p>
+                            <p className="text-3xl font-black italic tracking-tighter">{week.minggu}</p>
                           </div>
-                          <ArrowRight className="w-4 h-4 text-[#1D9E75] opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                        </a>
-                      )}
+                        </div>
+
+                        {/* Week Content */}
+                        <div className="flex-1 space-y-8">
+                           <div className="space-y-2">
+                             <div className="flex items-center gap-3">
+                               <Badge className="bg-slate-100 text-slate-500 border-none px-3 py-0.5 rounded-full font-black text-[8px] tracking-[0.2em] uppercase">
+                                 {week.estimasiJam} Jam Belajar
+                               </Badge>
+                               {isWeekDone && <p className="text-[8px] font-black text-[#1D9E75] uppercase tracking-widest flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Selesai</p>}
+                             </div>
+                             <h3 className="text-2xl md:text-3xl font-black text-black tracking-tight uppercase italic group-hover:text-[#1D9E75] transition-colors">
+                               {week.judul}
+                             </h3>
+                           </div>
+
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             {week.tugas.map((task) => {
+                               const isTaskDone = completedTasks.includes(task.id);
+                               return (
+                                 <button
+                                   key={task.id}
+                                   onClick={() => toggleTask(task.id, week.minggu)}
+                                   className={cn(
+                                     "flex items-start gap-4 p-5 rounded-3xl border transition-all text-left relative overflow-hidden active:scale-[0.98] group/task",
+                                     isTaskDone 
+                                       ? "bg-slate-50 border-[#1D9E75]/20 text-[#1D9E75]/80" 
+                                       : "bg-white border-slate-100 hover:border-black hover:shadow-xl hover:shadow-black/5"
+                                   )}
+                                 >
+                                   <div className={cn(
+                                     "w-6 h-6 rounded-lg border-2 mt-0.5 flex items-center justify-center shrink-0 transition-all",
+                                     isTaskDone ? "bg-[#1D9E75] border-[#1D9E75] text-white" : "border-slate-200 group-hover/task:border-black"
+                                   )}>
+                                     {isTaskDone && <Check className="w-4 h-4 stroke-[4px]" />}
+                                   </div>
+                                   <span className="text-[11px] font-bold uppercase leading-tight tracking-tight">
+                                     {task.text}
+                                   </span>
+                                 </button>
+                               );
+                             })}
+                           </div>
+
+                           {/* Resources Card */}
+                           {week.resource && (
+                             <motion.div 
+                               initial={{ opacity: 0, y: 10 }}
+                               whileInView={{ opacity: 1, y: 0 }}
+                               viewport={{ once: true }}
+                               className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-xl transition-all"
+                             >
+                               <div className="flex items-center gap-4">
+                                  <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-[#1D9E75]">
+                                     <BookOpen className="w-7 h-7" />
+                                  </div>
+                                  <div className="space-y-1">
+                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{week.resource.platform}</p>
+                                     <p className="font-black text-sm uppercase tracking-tight">{week.resource.judul}</p>
+                                  </div>
+                               </div>
+                               <Button 
+                                  asChild
+                                  variant="ghost"
+                                  className="h-12 px-6 rounded-xl hover:bg-[#1D9E75] hover:text-white group/btn"
+                               >
+                                 <a href={week.resource.url} target="_blank" rel="noopener noreferrer">
+                                   <span className="font-black text-[10px] uppercase tracking-widest">Buka Materi</span>
+                                   <ArrowUpRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
+                                 </a>
+                               </Button>
+                             </motion.div>
+                           )}
+                        </div>
+                      </div>
                     </div>
-                  )
+                  );
                 })}
             </motion.div>
           </AnimatePresence>
-        </div>
 
-        {/* Motivational Footer */}
-        <section className="pt-20">
-          <div className="bg-black rounded-[40px] p-8 md:p-16 relative overflow-hidden text-center md:text-left">
-            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none hidden md:block">
-              <Trophy className="w-48 h-48 text-white" />
-            </div>
-            <div className="max-w-xl space-y-8 relative z-10">
-              <div className="space-y-4">
-                <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase italic leading-tight">
-                  Konsistensi Adalah <br /> Kunci Kesuksesan.
-                </h2>
-                <p className="text-slate-400 font-medium text-sm">
-                  Jangan terburu-buru. Fokus pada kualitas setiap tugas yang kamu kerjakan. 
-                  Lulusan SMK yang sukses adalah mereka yang berani belajar setiap hari.
+          {/* Motivational Footer */}
+          <div className="mt-24 pt-24 border-t border-slate-100 text-center space-y-12">
+             <div className="max-w-xl mx-auto space-y-6">
+                <div className="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mx-auto scale-110 shadow-2xl">
+                   <Target className="w-8 h-8" />
+                </div>
+                <h3 className="text-3xl font-black italic uppercase tracking-tighter">Tetap Konsisten, <span className="text-[#1D9E75] uppercase">Kemenangan</span> Menantimu.</h3>
+                <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] leading-relaxed">
+                  Lulusan SMK yang sukses adalah mereka yang berani melangkah setiap hari. Jangan menyerah sebelum garis finish.
                 </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start">
-                <Button 
-                  onClick={() => router.push('/dashboard')}
-                  className="bg-white text-black hover:bg-[#1D9E75] hover:text-white h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] transition-all"
-                >
-                  <LayoutDashboard className="w-4 h-4 mr-2" />
-                  Dashboard
-                </Button>
-              </div>
-            </div>
+             </div>
+             <Button 
+                onClick={() => router.push('/dashboard')}
+                className="h-14 px-12 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-[#1D9E75] shadow-2xl transition-all"
+             >
+                <LayoutDashboard className="w-4 h-4 mr-3" /> Dashboard Proyek
+             </Button>
           </div>
         </section>
       </main>

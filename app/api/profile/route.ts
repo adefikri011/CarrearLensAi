@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         targetPosisi: body.targetPos as any,
         preferensiKerja: body.workPref,
         softSkills: body.softSkills || [],
-        kotaTarget: body.city ? [body.city] : [],
+        kotaTarget: body.kotaTarget || (body.city ? [body.city] : []),
         sertifikasi: body.sertifikasi || [],
         pengalaman: body.pengalaman || null,
     });
