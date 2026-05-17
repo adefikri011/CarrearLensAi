@@ -303,15 +303,43 @@ export default function ProfilePage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gender</Label>
-                        <select 
-                          value={formData.gender}
-                          className="w-full h-14 rounded-2xl bg-white border border-slate-100 px-4 font-bold text-sm appearance-none outline-none"
-                          onChange={(e) => setFormData({...formData, gender: e.target.value})}
-                        >
-                          <option>Laki-laki</option>
-                          <option>Perempuan</option>
-                        </select>
+                        <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Gender</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 uppercase italic"
+                            >
+                              {formData.gender || "Pilih Gender"}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 bg-white" align="start">
+                            <Command>
+                              <CommandList>
+                                <CommandGroup>
+                                  {["Laki-laki", "Perempuan"].map((g) => (
+                                    <CommandItem
+                                      key={g}
+                                      value={g}
+                                      onSelect={() => setFormData({ ...formData, gender: g })}
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          formData.gender === g ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                      {g}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
                     </div>
                  </div>
@@ -472,8 +500,8 @@ export default function ProfilePage() {
                             className="h-12 rounded-xl bg-white border-slate-100 font-bold text-xs"
                             placeholder="e.g. AutoCAD"
                           />
-                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black hover:bg-black/80">
-                            <Plus className="w-4 h-4 text-white" />
+                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black hover:bg-black/90 active:scale-95 transition-all">
+                            <Plus className="w-5 h-5 text-white" />
                           </Button>
                        </div>
                        <div className="flex flex-wrap gap-2">
@@ -493,6 +521,24 @@ export default function ProfilePage() {
                         className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm"
                         placeholder="e.g. Junior Developer"
                        />
+                    </div>
+
+                    <div className="space-y-4">
+                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Ruang Kerja</Label>
+                       <div className="grid grid-cols-3 gap-2">
+                          {["Remote", "On-site", "Hybrid"].map(pref => (
+                            <button
+                              key={pref}
+                              onClick={() => setFormData({...formData, workPref: pref})}
+                              className={cn(
+                                "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                                formData.workPref === pref ? "bg-black text-white border-black" : "bg-white text-slate-400 hover:text-black hover:border-slate-200 border-slate-50"
+                              )}
+                            >
+                              {pref}
+                            </button>
+                          ))}
+                       </div>
                     </div>
 
                     <div className="space-y-3">
