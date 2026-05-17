@@ -1,14 +1,67 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAppStore } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
-import { BrainCircuit, Bell, Menu, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { 
+  BrainCircuit, 
+  LayoutDashboard, 
+  User, 
+  FileText, 
+  Map as MapIcon 
+} from "lucide-react";
+import Link from "next/link";
+
+interface BottomNavItemProps {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  isActive: boolean;
+}
+
+function BottomNavItem({ href, icon: Icon, label, isActive }: BottomNavItemProps) {
+  return (
+    <Link 
+      href={href}
+      className={cn(
+        "flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors",
+        isActive ? "text-[#1D9E75]" : "text-[#9CA3AF]"
+      )}
+    >
+      <Icon className={cn("w-5 h-5", isActive ? "text-[#1D9E75]" : "text-[#9CA3AF]")} />
+      <span className="text-[10px] font-bold uppercase tracking-tight">{label}</span>
+    </Link>
+  );
+}
+
+function BottomNav() {
+  const pathname = usePathname();
+
+  const items = [
+    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+    { icon: User, label: "Profil Karier", href: "/profile" },
+    { icon: FileText, label: "Analisis CV", href: "/cv-builder" },
+    { icon: MapIcon, label: "Roadmap Karier", href: "/roadmap" },
+  ];
+
+  return (
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 px-2 pb-safe z-50 flex items-center justify-around shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+      {items.map((item) => (
+        <BottomNavItem
+          key={item.href}
+          href={item.href}
+          icon={item.icon}
+          label={item.label}
+          isActive={pathname === item.href}
+        />
+      ))}
+    </nav>
+  );
+}
 
 function DashboardLayoutContent({
   children,
@@ -18,7 +71,6 @@ function DashboardLayoutContent({
   const { data: session, status } = useSession();
   const router = useRouter();
   const { isSidebarOpen, setSidebarOpen } = useAppStore();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -32,7 +84,6 @@ function DashboardLayoutContent({
         setSidebarOpen(false);
       } else {
         setSidebarOpen(true);
-        setIsMobileMenuOpen(false);
       }
     };
 
@@ -61,7 +112,7 @@ function DashboardLayoutContent({
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F9FAFB]">
-      {/* Sidebar - hidden on mobile flow, but shown on desktop */}
+      {/* Sidebar - Desktop Only */}
       <div className="hidden md:flex h-full">
         <Sidebar />
       </div>
@@ -70,77 +121,16 @@ function DashboardLayoutContent({
         "flex-1 flex flex-col min-w-0 transition-all duration-300 ease-[0.22,1,0.36,1]",
         isSidebarOpen ? "md:pl-[260px]" : "md:pl-[72px]"
       )}>
-        {/* Mobile Topbar */}
-        <div className="md:hidden flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-30">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-teal flex items-center justify-center shadow-lg shadow-teal/10">
-              <BrainCircuit className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-[#030712] tracking-tight">
-              CareerLens <span className="text-teal">AI</span>
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <button className="p-2 text-gray-400 hover:text-black transition-colors">
-              <Bell className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 text-black bg-gray-50 rounded-xl"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-
-        <main className="flex-1 overflow-y-auto w-full p-4 sm:p-6 md:p-10">
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto w-full p-4 sm:p-6 md:p-10 pb-20 md:pb-10">
            <div className="max-w-7xl mx-auto">
             {children}
            </div>
         </main>
       </div>
 
-      {/* Mobile drawer menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 z-[100] md:hidden">
-            {/* Backdrop */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm" 
-            />
-            
-            {/* Sidebar content in Drawer */}
-            <motion.div 
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="absolute left-0 top-0 h-full w-[280px] bg-white shadow-2xl flex flex-col"
-            >
-              <div className="flex items-center justify-between p-6 border-b border-gray-50">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-teal flex items-center justify-center shadow-lg shadow-teal/10">
-                    <BrainCircuit className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="font-bold text-black tracking-tight">CareerLens</span>
-                </div>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-gray-400 hover:text-black">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto">
-                <Sidebar inDrawer onClose={() => setIsMobileMenuOpen(false)} />
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Bottom Navigation - Mobile Only */}
+      <BottomNav />
     </div>
   );
 }
