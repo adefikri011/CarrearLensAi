@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       contents: prompt,
       config: {
         temperature: 0.3,
-        maxOutputTokens: 4096,
+        maxOutputTokens: 8192,
         responseMimeType: "application/json"
       }
     });
