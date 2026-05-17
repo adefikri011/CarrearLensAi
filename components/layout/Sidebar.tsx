@@ -114,9 +114,9 @@ export default function Sidebar({
           !isSidebarOpen && !inDrawer && "justify-center"
         )}>
           <div className="w-8 h-8 shrink-0 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center relative">
-            {session?.user?.id ? (
+            {session?.user ? (
                <Image 
-                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`} 
+                 src={session.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id || "user"}`} 
                  alt="Avatar" 
                  fill
                  className="object-cover" 

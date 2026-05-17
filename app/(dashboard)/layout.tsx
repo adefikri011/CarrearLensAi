@@ -85,7 +85,7 @@ function MobileHeader({ session }: { session: any }) {
       <div className="flex items-center gap-3">
         <Link href="/profile" className="w-8 h-8 rounded-full border border-gray-100 bg-gray-50 overflow-hidden relative">
           <Image 
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || "user"}`} 
+            src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || "user"}`} 
             alt="Avatar" 
             fill
             className="object-cover"
