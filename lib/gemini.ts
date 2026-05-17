@@ -142,16 +142,16 @@ Kembalikan HANYA JSON valid dengan struktur ini:
   ],
   "roadmap90Hari": [
     {
-      "minggu": number, (1 sampai 12)
+      "minggu": number, (Wajib 1 sampai 12)
       "fase": "fondasi"|"pengembangan"|"persiapan",
-      "judul": string, (Judul fokus minggu ini)
+      "judul": string, (Judul progresif dan profesional)
       "tugas": [
-        { "id": string, "text": string, "selesai": false } (Minimal 3 tugas per minggu)
+        { "id": string, "text": string, "selesai": false } (Wajib minimal 5-7 tugas spesifik dan actionable per minggu)
       ],
       "resource": { "judul": string, "url": string, "platform": string },
-      "estimasiJam": number
+      "estimasiJam": number (Total jam belajar seminggu)
     }
-  ], (PENTING: Harus berisi tepat 12 elemen untuk 12 minggu)
+  ], (PENTING: Harus berisi tepat 12 elemen/minggu untuk total 90 hari)
   "skillRadar": {
     "teknisDigital": number,
     "komunikasi": number,
