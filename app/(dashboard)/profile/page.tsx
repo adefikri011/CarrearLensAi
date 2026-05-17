@@ -193,9 +193,16 @@ export default function ProfilePage() {
   }
 
   const completionPercent = Math.round(([
-    formData.name, formData.city, formData.major, 
-    formData.skills.length > 0, formData.targetPos
-  ].filter(Boolean).length / 5) * 100)
+    formData.name, 
+    formData.city, 
+    formData.province,
+    formData.schoolName,
+    formData.major, 
+    formData.skills.length > 0, 
+    formData.targetPos,
+    formData.gradYear,
+    formData.avgScore
+  ].filter(Boolean).length / 9) * 100)
 
   if (isLoading) return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 space-y-4">
@@ -237,9 +244,9 @@ export default function ProfilePage() {
            <Button 
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full md:w-auto h-12 px-8 bg-black hover:bg-[#1D9E75] text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl transition-all"
+              className="w-full md:w-auto h-12 px-8 bg-black hover:bg-[#1D9E75] text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl transition-all group"
             >
-              {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />}
               Simpan Profil
             </Button>
         </section>
@@ -328,7 +335,7 @@ export default function ProfilePage() {
                                     >
                                       <Check
                                         className={cn(
-                                          "mr-2 h-4 w-4",
+                                          "mr-2 h-4 w-4 text-[#1D9E75]",
                                           formData.gender === g ? "opacity-100" : "opacity-0"
                                         )}
                                       />
@@ -378,7 +385,7 @@ export default function ProfilePage() {
                                     >
                                       <Check
                                         className={cn(
-                                          "mr-2 h-4 w-4",
+                                          "mr-2 h-4 w-4 text-[#1D9E75]",
                                           formData.province === prov.name ? "opacity-100" : "opacity-0"
                                         )}
                                       />
@@ -422,7 +429,7 @@ export default function ProfilePage() {
                                       >
                                         <Check
                                           className={cn(
-                                            "mr-2 h-4 w-4",
+                                            "mr-2 h-4 w-4 text-[#1D9E75]",
                                             formData.city === reg.name ? "opacity-100" : "opacity-0"
                                           )}
                                         />
@@ -442,26 +449,65 @@ export default function ProfilePage() {
 
               <div className="space-y-8">
                  <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 pl-1">Pendidikan SMK</h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Sekolah</Label>
+                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Jenjang Pendidikan</Label>
+                       <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 uppercase italic"
+                            >
+                              {formData.education || "Pilih Jenjang"}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 bg-white" align="start">
+                            <Command>
+                              <CommandList>
+                                <CommandGroup>
+                                  {["SMK", "SMA", "Diploma", "Sarjana"].map((edu) => (
+                                    <CommandItem
+                                      key={edu}
+                                      value={edu}
+                                      onSelect={() => setFormData({ ...formData, education: edu })}
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4 text-[#1D9E75]",
+                                          formData.education === edu ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                      {edu}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                       </Popover>
+                    </div>
+                    <div className="space-y-2">
+                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nama Sekolah / Instansi</Label>
                        <Input 
                         value={formData.schoolName}
                         onChange={(e) => setFormData({...formData, schoolName: e.target.value})}
-                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm"
+                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm focus:ring-2 focus:ring-[#1D9E75]/20 focus:border-[#1D9E75] transition-all"
                         placeholder="SMKN 1 Bandung"
                        />
                     </div>
-                    <div className="space-y-2">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kompetensi Keahlian</Label>
+                    <div className="space-y-2 md:col-span-2">
+                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Kompetensi Keahlian (Jurusan)</Label>
                        <Input 
                         value={formData.major}
                         onChange={(e) => setFormData({...formData, major: e.target.value})}
-                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm"
+                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm focus:ring-2 focus:ring-[#1D9E75]/20 focus:border-[#1D9E75] transition-all"
                         placeholder="Rekayasa Perangkat Lunak"
                        />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 md:col-span-2">
                        <div className="space-y-2">
                           <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tahun Lulus</Label>
                           <Input 
@@ -500,7 +546,7 @@ export default function ProfilePage() {
                             className="h-12 rounded-xl bg-white border-slate-100 font-bold text-xs"
                             placeholder="e.g. AutoCAD"
                           />
-                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black hover:bg-black/90 active:scale-95 transition-all">
+                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black hover:bg-black/90 active:scale-95 transition-all flex items-center justify-center">
                             <Plus className="w-5 h-5 text-white" />
                           </Button>
                        </div>
@@ -584,9 +630,9 @@ export default function ProfilePage() {
            <Button 
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full h-16 bg-black hover:bg-[#1D9E75] text-white rounded-3xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all"
+              className="w-full h-16 bg-black hover:bg-[#1D9E75] text-white rounded-3xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all group"
             >
-              {isSaving ? <Loader2 className="w-5 h-5 animate-spin mr-3" /> : <CheckCircle2 className="w-5 h-5 mr-3" />}
+              {isSaving ? <Loader2 className="w-6 h-6 animate-spin mr-3 text-white" /> : <CheckCircle2 className="w-6 h-6 mr-3 text-white group-hover:scale-110 transition-transform" />}
               Sinkronisasi Seluruh Data Profil
             </Button>
             <p className="mt-6 text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">CareerLens AI – Indonesian SMK Edition</p>
