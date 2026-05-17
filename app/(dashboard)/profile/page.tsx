@@ -74,6 +74,7 @@ export default function ProfilePage() {
   const [skillInput, setSkillInput] = useState("")
   const [formData, setFormData] = useState({
     name: "",
+    image: "",
     age: 20,
     city: "",
     province: "",
@@ -117,8 +118,10 @@ export default function ProfilePage() {
             fetchRegencies(foundProv.id)
           }
 
+          const apiImage = p.image || ""
           setFormData({
             name: p.name || "",
+            image: apiImage,
             age: p.usia || 20,
             city: cityName,
             province: provName, 
@@ -235,9 +238,9 @@ export default function ProfilePage() {
            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10">
               <div className="relative group shrink-0">
                 <div className="w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] bg-black shadow-2xl overflow-hidden flex items-center justify-center border-4 border-white group-hover:scale-105 transition-transform duration-500 relative">
-                   {session?.user?.image ? (
+                   {formData.image || session?.user?.image ? (
                      <Image 
-                        src={session.user.image}
+                        src={formData.image || session?.user?.image || ""}
                         alt="Profile"
                         fill
                         className="object-cover"

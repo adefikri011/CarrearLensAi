@@ -83,14 +83,20 @@ function MobileHeader({ session }: { session: any }) {
       </Link>
 
       <div className="flex items-center gap-3">
-        <Link href="/profile" className="w-8 h-8 rounded-full border border-gray-100 bg-gray-50 overflow-hidden relative">
-          <Image 
-            src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || "user"}`} 
-            alt="Avatar" 
-            fill
-            className="object-cover"
-            referrerPolicy="no-referrer"
-          />
+        <Link href="/profile" className="w-8 h-8 rounded-full border border-gray-100 bg-black flex items-center justify-center overflow-hidden relative">
+          {session?.user?.image ? (
+            <Image 
+              src={session.user.image} 
+              alt="Avatar" 
+              fill
+              className="object-cover"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <span className="text-xs font-black text-[#1D9E75] italic">
+              {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : "U"}
+            </span>
+          )}
         </Link>
         <button 
           onClick={handleLogout}

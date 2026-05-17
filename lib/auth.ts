@@ -61,7 +61,26 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, trigger, session }) {
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.sub = user.id;
+        token.picture = user.image;
+        token.name = user.name;
+      }
+      
+      // If we are missing picture or name in subsequent calls, fetch it once from DB
+      // Note: In production, you might want to cache this or only do it on specific triggers
+      if (!token.picture || !token.name) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub as string },
+          select: { image: true, name: true }
+        });
+        if (dbUser) {
+          token.picture = dbUser.image;
+          token.name = dbUser.name;
+        }
+      }
+
       if (trigger === "update") {
         if (session?.image) token.picture = session.image;
         if (session?.name) token.name = session.name;
@@ -71,6 +90,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
+      }
+      if (token.name && session.user) {
+        session.user.name = token.name;
       }
       if (token.picture && session.user) {
         session.user.image = token.picture as string;

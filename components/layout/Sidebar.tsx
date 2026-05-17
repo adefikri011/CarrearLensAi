@@ -113,17 +113,19 @@ export default function Sidebar({
           "flex items-center gap-3 p-3 rounded-2xl border border-gray-100 bg-gray-50/50",
           !isSidebarOpen && !inDrawer && "justify-center"
         )}>
-          <div className="w-8 h-8 shrink-0 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center relative">
-            {session?.user ? (
+          <div className="w-8 h-8 shrink-0 rounded-full bg-black border border-gray-100 overflow-hidden flex items-center justify-center relative">
+            {session?.user?.image ? (
                <Image 
-                 src={session.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id || "user"}`} 
+                 src={session.user.image} 
                  alt="Avatar" 
                  fill
                  className="object-cover" 
                  referrerPolicy="no-referrer"
                />
             ) : (
-              <User className="w-4 h-4 text-gray-400" />
+              <span className="text-xs font-black text-[#1D9E75] italic">
+                {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : "U"}
+              </span>
             )}
           </div>
           {(isSidebarOpen || inDrawer) && (

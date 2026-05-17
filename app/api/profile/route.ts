@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { name: true }
+      select: { name: true, image: true }
     });
 
     if (!profile) {
@@ -73,7 +73,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ 
         success: true, 
         data: { 
-          name: user?.name || session.user.name 
+          name: user?.name || session.user.name,
+          image: user?.image || session.user.image
         } 
       });
     }
@@ -82,6 +83,7 @@ export async function GET(req: NextRequest) {
     const data = {
       ...profile,
       name: user?.name || "",
+      image: user?.image || "",
     };
 
     return NextResponse.json({ success: true, data });
