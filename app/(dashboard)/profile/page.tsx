@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, 
@@ -56,6 +58,7 @@ interface Region {
 
 export default function ProfilePage() {
   const router = useRouter()
+  const { data: session, update } = useSession()
   const { toast } = useToast()
   
   const [isLoading, setIsLoading] = useState(true)
@@ -178,6 +181,7 @@ export default function ProfilePage() {
           avgScore: p.nilaiRata?.toString() || prev.avgScore
         }))
         toast({ title: "Profil Tersimpan", description: "Data masa depanmu sudah diamankan." })
+        update() // Sync with session if name changed
         setIsUpdate(true)
         router.refresh()
       } else {
@@ -205,13 +209,15 @@ export default function ProfilePage() {
     formData.name, 
     formData.city, 
     formData.province,
+    formData.gender,
     formData.schoolName,
+    formData.education,
     formData.major, 
     formData.skills.length > 0, 
     formData.targetPos,
     formData.gradYear,
     formData.avgScore
-  ].filter(Boolean).length / 9) * 100)
+  ].filter(Boolean).length / 11) * 100)
 
   if (isLoading) return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 space-y-4">
@@ -227,17 +233,22 @@ export default function ProfilePage() {
         {/* Header with Save Button */}
         <section className="flex flex-col md:flex-row items-center justify-between gap-6 pb-10 border-b border-slate-100">
            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10">
-              <div className="relative group">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] bg-black shadow-2xl overflow-hidden flex items-center justify-center border-4 border-white group-hover:scale-105 transition-transform duration-500">
-                   {formData.name ? (
+              <div className="relative group shrink-0">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] bg-black shadow-2xl overflow-hidden flex items-center justify-center border-4 border-white group-hover:scale-105 transition-transform duration-500 relative">
+                   {session?.user?.image ? (
+                     <Image 
+                        src={session.user.image}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                        referrerPolicy="no-referrer"
+                     />
+                   ) : formData.name ? (
                      <span className="text-4xl font-black text-[#1D9E75] italic leading-none">{formData.name.charAt(0)}</span>
                    ) : (
-                     <User className="w-12 h-12 text-slate-700" />
+                     <User className="w-12 h-12 text-[#1D9E75]/20" />
                    )}
                 </div>
-                <button className="absolute -bottom-1 -right-1 p-3 bg-[#1D9E75] text-white rounded-[1.2rem] shadow-xl hover:rotate-12 transition-all">
-                   <Camera className="w-4 h-4" />
-                </button>
               </div>
 
               <div className="text-center md:text-left space-y-2">
