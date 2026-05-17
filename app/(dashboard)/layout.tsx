@@ -74,7 +74,7 @@ function MobileHeader({ session }: { session: any }) {
   };
 
   return (
-    <header className="md:hidden sticky top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 flex items-center justify-between z-40">
+    <header className="md:hidden relative h-16 bg-white border-b border-gray-100 px-4 flex items-center justify-between z-40">
       <Link href="/dashboard" className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center">
           <BrainCircuit className="w-5 h-5 text-[#1D9E75]" />
