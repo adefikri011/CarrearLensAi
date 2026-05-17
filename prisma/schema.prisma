@@ -93,8 +93,11 @@ model Profile {
   id              String   @id @default(cuid())
   userId          String   @unique
   usia            Int?
+  gender          String?
+  sekolah         String?
   lulusan         String?
   jurusan         String?
+  nilaiRata       Float?
   hardSkills      String[]
   softSkills      String[]
   minat           String[]

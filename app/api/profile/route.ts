@@ -26,8 +26,11 @@ export async function POST(req: NextRequest) {
 
     const profile = await db.profile.upsert(session.user.id, {
         usia: body.age,
+        gender: body.gender,
+        sekolah: body.schoolName,
         jurusan: body.major,
         lulusan: body.gradYear,
+        nilaiRata: parseFloat(body.avgScore) || 0,
         hardSkills: body.skills,
         minat: body.interests,
         targetGaji: body.salary,

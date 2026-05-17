@@ -24,7 +24,9 @@ import {
   Camera,
   Briefcase,
   ChevronRight,
-  Info
+  Info,
+  Check,
+  ChevronsUpDown
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -33,6 +35,19 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { Progress } from "@/components/ui/progress"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface Region {
   id: string
@@ -105,8 +120,8 @@ export default function ProfilePage() {
             city: cityName,
             province: provName, 
             gender: p.gender || "Laki-laki",
-            education: p.sekolah || "SMK",
-            schoolName: p.schoolName || "",
+            education: "SMK",
+            schoolName: p.sekolah || "",
             major: p.jurusan || "",
             gradYear: p.lulusan || "",
             avgScore: p.nilaiRata?.toString() || "",
@@ -302,33 +317,96 @@ export default function ProfilePage() {
                  </div>
 
                  <div className="space-y-4">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lokasi Domisili (Kabupaten)</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Lokasi Domisili (Kabupaten)</Label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       <select 
-                          value={selectedProvId}
-                          onChange={(e) => {
-                            const id = e.target.value
-                            setSelectedProvId(id)
-                            const name = provinces.find(p => p.id === id)?.name || ""
-                            setFormData({ ...formData, province: name, city: "" })
-                            fetchRegencies(id)
-                          }}
-                          className="w-full h-14 rounded-2xl bg-white border border-slate-100 px-4 font-bold text-sm appearance-none outline-none"
-                        >
-                          <option value="">Pilih Provinsi</option>
-                          {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                        </select>
+                        {/* Province Search Select */}
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 uppercase italic"
+                            >
+                              {formData.province || "Pilih Provinsi"}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 bg-white" align="start">
+                            <Command>
+                              <CommandInput placeholder="Cari provinsi..." className="font-bold text-xs" />
+                              <CommandList>
+                                <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400">Provinsi tidak ditemukan.</CommandEmpty>
+                                <CommandGroup>
+                                  {provinces.map((prov) => (
+                                    <CommandItem
+                                      key={prov.id}
+                                      value={prov.name}
+                                      onSelect={() => {
+                                        setSelectedProvId(prov.id)
+                                        setFormData({ ...formData, province: prov.name, city: "" })
+                                        fetchRegencies(prov.id)
+                                      }}
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          formData.province === prov.name ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                      {prov.name}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+
+                        {/* Regency Search Select */}
                         <div className="relative">
-                          <select 
-                            disabled={!selectedProvId || isRegionsLoading}
-                            value={formData.city}
-                            onChange={(e) => setFormData({...formData, city: e.target.value})}
-                            className="w-full h-14 rounded-2xl bg-white border border-slate-100 px-4 font-bold text-sm appearance-none outline-none disabled:opacity-50"
-                          >
-                            <option value="">Pilih Kab/Kota</option>
-                            {regencies.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
-                          </select>
-                          {isRegionsLoading && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1D9E75]" />}
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                disabled={!selectedProvId || isRegionsLoading}
+                                className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 disabled:opacity-50 uppercase italic"
+                              >
+                                {formData.city || "Pilih Kab/Kota"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0 bg-white" align="start">
+                              <Command>
+                                <CommandInput placeholder="Cari kabupaten/kota..." className="font-bold text-xs" />
+                                <CommandList>
+                                  <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400">Lokasi tidak ditemukan.</CommandEmpty>
+                                  <CommandGroup>
+                                    {regencies.map((reg) => (
+                                      <CommandItem
+                                        key={reg.id}
+                                        value={reg.name}
+                                        onSelect={() => {
+                                          setFormData({ ...formData, city: reg.name })
+                                        }}
+                                        className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            formData.city === reg.name ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {reg.name}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          {isRegionsLoading && <Loader2 className="absolute right-12 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1D9E75]" />}
                         </div>
                     </div>
                  </div>
@@ -394,7 +472,9 @@ export default function ProfilePage() {
                             className="h-12 rounded-xl bg-white border-slate-100 font-bold text-xs"
                             placeholder="e.g. AutoCAD"
                           />
-                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black"><Plus className="w-4 h-4" /></Button>
+                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black hover:bg-black/80">
+                            <Plus className="w-4 h-4 text-white" />
+                          </Button>
                        </div>
                        <div className="flex flex-wrap gap-2">
                           {formData.skills.map(s => (
