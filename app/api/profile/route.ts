@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
         usia: body.age,
         gender: body.gender,
         sekolah: body.schoolName,
+        jenjang: body.education,
         jurusan: body.major,
         lulusan: body.gradYear,
         nilaiRata: parseFloat(body.avgScore) || 0,

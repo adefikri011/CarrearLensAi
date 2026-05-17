@@ -95,6 +95,7 @@ model Profile {
   usia            Int?
   gender          String?
   sekolah         String?
+  jenjang         String?
   lulusan         String?
   jurusan         String?
   nilaiRata       Float?

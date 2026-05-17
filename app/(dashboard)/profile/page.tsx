@@ -120,7 +120,7 @@ export default function ProfilePage() {
             city: cityName,
             province: provName, 
             gender: p.gender || "Laki-laki",
-            education: "SMK",
+            education: p.jenjang || "SMK",
             schoolName: p.sekolah || "",
             major: p.jurusan || "",
             gradYear: p.lulusan || "",
@@ -168,6 +168,15 @@ export default function ProfilePage() {
       })
       const result = await res.json()
       if (result.success) {
+        const p = result.data
+        setFormData(prev => ({
+          ...prev,
+          schoolName: p.sekolah || prev.schoolName,
+          major: p.jurusan || prev.major,
+          education: p.jenjang || prev.education,
+          gradYear: p.lulusan || prev.gradYear,
+          avgScore: p.nilaiRata?.toString() || prev.avgScore
+        }))
         toast({ title: "Profil Tersimpan", description: "Data masa depanmu sudah diamankan." })
         setIsUpdate(true)
         router.refresh()
@@ -323,7 +332,8 @@ export default function ProfilePage() {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-full p-0 bg-white" align="start">
-                            <Command>
+                            <Command className="border-none">
+                              <CommandInput placeholder="Cari gender..." className="font-bold text-xs" />
                               <CommandList>
                                 <CommandGroup>
                                   {["Laki-laki", "Perempuan"].map((g) => (
@@ -331,7 +341,7 @@ export default function ProfilePage() {
                                       key={g}
                                       value={g}
                                       onSelect={() => setFormData({ ...formData, gender: g })}
-                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
                                     >
                                       <Check
                                         className={cn(
@@ -366,9 +376,9 @@ export default function ProfilePage() {
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white" align="start">
-                            <Command>
-                              <CommandInput placeholder="Cari provinsi..." className="font-bold text-xs" />
+                          <PopoverContent className="w-full p-0 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                            <Command className="border-none">
+                              <CommandInput placeholder="Cari provinsi..." className="font-bold text-xs py-4" />
                               <CommandList>
                                 <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400">Provinsi tidak ditemukan.</CommandEmpty>
                                 <CommandGroup>
@@ -381,7 +391,7 @@ export default function ProfilePage() {
                                         setFormData({ ...formData, province: prov.name, city: "" })
                                         fetchRegencies(prov.id)
                                       }}
-                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
                                     >
                                       <Check
                                         className={cn(
@@ -412,9 +422,9 @@ export default function ProfilePage() {
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-full p-0 bg-white" align="start">
-                              <Command>
-                                <CommandInput placeholder="Cari kabupaten/kota..." className="font-bold text-xs" />
+                             <PopoverContent className="w-full p-0 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                              <Command className="border-none">
+                                <CommandInput placeholder="Cari kabupaten/kota..." className="font-bold text-xs py-4" />
                                 <CommandList>
                                   <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400">Lokasi tidak ditemukan.</CommandEmpty>
                                   <CommandGroup>
@@ -425,7 +435,7 @@ export default function ProfilePage() {
                                         onSelect={() => {
                                           setFormData({ ...formData, city: reg.name })
                                         }}
-                                        className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                        className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
                                       >
                                         <Check
                                           className={cn(
@@ -463,8 +473,9 @@ export default function ProfilePage() {
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white" align="start">
-                            <Command>
+                          <PopoverContent className="w-full p-0 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                            <Command className="border-none">
+                              <CommandInput placeholder="Cari jenjang..." className="font-bold text-xs py-4" />
                               <CommandList>
                                 <CommandGroup>
                                   {["SMK", "SMA", "Diploma", "Sarjana"].map((edu) => (
@@ -472,7 +483,7 @@ export default function ProfilePage() {
                                       key={edu}
                                       value={edu}
                                       onSelect={() => setFormData({ ...formData, education: edu })}
-                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50"
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
                                     >
                                       <Check
                                         className={cn(
