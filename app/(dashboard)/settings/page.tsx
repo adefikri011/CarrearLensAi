@@ -229,17 +229,49 @@ export default function SettingsPage() {
                        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
                           <div className="relative group shrink-0">
                              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center relative">
-                                <Image 
-                                  src={avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`} 
-                                  alt="Avatar" 
-                                  fill
-                                  className="object-cover"
-                                  referrerPolicy="no-referrer"
-                                />
+                                {avatarUrl ? (
+                                  <Image 
+                                    src={avatarUrl} 
+                                    alt="Avatar" 
+                                    fill
+                                    className="object-cover"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                ) : (
+                                  <User className="w-12 h-12 text-gray-200" />
+                                )}
+                                {isSaving && (
+                                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                     <LoadingSpinner size="sm" className="text-white" />
+                                  </div>
+                                )}
                              </div>
+                             <input 
+                               type="file" 
+                               id="avatar-upload" 
+                               className="hidden" 
+                               accept="image/*"
+                               onChange={async (e) => {
+                                 const file = e.target.files?.[0];
+                                 if (!file) return;
+                                 const formData = new FormData();
+                                 formData.append("file", file);
+                                 setIsSaving(true);
+                                 try {
+                                   const res = await fetch("/api/upload/avatar", { method: "POST", body: formData });
+                                   const result = await res.json();
+                                   if (result.success) {
+                                     setAvatarUrl(result.data.url);
+                                     toast.success("Foto profil berhasil diperbarui!");
+                                     update();
+                                   } else { toast.error(result.error || "Gagal mengunggah foto"); }
+                                 } catch (err) { toast.error("Terjadi kesalahan saat mengunggah"); } finally { setIsSaving(false); }
+                               }}
+                             />
                              <button 
-                               onClick={() => toast.info("Fitur upload foto segera hadir!")}
-                               className="absolute bottom-0 right-0 p-2 sm:p-3 bg-black text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all"
+                               onClick={() => document.getElementById("avatar-upload")?.click()}
+                               disabled={isSaving}
+                               className="absolute bottom-0 right-0 p-2 sm:p-3 bg-black text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
                              >
                                 <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
                              </button>
@@ -249,14 +281,30 @@ export default function SettingsPage() {
                              <p className="text-sm text-gray-500 mb-4">Direkomendasikan 400x400px. Max 2MB.</p>
                              <div className="flex justify-center sm:justify-start gap-2">
                                 <Button 
-                                  onClick={() => setAvatarUrl(`https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`)}
+                                  onClick={() => document.getElementById("avatar-upload")?.click()}
+                                  disabled={isSaving}
                                   variant="outline" 
                                   className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold border-gray-100"
                                 >
                                   Ganti Foto
                                 </Button>
                                 <Button 
-                                  onClick={() => toast.error("Tidak bisa menghapus foto Utama.")}
+                                  onClick={async () => {
+                                    setIsSaving(true);
+                                    try {
+                                      const res = await fetch("/api/settings", {
+                                        method: "PUT",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}` }),
+                                      });
+                                      if ((await res.json()).success) {
+                                        setAvatarUrl(`https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id || 'Budi'}`);
+                                        toast.success("Foto dihapus (kembali ke default)");
+                                        update();
+                                      }
+                                    } finally { setIsSaving(false); }
+                                  }}
+                                  disabled={isSaving}
                                   variant="ghost" 
                                   className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold text-red-500 hover:bg-red-50"
                                 >
