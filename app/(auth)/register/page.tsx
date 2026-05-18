@@ -203,7 +203,11 @@ export default function RegisterPage() {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <form 
+              onSubmit={form.handleSubmit(onSubmit)} 
+              className="space-y-3"
+              method="POST"
+            >
               <FormField
                 control={form.control}
                 name="name"

@@ -27,7 +27,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         if (!user || !user.password) return null;
 
-        const isPasswordValid = await bcrypt.compare(
+        const isPasswordValid = bcrypt.compareSync(
           credentials.password as string,
           user.password
         );
@@ -53,7 +53,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         httpOnly: true,
         sameSite: "none",
         path: "/",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
     callbackUrl: {
@@ -61,7 +61,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       options: {
         sameSite: "none",
         path: "/",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
     csrfToken: {
@@ -69,7 +69,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       options: {
         sameSite: "none",
         path: "/",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
   },
