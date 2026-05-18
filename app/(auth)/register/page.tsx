@@ -185,8 +185,8 @@ export default function RegisterPage() {
         html, body { overflow: hidden; height: 100%; }
       `}} />
       {/* Form Section */}
-      <div className="w-full lg:w-[45%] bg-white flex flex-col p-6 md:p-8 overflow-y-auto h-full scrollbar-hide">
-        <div className="max-w-md w-full mx-auto flex flex-col min-h-full">
+      <div className="w-full lg:w-[45%] bg-white flex flex-col p-6 md:p-8 overflow-y-auto h-full px-4">
+        <div className="max-w-md w-full mx-auto flex flex-col min-h-full pb-10">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-4 w-fit group">
             <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center transition-transform group-hover:scale-105">
@@ -313,7 +313,7 @@ export default function RegisterPage() {
           <Button 
             variant="outline" 
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full h-11 rounded-xl border-gray-200 font-bold flex gap-3 hover:bg-gray-50 transition-all text-[13px]"
+            className="w-full h-11 rounded-xl border-gray-200 font-bold flex gap-3 hover:bg-gray-50 transition-all text-[13px] mb-8"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -336,7 +336,7 @@ export default function RegisterPage() {
             Daftar dengan Google
           </Button>
 
-          <p className="text-center text-gray-500 font-medium pb-4 mt-auto text-xs">
+          <p className="text-center text-gray-500 font-medium pb-4 text-[13px] mt-auto">
             Sudah punya akun?{" "}
             <Link href="/login" className="text-[#1D9E75] font-black hover:underline inline-flex items-center gap-1">
               Masuk di sini <ChevronRight size={14} />
