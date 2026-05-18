@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone', // <-- Tambahkan baris ini di sini
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -27,7 +28,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'kbwibybypptujqyzhkmy.supabase.co',
-        pathname: '/**',
+        pathname: '/storage/v1/object/public/**',
       },
     ],
   },

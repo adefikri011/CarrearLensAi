@@ -11,9 +11,12 @@ import {
   Menu,
   X,
   Star,
-  ArrowRight
+  ArrowRight,
+  User
 } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // --- Custom Hooks ---
 
@@ -92,8 +95,10 @@ const Counter = ({ value, duration = 1500 }: { value: string, duration?: number 
 };
 
 const Navbar = () => {
+  const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,6 +107,8 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const authenticated = status === "authenticated";
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
@@ -133,16 +140,35 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <button className="text-[14px] font-bold text-black px-6 py-2 hover:opacity-70 transition-opacity">
-            Masuk
-          </button>
-          <motion.button 
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="bg-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] transition-all shadow-lg active:scale-95"
-          >
-            Mulai Gratis
-          </motion.button>
+          {authenticated ? (
+            <Link href="/dashboard">
+              <motion.button 
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="bg-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] transition-all shadow-lg active:scale-95 flex items-center gap-2"
+              >
+                <User size={14} />
+                Ke Dashboard
+              </motion.button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <button className="text-[14px] font-bold text-black px-6 py-2 hover:opacity-70 transition-opacity">
+                  Masuk
+                </button>
+              </Link>
+              <Link href="/register">
+                <motion.button 
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="bg-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] transition-all shadow-lg active:scale-95"
+                >
+                  Mulai Gratis
+                </motion.button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -174,8 +200,20 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="flex flex-col gap-3 pt-6 border-t border-gray-100">
-               <button className="w-full py-4 text-black font-bold border border-gray-200 rounded-2xl">Masuk</button>
-               <button className="w-full py-4 bg-black text-white font-bold rounded-2xl shadow-lg">Mulai Gratis</button>
+               {authenticated ? (
+                 <Link href="/dashboard" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                   <button className="w-full py-4 bg-black text-white font-bold rounded-2xl shadow-lg">Ke Dashboard</button>
+                 </Link>
+               ) : (
+                 <>
+                   <Link href="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                     <button className="w-full py-4 text-black font-bold border border-gray-200 rounded-2xl">Masuk</button>
+                   </Link>
+                   <Link href="/register" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                     <button className="w-full py-4 bg-black text-white font-bold rounded-2xl shadow-lg">Mulai Gratis</button>
+                   </Link>
+                 </>
+               )}
             </div>
           </motion.div>
         )}
@@ -185,6 +223,8 @@ const Navbar = () => {
 };
 
 const Hero = () => {
+  const { status } = useSession();
+  const authenticated = status === "authenticated";
   return (
     <section className="bg-white pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden px-6">
       <div className="max-w-6xl mx-auto text-center">
@@ -217,20 +257,24 @@ const Hero = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <motion.button 
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="h-16 px-12 bg-black text-white rounded-full font-bold text-[15px] tracking-tight hover:bg-[#1D9E75] transition-all shadow-2xl shadow-black/10 w-full sm:w-auto"
-          >
-            Analisis CV Sekarang
-          </motion.button>
-          <motion.button 
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="h-16 px-12 bg-white text-black border border-gray-200 rounded-full font-bold text-[15px] tracking-tight hover:bg-gray-50 transition-all w-full sm:w-auto"
-          >
-            Lihat Demo
-          </motion.button>
+          <Link href={authenticated ? "/dashboard/cv" : "/register"} className="w-full sm:w-auto">
+            <motion.button 
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="h-16 px-12 bg-black text-white rounded-full font-bold text-[15px] tracking-tight hover:bg-[#1D9E75] transition-all shadow-2xl shadow-black/10 w-full"
+            >
+              Analisis CV Sekarang
+            </motion.button>
+          </Link>
+          <Link href="#cara-kerja" className="w-full sm:w-auto">
+            <motion.button 
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="h-16 px-12 bg-white text-black border border-gray-200 rounded-full font-bold text-[15px] tracking-tight hover:bg-gray-50 transition-all w-full"
+            >
+              Lihat Demo
+            </motion.button>
+          </Link>
         </motion.div>
 
         {/* Dashboard Mockup */}
@@ -650,6 +694,8 @@ const FAQ = () => {
 
 const CTA = () => {
   const { ref, visible } = useScrollReveal();
+  const { status } = useSession();
+  const authenticated = status === "authenticated";
   return (
     <section className="bg-black py-40 px-6 relative overflow-hidden" ref={ref}>
       <motion.div 
@@ -665,13 +711,15 @@ const CTA = () => {
         <p className="text-gray-400 text-xl md:text-2xl mb-16 max-w-2xl mx-auto font-medium">
           Mulai sekarang — dalam 5 menit profilmu akan lebih berharga dari sebelumnya.
         </p>
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="h-20 px-20 bg-[#1D9E75] text-black font-black text-xl rounded-full hover:bg-white transition-all shadow-[0_30px_70px_rgba(29,158,117,0.4)] active:scale-95 uppercase tracking-widest"
-        >
-           Analisis CV Sekarang — Gratis
-        </motion.button>
+        <Link href={authenticated ? "/dashboard/cv" : "/register"}>
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="h-20 px-20 bg-[#1D9E75] text-black font-black text-xl rounded-full hover:bg-white transition-all shadow-[0_30px_70px_rgba(29,158,117,0.4)] active:scale-95 uppercase tracking-widest"
+          >
+             Analisis CV Sekarang — Gratis
+          </motion.button>
+        </Link>
       </motion.div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#1D9E75]/5 rounded-full blur-[150px] pointer-events-none" />
     </section>
@@ -738,8 +786,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Stats />
-      <HowItWorks />
       <Features />
+      <HowItWorks />
       <Testimonials />
       <FAQ />
       <CTA />

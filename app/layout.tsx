@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Providers } from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: {
@@ -39,7 +41,9 @@ export default function RootLayout({
             }),
           }}
         />
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         <Toaster position="top-center" richColors />
       </body>
     </html>

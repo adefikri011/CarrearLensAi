@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import UserAvatar from "@/components/shared/UserAvatar";
 import { useSession, signOut } from "next-auth/react";
 
 const menuItems = [
@@ -113,21 +113,7 @@ export default function Sidebar({
           "flex items-center gap-3 p-3 rounded-2xl border border-gray-100 bg-gray-50/50",
           !isSidebarOpen && !inDrawer && "justify-center"
         )}>
-          <div className="w-8 h-8 shrink-0 rounded-full bg-black border border-gray-100 overflow-hidden flex items-center justify-center relative">
-            {session?.user?.image ? (
-               <Image 
-                 src={session.user.image} 
-                 alt="Avatar" 
-                 fill
-                 className="object-cover" 
-                 referrerPolicy="no-referrer"
-               />
-            ) : (
-              <span className="text-xs font-black text-[#1D9E75] italic">
-                {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : "U"}
-              </span>
-            )}
-          </div>
+          <UserAvatar size="sm" />
           {(isSidebarOpen || inDrawer) && (
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-black truncate leading-none">{session?.user?.name || "User"}</p>

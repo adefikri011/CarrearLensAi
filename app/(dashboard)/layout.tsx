@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAppStore } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
-import { SessionProvider } from "next-auth/react";
 import { 
   BrainCircuit, 
   LayoutDashboard, 
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import Image from "next/image";
+import UserAvatar from "@/components/shared/UserAvatar";
 
 interface BottomNavItemProps {
   href: string;
@@ -83,20 +82,8 @@ function MobileHeader({ session }: { session: any }) {
       </Link>
 
       <div className="flex items-center gap-3">
-        <Link href="/profile" className="w-8 h-8 rounded-full border border-gray-100 bg-black flex items-center justify-center overflow-hidden relative">
-          {session?.user?.image ? (
-            <Image 
-              src={session.user.image} 
-              alt="Avatar" 
-              fill
-              className="object-cover"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <span className="text-xs font-black text-[#1D9E75] italic">
-              {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : "U"}
-            </span>
-          )}
+        <Link href="/profile">
+          <UserAvatar size="sm" />
         </Link>
         <button 
           onClick={handleLogout}
@@ -189,8 +176,6 @@ export default function DashboardLayout({
     children: React.ReactNode;
   }) {
     return (
-        <SessionProvider>
-            <DashboardLayoutContent>{children}</DashboardLayoutContent>
-        </SessionProvider>
+        <DashboardLayoutContent>{children}</DashboardLayoutContent>
     )
 }
