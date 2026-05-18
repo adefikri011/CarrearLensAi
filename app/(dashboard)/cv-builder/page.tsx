@@ -238,29 +238,33 @@ export default function CVBuilderPage() {
         ) : (
           <motion.div key="preview" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-12">
             {/* CV Details Banner */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white border border-gray-100 rounded-2xl shadow-sm">
-                <div className="flex items-center gap-4 sm:gap-6">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-teal shrink-0">
-                        <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-6 bg-white border border-gray-100 rounded-[32px] shadow-sm overflow-hidden">
+                <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto min-w-0">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-teal shrink-0">
+                        <FileText className="w-7 h-7 sm:w-8 sm:h-8" />
                     </div>
-                    <div className="min-w-0">
-                        <h3 className="text-lg sm:text-xl font-bold text-black truncate">{uploadedData.filename}</h3>
-                        <p className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase mt-1">Diunggah: {new Date(uploadedData.createdAt || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                    <div className="min-w-0 flex-1">
+                        <h3 className="text-lg sm:text-xl font-black text-black truncate w-full" title={uploadedData.filename}>
+                            {uploadedData.filename}
+                        </h3>
+                        <p className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase mt-1 tracking-wider">
+                          DIUNGGAH: {new Date(uploadedData.createdAt || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
                     <Button 
                       onClick={handleAnalyze}
                       disabled={isAnalyzing}
                       variant="outline" 
-                      className="w-full sm:w-auto h-11 sm:h-12 rounded-xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest border-teal bg-teal/5 text-teal hover:bg-teal hover:text-white transition-all shadow-lg shadow-teal/10"
+                      className="w-full sm:flex-1 md:w-auto h-12 lg:h-14 rounded-2xl px-8 font-black text-[10px] uppercase tracking-widest border-teal bg-teal/5 text-teal hover:bg-teal hover:text-white transition-all shadow-lg shadow-teal/10"
                     >
                       {isAnalyzing ? <LoadingSpinner size="sm" className="mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />} 
                       Mulai Analisis Karier
                     </Button>
                     <Button 
                       onClick={handleResetCV}
-                      className="w-full sm:w-auto h-11 sm:h-12 rounded-xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest bg-black text-white hover:bg-red-600"
+                      className="w-full sm:w-auto h-12 lg:h-14 rounded-2xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest bg-black text-white hover:bg-red-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4 mr-2" /> Ganti CV
                     </Button>
