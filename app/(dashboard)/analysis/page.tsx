@@ -229,8 +229,8 @@ export default function AnalysisPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
          <div className="space-y-4">
-            <Link href="/cv-builder" className="inline-flex items-center gap-2 text-gray-400 hover:text-black transition-colors font-bold group mb-4">
-                <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-black transition-all">
+            <Link href="/cv-builder" className="inline-flex items-center gap-2 text-gray-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold group mb-4">
+                <div className="w-8 h-8 rounded-full border border-gray-100 dark:border-zinc-800 flex items-center justify-center group-hover:border-black dark:group-hover:border-white transition-all">
                   <ArrowLeft className="w-4 h-4" />
                 </div>
                 Kembali ke Analisis CV
@@ -239,8 +239,8 @@ export default function AnalysisPage() {
                <BrainCircuit className="w-4 h-4" />
                Deep Insight Analysis
             </div>
-            <h1 className="text-3xl font-black text-black">Hasil Analisis Karier</h1>
-            <p className="text-base text-gray-500 leading-relaxed max-w-xl">
+            <h1 className="text-3xl font-black text-black dark:text-white transition-colors">Hasil Analisis Karier</h1>
+            <p className="text-base text-gray-500 dark:text-zinc-500 leading-relaxed max-w-xl transition-colors">
                Berdasarkan kecerdasan buatan, inilah jalur karier paling potensial untuk masa depanmu.
             </p>
          </div>
@@ -248,7 +248,7 @@ export default function AnalysisPage() {
             <Button 
               onClick={handleAnalyze} 
               disabled={isAnalyzing}
-              className="h-12 rounded-full px-8 bg-black text-white font-bold hover:bg-gray-800 transition-all shadow-xl shadow-black/10"
+              className="h-12 rounded-full px-8 bg-black dark:bg-white text-white dark:text-black font-bold hover:bg-gray-800 dark:hover:bg-zinc-200 transition-all shadow-xl shadow-black/10 dark:shadow-white/5"
             >
               {isAnalyzing ? <LoadingSpinner size="sm" className="mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
               {analysis ? "Analisis Ulang" : "Mulai Analisis"}
@@ -257,13 +257,13 @@ export default function AnalysisPage() {
       </div>
 
       {!analysis && !isAnalyzing ? (
-        <div className="bg-white border border-gray-100 rounded-[40px] p-20 text-center flex flex-col items-center space-y-6">
-           <div className="w-20 h-20 rounded-[32px] bg-gray-50 flex items-center justify-center text-gray-300">
+        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-20 text-center flex flex-col items-center space-y-6 transition-all">
+           <div className="w-20 h-20 rounded-[32px] bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-gray-300 dark:text-zinc-700">
               <AlertCircle className="w-10 h-10" />
            </div>
            <div>
-              <h3 className="text-xl font-bold text-black mb-2">Belum Ada Analisis</h3>
-              <p className="text-gray-500 max-w-xs mx-auto">Upload CV kamu terlebih dahulu untuk mendapatkan analisis jalur karier yang mendalam.</p>
+              <h3 className="text-xl font-bold text-black dark:text-white mb-2 transition-colors">Belum Ada Analisis</h3>
+              <p className="text-gray-500 dark:text-zinc-500 max-w-xs mx-auto transition-colors">Upload CV kamu terlebih dahulu untuk mendapatkan analisis jalur karier yang mendalam.</p>
            </div>
            <Link href="/cv-builder">
               <Button className="bg-teal hover:bg-teal-dark rounded-full px-8 h-12 font-bold text-white uppercase text-[10px] tracking-widest">
@@ -272,14 +272,14 @@ export default function AnalysisPage() {
            </Link>
         </div>
       ) : isAnalyzing ? (
-        <div className="bg-white border border-gray-100 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8">
+        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all">
            <div className="relative">
               <LoadingSpinner size="lg" />
               <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-teal-dark animate-pulse" />
            </div>
            <div className="space-y-2">
-              <h3 className="text-2xl font-bold text-black italic">Gemini AI sedang berpikir...</h3>
-              <p className="text-gray-400 max-w-md mx-auto">Kami memadukan profil kamu dengan kecocokan industri saat ini untuk hasil yang paling akurat.</p>
+              <h3 className="text-2xl font-bold text-black dark:text-white italic transition-colors">Gemini AI sedang berpikir...</h3>
+              <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto transition-colors">Kami memadukan profil kamu dengan kecocokan industri saat ini untuk hasil yang paling akurat.</p>
            </div>
         </div>
       ) : (
@@ -306,14 +306,16 @@ export default function AnalysisPage() {
           )}
 
           {/* Tabs */}
-          <div className="flex items-center gap-1 p-1.5 bg-gray-50 w-fit rounded-2xl border border-gray-100">
+          <div className="flex items-center gap-1 p-1.5 bg-gray-50 dark:bg-zinc-900 w-fit rounded-2xl border border-gray-100 dark:border-zinc-800 transition-all">
              {["overview", "detail", "compare"].map((tab) => (
                 <button
                    key={tab}
                    onClick={() => setActiveTab(tab)}
                    className={cn(
                       "px-8 py-2.5 rounded-xl text-[11px] font-black transition-all uppercase tracking-widest",
-                      activeTab === tab ? "bg-white text-black shadow-sm" : "text-gray-400 hover:text-black"
+                      activeTab === tab 
+                        ? "bg-white dark:bg-zinc-800 text-black dark:text-white shadow-sm" 
+                        : "text-gray-400 dark:text-zinc-600 hover:text-black dark:hover:text-white"
                    )}
                 >
                    {tab === "overview" ? "Ringkasan" : tab === "detail" ? "Detail Jalur" : "Perbandingan"}
@@ -333,7 +335,7 @@ export default function AnalysisPage() {
                           <Button 
                            onClick={handleDownloadPDF}
                            variant="outline" 
-                           className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
+                           className="h-11 px-6 rounded-xl border-gray-100 dark:border-zinc-800 font-bold text-xs dark:text-white dark:hover:bg-zinc-800 transition-all"
                           >
                              Download PDF
                           </Button>
@@ -342,57 +344,57 @@ export default function AnalysisPage() {
                             <DropdownMenuTrigger asChild>
                               <Button 
                                 variant="outline" 
-                                className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs hover:border-teal hover:text-teal transition-all flex items-center gap-2"
+                                className="h-11 px-6 rounded-xl border-gray-100 dark:border-zinc-800 font-bold text-xs hover:border-teal hover:text-teal dark:text-white dark:hover:bg-zinc-800 transition-all flex items-center gap-2"
                               >
                                  <Share2 className="w-4 h-4" />
                                  Bagikan
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="rounded-[24px] p-2 min-w-[240px] z-[100] border-gray-100 shadow-2xl bg-white">
-                              <div className="px-4 py-3 mb-1 border-b border-gray-50">
-                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Platform</p>
+                            <DropdownMenuContent align="end" className="rounded-[24px] p-2 min-w-[240px] z-[100] border-gray-100 dark:border-zinc-800 shadow-2xl bg-white dark:bg-zinc-900 transition-colors">
+                              <div className="px-4 py-3 mb-1 border-b border-gray-50 dark:border-zinc-800">
+                                 <p className="text-[10px] font-black text-gray-400 dark:text-zinc-600 uppercase tracking-widest">Pilih Platform</p>
                               </div>
                               <DropdownMenuItem 
                                 onClick={() => handleShare('whatsapp')}
-                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-green-50 transition-colors group"
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-green-50 dark:hover:bg-green-500/10 dark:text-white transition-colors group"
                               >
                                 <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
                                   <Share2 className="w-4 h-4" />
                                 </div>
                                 <div className="flex flex-col">
                                   <span>WhatsApp</span>
-                                  <span className="text-[9px] font-medium text-gray-400">Kirim langsung ke kontak</span>
+                                  <span className="text-[9px] font-medium text-gray-400 dark:text-zinc-500">Kirim langsung ke kontak</span>
                                 </div>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleShare('instagram')}
-                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-pink-50 transition-colors group"
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-pink-50 dark:hover:bg-pink-500/10 dark:text-white transition-colors group"
                               >
                                 <div className="w-9 h-9 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600 group-hover:scale-110 transition-transform">
                                   <Instagram className="w-4 h-4" />
                                 </div>
                                 <div className="flex flex-col">
                                   <span>Instagram</span>
-                                  <span className="text-[9px] font-medium text-gray-400">Salin link untuk bio/story</span>
+                                  <span className="text-[9px] font-medium text-gray-400 dark:text-zinc-500">Salin link untuk bio/story</span>
                                 </div>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleShare('copy')}
-                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-gray-50 transition-colors group"
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-gray-50 dark:hover:bg-zinc-800 dark:text-white transition-colors group"
                               >
-                                <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 group-hover:scale-110 transition-transform">
+                                <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-600 dark:text-zinc-400 group-hover:scale-110 transition-transform">
                                   <FileText className="w-4 h-4" />
                                 </div>
                                 <div className="flex flex-col">
                                   <span>Salin Link</span>
-                                  <span className="text-[9px] font-medium text-gray-400">Gunakan di platform lain</span>
+                                  <span className="text-[9px] font-medium text-gray-400 dark:text-zinc-500">Gunakan di platform lain</span>
                                 </div>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                        </div>
                        <div className="hidden sm:block">
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Update Terakhir: {new Date(analysis?.createdAt || Date.now()).toLocaleDateString('id-ID')}</p>
+                          <p className="text-[10px] font-black text-gray-400 dark:text-zinc-600 uppercase tracking-widest transition-colors">Update Terakhir: {new Date(analysis?.createdAt || Date.now()).toLocaleDateString('id-ID')}</p>
                        </div>
                    </div>
 
@@ -401,26 +403,26 @@ export default function AnalysisPage() {
                       <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                           {(result?.careerPaths || []).map((path: any, i: number) => (
                              <div key={i} className={cn(
-                                "p-8 rounded-[40px] border border-gray-100 bg-white transition-all hover:shadow-xl hover:scale-[1.01] group",
+                                "p-8 rounded-[40px] border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-all hover:shadow-xl hover:scale-[1.01] group shadow-sm",
                                 i === 0 && "md:col-span-2"
                              )}>
                                 <div className="flex justify-between items-start mb-10">
                                    <div className="space-y-2">
-                                      <h3 className="text-2xl font-extrabold text-black group-hover:text-teal transition-colors tracking-tight">{path.nama}</h3>
-                                      <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{path.deskripsi}</p>
+                                      <h3 className="text-2xl font-extrabold text-black dark:text-white group-hover:text-teal transition-colors tracking-tight transition-colors">{path.nama}</h3>
+                                      <p className="text-gray-500 dark:text-zinc-500 text-sm leading-relaxed max-w-xs transition-colors">{path.deskripsi}</p>
                                    </div>
                                    <div className={cn(
                                       "w-20 h-20 rounded-3xl flex flex-col items-center justify-center shrink-0 border-4 transition-all",
-                                      i === 0 ? "bg-teal-light border-white text-teal" : 
-                                      i === 1 ? "bg-black/5 border-white text-black" : "bg-gray-50 border-white text-gray-400"
+                                      i === 0 ? "bg-teal-light dark:bg-teal/10 border-white dark:border-zinc-800 text-teal" : 
+                                      i === 1 ? "bg-black/5 dark:bg-white/5 border-white dark:border-zinc-800 text-black dark:text-white" : "bg-gray-50 dark:bg-white/5 border-white dark:border-zinc-800 text-gray-400"
                                    )}>
                                       <span className="text-2xl font-black">{path.matchScore}%</span>
                                       <span className="text-[9px] font-black uppercase tracking-tighter">MATCH</span>
                                    </div>
                                 </div>
-                                <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
+                                <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-zinc-800 transition-all">
                                     <Link href="/roadmap" className="flex-1" onClick={() => selectPath(path.nama)}>
-                                       <Button className="w-full bg-black text-white rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal transition-all">
+                                       <Button className="w-full bg-black dark:bg-white text-white dark:text-black rounded-xl h-11 font-black text-[10px] uppercase tracking-widest hover:bg-teal dark:hover:bg-teal dark:hover:text-white transition-all">
                                           LIHAT ROADMAP
                                        </Button>
                                     </Link>
@@ -428,8 +430,10 @@ export default function AnalysisPage() {
                                      onClick={() => selectPath(path.nama)}
                                      variant="ghost" 
                                      className={cn(
-                                       "w-11 h-11 p-0 rounded-xl border border-gray-100 hover:bg-teal hover:text-white transition-all",
-                                       analysis?.selectedPath === path.nama && "bg-teal text-white border-teal shadow-lg shadow-teal/20"
+                                       "w-11 h-11 p-0 rounded-xl border border-gray-100 dark:border-zinc-800 hover:bg-teal hover:text-white dark:hover:text-white transition-all",
+                                       analysis?.selectedPath === path.nama 
+                                         ? "bg-teal text-white border-teal dark:border-teal shadow-lg shadow-teal/20" 
+                                         : "dark:text-zinc-400"
                                      )}
                                     >
                                        <Target className="w-5 h-5" />
@@ -440,12 +444,12 @@ export default function AnalysisPage() {
                       </div>
 
                       {/* Skill Radar Chart */}
-                      <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm flex flex-col items-center justify-center overflow-hidden">
-                         <h4 className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-10 text-center">SKILL LANDSCAPE</h4>
+                      <div className="bg-white dark:bg-zinc-900 p-10 rounded-[40px] border border-gray-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center overflow-hidden transition-all">
+                         <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-widest uppercase mb-10 text-center">SKILL LANDSCAPE</h4>
                          <div className="w-full h-64">
                             <ResponsiveContainer width="100%" height="100%">
                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                                  <PolarGrid stroke="#F3F4F6" />
+                                  <PolarGrid stroke={process.env.NEXT_PUBLIC_THEME === 'dark' ? "#27272a" : "#F3F4F6"} />
                                   <PolarAngleAxis dataKey="subject" tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 800 }} />
                                   <Radar
                                      name="Proyeksi Skill"
@@ -457,8 +461,8 @@ export default function AnalysisPage() {
                                </RadarChart>
                             </ResponsiveContainer>
                          </div>
-                         <div className="mt-10 pt-6 border-t border-gray-50 w-full text-center">
-                            <p className="text-[11px] text-gray-400 leading-relaxed font-bold">
+                         <div className="mt-10 pt-6 border-t border-gray-50 dark:border-zinc-800 w-full text-center transition-all">
+                            <p className="text-[11px] text-gray-400 dark:text-zinc-500 leading-relaxed font-bold transition-colors">
                                Proyeksi kekuatan skill berdasarkan analisis AI dari CV dan profil kamu.
                             </p>
                          </div>
@@ -471,10 +475,10 @@ export default function AnalysisPage() {
       )}
 
       {/* Final Action */}
-      <motion.div variants={fadeUp} className="bg-black rounded-[48px] p-12 text-center text-white relative overflow-hidden">
+      <motion.div variants={fadeUp} className="bg-black dark:bg-zinc-900 rounded-[48px] p-12 text-center text-white relative overflow-hidden transition-all shadow-2xl shadow-black/10">
          <div className="relative z-10">
-            <h3 className="text-3xl font-black mb-6 italic">Sudah Menentukan Pilihan?</h3>
-            <p className="text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed text-sm font-medium">
+            <h3 className="text-3xl font-black mb-6 italic transition-colors">Sudah Menentukan Pilihan?</h3>
+            <p className="text-gray-400 dark:text-zinc-500 max-w-xl mx-auto mb-10 leading-relaxed text-sm font-medium transition-colors">
                Pilih satu jalur utama untuk mengaktifkan 90 Hari Roadmap Aksi. Kamu bisa mengganti pilihan kapan saja di dashboard.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -485,7 +489,7 @@ export default function AnalysisPage() {
                </Link>
                <button 
                  onClick={() => toast.info("AI Mentor akan segera tersedia untuk kamu!")}
-                 className="px-10 py-4 bg-white/5 border border-white/10 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-white/10 transition-all"
+                 className="px-10 py-4 bg-white/5 border border-white/10 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-white/10 dark:hover:bg-zinc-800 transition-all"
                >
                   KONSULTASI AI MENTOR
                </button>

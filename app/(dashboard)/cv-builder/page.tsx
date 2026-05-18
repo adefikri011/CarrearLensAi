@@ -134,7 +134,7 @@ export default function CVBuilderPage() {
   if (isLoading) return <PageLoader isLoading={true} text="Memeriksa Data CV..." />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-10 lg:space-y-16 pb-20">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-10 lg:space-y-16 pb-20 transition-colors duration-300">
       <PageLoader isLoading={isProcessing} text="Sedang Menganalisis CV..." />
 
       {/* Header Section */}
@@ -144,20 +144,20 @@ export default function CVBuilderPage() {
               <Sparkles className="w-4 h-4" />
               CV ANALYTICS
            </div>
-           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-black mb-3 sm:mb-4">Optimalkan CV-mu untuk Masa Depan.</h1>
-           <p className="text-sm sm:text-base text-gray-500 leading-relaxed mx-auto sm:mx-0 max-w-xl">
+           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-black dark:text-white mb-3 sm:mb-4 transition-colors">Optimalkan CV-mu untuk Masa Depan.</h1>
+           <p className="text-sm sm:text-base text-gray-500 dark:text-zinc-500 leading-relaxed mx-auto sm:mx-0 max-w-xl transition-colors">
              Gunakan kecerdasan buatan untuk memastikan CV kamu memenuhi standar ATS dan siap bersaing di pasar kerja global.
            </p>
         </div>
         
         {uploadedData && (
-          <div className="hidden sm:flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm self-center sm:self-auto">
+          <div className="hidden sm:flex items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm self-center sm:self-auto transition-all">
              <div className="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center text-teal">
                 <CheckCircle2 className="w-5 h-5" />
              </div>
              <div>
-                <p className="text-[9px] uppercase font-black text-gray-400 leading-none mb-1">Status</p>
-                <p className="text-xs font-bold text-black leading-none">Teranalisis</p>
+                <p className="text-[9px] uppercase font-black text-gray-400 dark:text-zinc-600 leading-none mb-1">Status</p>
+                <p className="text-xs font-bold text-black dark:text-white leading-none">Teranalisis</p>
              </div>
           </div>
         )}
@@ -165,7 +165,7 @@ export default function CVBuilderPage() {
 
       {/* Steps Indicator (Progressive) */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex items-center justify-center gap-4 sm:gap-8 mb-8 relative">
-         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-100 -translate-y-1/2 z-0 hidden sm:block opacity-50" />
+         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-100 dark:bg-zinc-800 -translate-y-1/2 z-0 hidden sm:block opacity-50" />
          
          {[
            { step: "01", label: "UPLOAD", active: !uploadedData },
@@ -174,13 +174,15 @@ export default function CVBuilderPage() {
            <div key={i} className="flex flex-col items-center gap-2 sm:gap-3 relative z-10 w-24">
               <div className={cn(
                 "w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 flex items-center justify-center font-black text-[9px] sm:text-[10px] transition-all duration-500",
-                s.active ? "bg-black border-black text-white shadow-xl shadow-black/10" : "bg-white border-gray-100 text-gray-300"
+                s.active 
+                  ? "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black shadow-xl shadow-black/10 dark:shadow-white/5" 
+                  : "bg-white dark:bg-zinc-950 border-gray-100 dark:border-zinc-800 text-gray-300 dark:text-zinc-700"
               )}>
                 {s.step}
               </div>
               <span className={cn(
-                "text-[8px] sm:text-[9px] font-black tracking-[0.1em] sm:tracking-[0.15em] uppercase text-center",
-                s.active ? "text-black" : "text-gray-300"
+                "text-[8px] sm:text-[9px] font-black tracking-[0.1em] sm:tracking-[0.15em] uppercase text-center transition-colors",
+                s.active ? "text-black dark:text-white" : "text-gray-300 dark:text-zinc-700"
               )}>{s.label}</span>
            </div>
          ))}
@@ -194,7 +196,7 @@ export default function CVBuilderPage() {
             {/* History Section */}
             <div className="mt-16 lg:mt-24 w-full">
                <div className="flex items-center justify-between mb-6 sm:mb-8">
-                  <h3 className="text-[10px] sm:text-[11px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-2">
+                  <h3 className="text-[10px] sm:text-[11px] font-black text-gray-400 dark:text-zinc-500 tracking-widest uppercase flex items-center gap-2">
                      <History className="w-4 h-4" />
                      RIWAYAT ANALISIS
                   </h3>
@@ -204,32 +206,32 @@ export default function CVBuilderPage() {
                     <div 
                       key={i} 
                       onClick={() => handleViewHistory(h)}
-                      className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-gray-50 transition-all group shadow-sm cursor-pointer gap-4"
+                      className="bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-2xl border border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-all group shadow-sm cursor-pointer gap-4"
                     >
                        <div className="flex items-center gap-4 w-full sm:w-auto">
-                          <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:text-white transition-all shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-gray-400 group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-all shrink-0">
                              <FileText className="w-5 h-5" />
                           </div>
                           <div className="min-w-0">
-                             <h4 className="font-bold text-black text-sm truncate">{h.filename}</h4>
-                             <p className="text-[10px] text-gray-400 font-medium uppercase">
+                             <h4 className="font-bold text-black dark:text-white text-sm truncate transition-colors">{h.filename}</h4>
+                             <p className="text-[10px] text-gray-400 dark:text-zinc-500 font-medium uppercase">
                                {new Date(h.createdAt).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })}
                              </p>
                           </div>
                        </div>
                        <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto mt-2 sm:mt-0">
                           <div className="text-left sm:text-right">
-                             <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">EST. SCORE</p>
-                             <p className="text-lg font-black text-black">80%</p>
+                             <p className="text-[9px] font-black text-gray-400 dark:text-zinc-600 uppercase mb-0.5">EST. SCORE</p>
+                             <p className="text-lg font-black text-black dark:text-white transition-colors">80%</p>
                           </div>
-                          <button className="p-2 sm:p-2.5 bg-gray-50 text-gray-400 rounded-xl group-hover:bg-teal group-hover:text-white transition-all border border-transparent group-hover:border-teal">
+                          <button className="p-2 sm:p-2.5 bg-gray-50 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500 rounded-xl group-hover:bg-teal group-hover:text-white transition-all border border-transparent group-hover:border-teal">
                              <ArrowRight className="w-4 h-4" />
                           </button>
                        </div>
                     </div>
                   )) : (
-                    <div className="bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-3xl p-8 sm:p-12 text-center">
-                       <p className="text-gray-400 text-sm font-medium italic">Belum ada riwayat analisis.</p>
+                    <div className="bg-gray-50/50 dark:bg-zinc-900/20 border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-3xl p-8 sm:p-12 text-center transition-colors">
+                       <p className="text-gray-400 dark:text-zinc-600 text-sm font-medium italic">Belum ada riwayat analisis.</p>
                     </div>
                   )}
                </div>
@@ -238,16 +240,16 @@ export default function CVBuilderPage() {
         ) : (
           <motion.div key="preview" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-12">
             {/* CV Details Banner */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-6 bg-white border border-gray-100 rounded-[32px] shadow-sm overflow-hidden">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-6 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[32px] shadow-sm overflow-hidden transition-all">
                 <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto min-w-0">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-teal shrink-0">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-teal shrink-0">
                         <FileText className="w-7 h-7 sm:w-8 sm:h-8" />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <h3 className="text-lg sm:text-xl font-black text-black truncate w-full" title={uploadedData.filename}>
+                        <h3 className="text-lg sm:text-xl font-black text-black dark:text-white truncate w-full transition-colors" title={uploadedData.filename}>
                             {uploadedData.filename}
                         </h3>
-                        <p className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase mt-1 tracking-wider">
+                        <p className="text-[10px] sm:text-xs text-gray-400 dark:text-zinc-500 font-bold uppercase mt-1 tracking-wider">
                           DIUNGGAH: {new Date(uploadedData.createdAt || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                     </div>
@@ -257,14 +259,14 @@ export default function CVBuilderPage() {
                       onClick={handleAnalyze}
                       disabled={isAnalyzing}
                       variant="outline" 
-                      className="w-full sm:flex-1 md:w-auto h-12 lg:h-14 rounded-2xl px-8 font-black text-[10px] uppercase tracking-widest border-teal bg-teal/5 text-teal hover:bg-teal hover:text-white transition-all shadow-lg shadow-teal/10"
+                      className="w-full sm:flex-1 md:w-auto h-12 lg:h-14 rounded-2xl px-8 font-black text-[10px] uppercase tracking-widest border-teal bg-teal/5 dark:bg-teal/10 text-teal hover:bg-teal hover:text-white transition-all shadow-lg shadow-teal/10"
                     >
                       {isAnalyzing ? <LoadingSpinner size="sm" className="mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />} 
                       Mulai Analisis Karier
                     </Button>
                     <Button 
                       onClick={handleResetCV}
-                      className="w-full sm:w-auto h-12 lg:h-14 rounded-2xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest bg-black text-white hover:bg-red-600 transition-colors"
+                      className="w-full sm:w-auto h-12 lg:h-14 rounded-2xl px-6 sm:px-8 font-black text-[10px] uppercase tracking-widest bg-black dark:bg-white text-white dark:text-black hover:bg-red-600 dark:hover:bg-red-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4 mr-2" /> Ganti CV
                     </Button>
@@ -278,13 +280,13 @@ export default function CVBuilderPage() {
 
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmReplace} onOpenChange={setShowConfirmReplace}>
-        <DialogContent className="rounded-[32px] p-8">
+        <DialogContent className="rounded-[32px] p-8 bg-white dark:bg-zinc-950 border-gray-100 dark:border-zinc-800 transition-colors">
            <DialogHeader>
-              <div className="w-16 h-16 bg-red-50 rounded-[24px] flex items-center justify-center text-red-600 mb-6 mx-auto">
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-500/10 rounded-[24px] flex items-center justify-center text-red-600 mb-6 mx-auto transition-colors">
                  <AlertCircle className="w-8 h-8" />
               </div>
-              <DialogTitle className="text-2xl font-black text-center text-black">Ganti CV Saat Ini?</DialogTitle>
-              <DialogDescription className="text-center text-gray-500 pt-4 text-sm leading-relaxed">
+              <DialogTitle className="text-2xl font-black text-center text-black dark:text-white">Ganti CV Saat Ini?</DialogTitle>
+              <DialogDescription className="text-center text-gray-500 dark:text-zinc-500 pt-4 text-sm leading-relaxed">
                  CV lama dan hasil analisis sebelumnya akan diganti dengan data baru. Tindakan ini tidak dapat dibatalkan.
               </DialogDescription>
            </DialogHeader>
@@ -292,7 +294,7 @@ export default function CVBuilderPage() {
               <Button 
                 variant="outline" 
                 onClick={() => setShowConfirmReplace(false)}
-                className="flex-1 h-12 rounded-xl font-bold border-gray-100"
+                className="flex-1 h-12 rounded-xl font-bold border-gray-100 dark:border-zinc-800 dark:text-white dark:hover:bg-zinc-900"
               >
                 Batal
               </Button>

@@ -224,28 +224,28 @@ export default function ProfilePage() {
   ].filter(Boolean).length / 11) * 100)
 
   if (isLoading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 space-y-4">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 flex flex-col items-center justify-center p-8 space-y-4 transition-colors duration-300">
       <Loader2 className="w-10 h-10 animate-spin text-[#1D9E75]" />
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Menyusun Identitas...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-zinc-600">Menyusun Identitas...</p>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD]">
+    <div className="min-h-screen bg-[#FDFDFD] dark:bg-zinc-950 transition-colors duration-300">
       <main className="max-w-4xl mx-auto px-4 py-8 md:py-16 space-y-12">
         
         {/* Header with Save Button */}
-        <section className="flex flex-col md:flex-row items-center justify-between gap-6 pb-10 border-b border-slate-100">
+        <section className="flex flex-col md:flex-row items-center justify-between gap-6 pb-10 border-b border-slate-100 dark:border-zinc-800">
            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10">
               <div className="relative group shrink-0">
                 <UserAvatar size="xl" src={formData.image} name={formData.name} />
               </div>
 
               <div className="text-center md:text-left space-y-2">
-                 <h1 className="text-3xl md:text-5xl font-black text-black tracking-tighter uppercase italic leading-[0.85]">
+                 <h1 className="text-3xl md:text-5xl font-black text-black dark:text-white tracking-tighter uppercase italic leading-[0.85]">
                    {formData.name || "Kandidat SMK"}
                  </h1>
-                 <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center justify-center md:justify-start gap-2">
+                 <p className="text-slate-400 dark:text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center justify-center md:justify-start gap-2">
                    <MapPin className="w-3.5 h-3.5 text-[#1D9E75]" /> {formData.city || "Lokasi Belum Diatur"}
                  </p>
               </div>
@@ -254,7 +254,7 @@ export default function ProfilePage() {
            <Button 
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full md:w-auto h-12 px-8 bg-black hover:bg-[#1D9E75] text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl transition-all group"
+              className="w-full md:w-auto h-12 px-8 bg-black dark:bg-white text-white dark:text-black hover:bg-[#1D9E75] dark:hover:bg-teal rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl transition-all group"
             >
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />}
               Simpan Profil
@@ -263,31 +263,31 @@ export default function ProfilePage() {
 
         {/* Progress Insight */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           <div className="md:col-span-2 bg-[#1D9E75]/5 p-6 md:p-8 rounded-[2rem] border border-[#1D9E75]/10 flex flex-col md:flex-row items-center gap-6">
+           <div className="md:col-span-2 bg-[#1D9E75]/5 dark:bg-[#1D9E75]/10 p-6 md:p-8 rounded-[2rem] border border-[#1D9E75]/10 dark:border-[#1D9E75]/20 flex flex-col md:flex-row items-center gap-6">
               <div className="w-16 h-16 rounded-2xl bg-[#1D9E75] flex items-center justify-center text-white shrink-0">
                  <Sparkles className="w-8 h-8" />
               </div>
               <div className="space-y-4 flex-1">
                  <div className="space-y-1">
                     <p className="text-[10px] font-black text-[#1D9E75] uppercase tracking-widest">Kecocokan Profil AI</p>
-                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Lengkapi profil untuk mendapatkan rekomendasi lowongan kerja 100% akurat.</p>
+                    <p className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-tight">Lengkapi profil untuk mendapatkan rekomendasi lowongan kerja 100% akurat.</p>
                  </div>
                  <div className="flex items-center gap-4">
-                    <Progress value={completionPercent} className="h-2 bg-[#1D9E75]/10" />
+                    <Progress value={completionPercent} className="h-2 bg-[#1D9E75]/10 dark:bg-zinc-800" />
                     <span className="text-xs font-black italic text-[#1D9E75]">{completionPercent}%</span>
                  </div>
               </div>
            </div>
 
-           <div className="bg-black text-white p-6 md:p-8 rounded-[2rem] flex flex-col justify-center items-center text-center space-y-2">
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Target Gaji</p>
+           <div className="bg-black dark:bg-zinc-900 text-white p-6 md:p-8 rounded-[2rem] border border-white/5 flex flex-col justify-center items-center text-center space-y-2 transition-colors">
+              <p className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest leading-none">Target Gaji</p>
               <p className="text-2xl font-black italic tracking-tighter">Rp {(formData.salary / 1000000).toFixed(1)} Jt</p>
               <div className="w-full pt-2">
                  <input 
                   type="range" min="2000000" max="25000000" step="500000"
                   value={formData.salary} 
                   onChange={(e) => setFormData({...formData, salary: parseInt(e.target.value)})}
-                  className="w-full h-1 bg-white/10 rounded-full appearance-none accent-[#1D9E75] cursor-pointer"
+                  className="w-full h-1 bg-white/10 dark:bg-zinc-800 rounded-full appearance-none accent-[#1D9E75] cursor-pointer"
                  />
               </div>
            </div>
@@ -299,41 +299,41 @@ export default function ProfilePage() {
            {/* Main Column */}
            <div className="md:col-span-8 space-y-12">
               <div className="space-y-8">
-                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 pl-1">Informasi Dasar</h3>
+                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 dark:text-zinc-700 pl-1">Informasi Dasar</h3>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Lengkap</Label>
-                      <Input 
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm"
-                      />
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Nama Lengkap</Label>
+                       <Input 
+                         value={formData.name}
+                         onChange={(e) => setFormData({...formData, name: e.target.value})}
+                         className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm dark:text-white"
+                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Usia</Label>
+                        <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Usia</Label>
                         <Input 
                           type="number"
                           value={formData.age}
-                          className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm text-center"
+                          className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm text-center dark:text-white"
                           onChange={(e) => setFormData({...formData, age: parseInt(e.target.value)})}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Gender</Label>
+                        <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">Gender</Label>
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               role="combobox"
-                              className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 uppercase italic"
+                              className="w-full h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm justify-between hover:bg-slate-50 dark:hover:bg-zinc-800 uppercase italic dark:text-white"
                             >
                               {formData.gender || "Pilih Gender"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white" align="start">
-                            <Command className="border-none">
+                          <PopoverContent className="w-full p-0 bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800" align="start">
+                            <Command className="border-none bg-transparent">
                               <CommandInput placeholder="Cari gender..." className="font-bold text-xs" />
                               <CommandList>
                                 <CommandGroup>
@@ -342,7 +342,7 @@ export default function ProfilePage() {
                                       key={g}
                                       value={g}
                                       onSelect={() => setFormData({ ...formData, gender: g })}
-                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:text-white aria-selected:bg-slate-50 dark:aria-selected:bg-zinc-800 transition-colors"
                                     >
                                       <Check
                                         className={cn(
@@ -363,7 +363,7 @@ export default function ProfilePage() {
                  </div>
 
                  <div className="space-y-4">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Lokasi Domisili (Kabupaten)</Label>
+                    <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">Lokasi Domisili (Kabupaten)</Label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Province Search Select */}
                         <Popover>
@@ -371,17 +371,17 @@ export default function ProfilePage() {
                             <Button
                               variant="outline"
                               role="combobox"
-                              className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 uppercase italic"
+                              className="w-full h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm justify-between hover:bg-slate-50 dark:hover:bg-zinc-800 uppercase italic dark:text-white"
                             >
                               {formData.province || "Pilih Provinsi"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
-                            <Command className="border-none">
-                              <CommandInput placeholder="Cari provinsi..." className="font-bold text-xs py-4" />
+                          <PopoverContent className="w-full p-0 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                            <Command className="border-none bg-transparent">
+                              <CommandInput placeholder="Cari provinsi..." className="font-bold text-xs py-4 dark:text-white" />
                               <CommandList>
-                                <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400">Provinsi tidak ditemukan.</CommandEmpty>
+                                <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400 dark:text-zinc-500">Provinsi tidak ditemukan.</CommandEmpty>
                                 <CommandGroup>
                                   {provinces.map((prov) => (
                                     <CommandItem
@@ -392,7 +392,7 @@ export default function ProfilePage() {
                                         setFormData({ ...formData, province: prov.name, city: "" })
                                         fetchRegencies(prov.id)
                                       }}
-                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:text-white aria-selected:bg-slate-50 dark:aria-selected:bg-zinc-800 transition-colors"
                                     >
                                       <Check
                                         className={cn(
@@ -417,17 +417,17 @@ export default function ProfilePage() {
                                 variant="outline"
                                 role="combobox"
                                 disabled={!selectedProvId || isRegionsLoading}
-                                className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 disabled:opacity-50 uppercase italic"
+                                className="w-full h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm justify-between hover:bg-slate-50 dark:hover:bg-zinc-800 disabled:opacity-50 uppercase italic dark:text-white"
                               >
                                 {formData.city || "Pilih Kab/Kota"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                             <PopoverContent className="w-full p-0 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
-                              <Command className="border-none">
-                                <CommandInput placeholder="Cari kabupaten/kota..." className="font-bold text-xs py-4" />
+                             <PopoverContent className="w-full p-0 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                              <Command className="border-none bg-transparent">
+                                <CommandInput placeholder="Cari kabupaten/kota..." className="font-bold text-xs py-4 dark:text-white" />
                                 <CommandList>
-                                  <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400">Lokasi tidak ditemukan.</CommandEmpty>
+                                  <CommandEmpty className="py-6 text-center text-[10px] font-black uppercase text-slate-400 dark:text-zinc-500">Lokasi tidak ditemukan.</CommandEmpty>
                                   <CommandGroup>
                                     {regencies.map((reg) => (
                                       <CommandItem
@@ -436,7 +436,7 @@ export default function ProfilePage() {
                                         onSelect={() => {
                                           setFormData({ ...formData, city: reg.name })
                                         }}
-                                        className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
+                                        className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:text-white aria-selected:bg-slate-50 dark:aria-selected:bg-zinc-800 transition-colors"
                                       >
                                         <Check
                                           className={cn(
@@ -459,24 +459,24 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-8">
-                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 pl-1">Pendidikan SMK</h3>
+                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 dark:text-zinc-700 pl-1">Pendidikan SMK</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Jenjang Pendidikan</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">Jenjang Pendidikan</Label>
                        <Popover>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               role="combobox"
-                              className="w-full h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm justify-between hover:bg-slate-50 uppercase italic"
+                              className="w-full h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm justify-between hover:bg-slate-50 dark:hover:bg-zinc-800 uppercase italic dark:text-white"
                             >
                               {formData.education || "Pilih Jenjang"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
-                            <Command className="border-none">
-                              <CommandInput placeholder="Cari jenjang..." className="font-bold text-xs py-4" />
+                          <PopoverContent className="w-full p-0 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                            <Command className="border-none bg-transparent">
+                              <CommandInput placeholder="Cari jenjang..." className="font-bold text-xs py-4 dark:text-white" />
                               <CommandList>
                                 <CommandGroup>
                                   {["SMK", "SMA", "Diploma", "Sarjana"].map((edu) => (
@@ -484,7 +484,7 @@ export default function ProfilePage() {
                                       key={edu}
                                       value={edu}
                                       onSelect={() => setFormData({ ...formData, education: edu })}
-                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 aria-selected:bg-slate-50 transition-colors"
+                                      className="font-bold text-xs uppercase cursor-pointer py-3 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:text-white aria-selected:bg-slate-50 dark:aria-selected:bg-zinc-800 transition-colors"
                                     >
                                       <Check
                                         className={cn(
@@ -502,39 +502,39 @@ export default function ProfilePage() {
                        </Popover>
                     </div>
                     <div className="space-y-2">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nama Sekolah / Instansi</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">Nama Sekolah / Instansi</Label>
                        <Input 
-                        value={formData.schoolName}
-                        onChange={(e) => setFormData({...formData, schoolName: e.target.value})}
-                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm focus:ring-2 focus:ring-[#1D9E75]/20 focus:border-[#1D9E75] transition-all"
-                        placeholder="SMKN 1 Bandung"
+                         value={formData.schoolName}
+                         onChange={(e) => setFormData({...formData, schoolName: e.target.value})}
+                         className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm focus:ring-2 focus:ring-[#1D9E75]/20 focus:border-[#1D9E75] transition-all dark:text-white"
+                         placeholder="SMKN 1 Bandung"
                        />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Kompetensi Keahlian (Jurusan)</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">Kompetensi Keahlian (Jurusan)</Label>
                        <Input 
-                        value={formData.major}
-                        onChange={(e) => setFormData({...formData, major: e.target.value})}
-                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm focus:ring-2 focus:ring-[#1D9E75]/20 focus:border-[#1D9E75] transition-all"
-                        placeholder="Rekayasa Perangkat Lunak"
+                         value={formData.major}
+                         onChange={(e) => setFormData({...formData, major: e.target.value})}
+                         className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm focus:ring-2 focus:ring-[#1D9E75]/20 focus:border-[#1D9E75] transition-all dark:text-white"
+                         placeholder="Rekayasa Perangkat Lunak"
                        />
                     </div>
                     <div className="grid grid-cols-2 gap-4 md:col-span-2">
                        <div className="space-y-2">
-                          <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tahun Lulus</Label>
+                          <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Tahun Lulus</Label>
                           <Input 
                             value={formData.gradYear}
                             onChange={(e) => setFormData({...formData, gradYear: e.target.value})}
-                            className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm text-center"
+                            className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm text-center dark:text-white"
                             placeholder="2024"
                           />
                        </div>
                        <div className="space-y-2">
-                          <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nilai Rata-rata</Label>
+                          <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Nilai Rata-rata</Label>
                           <Input 
                             value={formData.avgScore}
                             onChange={(e) => setFormData({...formData, avgScore: e.target.value})}
-                            className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm text-center"
+                            className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm text-center dark:text-white"
                             placeholder="85.0"
                           />
                        </div>
@@ -546,25 +546,25 @@ export default function ProfilePage() {
            {/* Sidebar Column */}
            <div className="md:col-span-4 space-y-12">
               <div className="space-y-8">
-                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 pl-1">Keahlian</h3>
+                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-300 dark:text-zinc-700 pl-1">Keahlian</h3>
                  <div className="space-y-6">
                     <div className="space-y-3">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hard Skills</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Hard Skills</Label>
                        <div className="flex gap-2">
                           <Input 
                             value={skillInput}
                             onChange={(e) => setSkillInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && addSkill(skillInput)}
-                            className="h-12 rounded-xl bg-white border-slate-100 font-bold text-xs"
+                            className="h-12 rounded-xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-xs dark:text-white"
                             placeholder="e.g. AutoCAD"
                           />
-                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black hover:bg-black/90 active:scale-95 transition-all flex items-center justify-center">
-                            <Plus className="w-5 h-5 text-white" />
+                          <Button onClick={() => addSkill(skillInput)} className="h-12 w-12 rounded-xl bg-black dark:bg-white hover:bg-black/90 dark:hover:bg-zinc-200 active:scale-95 transition-all flex items-center justify-center">
+                            <Plus className="w-5 h-5 text-white dark:text-black" />
                           </Button>
                        </div>
                        <div className="flex flex-wrap gap-2">
                           {formData.skills.map(s => (
-                            <Badge key={s} className="bg-slate-50 text-black border-slate-100 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest flex items-center gap-2" onClick={() => setFormData({...formData, skills: formData.skills.filter(i => i !== s)})}>
+                            <Badge key={s} className="bg-slate-50 dark:bg-zinc-900 text-black dark:text-zinc-300 border-slate-100 dark:border-zinc-800 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest flex items-center gap-2" onClick={() => setFormData({...formData, skills: formData.skills.filter(i => i !== s)})}>
                                {s} <X className="w-2.5 h-2.5" />
                             </Badge>
                           ))}
@@ -572,17 +572,17 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="space-y-2">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ambisi Karier (Posisi)</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Ambisi Karier (Posisi)</Label>
                        <Input 
                         value={formData.targetPos}
                         onChange={(e) => setFormData({...formData, targetPos: e.target.value})}
-                        className="h-14 rounded-2xl bg-white border-slate-100 font-bold text-sm"
+                        className="h-14 rounded-2xl bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 font-bold text-sm dark:text-white"
                         placeholder="e.g. Junior Developer"
                        />
                     </div>
 
                     <div className="space-y-4">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Ruang Kerja</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">Ruang Kerja</Label>
                        <div className="grid grid-cols-3 gap-2">
                           {["Remote", "On-site", "Hybrid"].map(pref => (
                             <button
@@ -590,7 +590,9 @@ export default function ProfilePage() {
                               onClick={() => setFormData({...formData, workPref: pref})}
                               className={cn(
                                 "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
-                                formData.workPref === pref ? "bg-black text-white border-black" : "bg-white text-slate-400 hover:text-black hover:border-slate-200 border-slate-50"
+                                formData.workPref === pref 
+                                  ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white" 
+                                  : "bg-white dark:bg-zinc-900 text-slate-400 dark:text-zinc-600 hover:text-black dark:hover:text-white hover:border-slate-200 dark:hover:border-zinc-700 border-slate-50 dark:border-zinc-800"
                               )}
                             >
                               {pref}
@@ -600,7 +602,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="space-y-3">
-                       <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Minat Industri</Label>
+                       <Label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Minat Industri</Label>
                        <div className="flex flex-wrap gap-2">
                           {["Produksi", "Teknologi", "Kreatif", "Jasa"].map(ind => {
                              const active = formData.interests.includes(ind)
@@ -613,7 +615,9 @@ export default function ProfilePage() {
                                   }}
                                   className={cn(
                                     "px-4 py-2 rounded-xl border font-black text-[9px] uppercase tracking-widest transition-all",
-                                    active ? "bg-black text-white border-black" : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"
+                                    active 
+                                      ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white" 
+                                      : "bg-white dark:bg-zinc-900 text-slate-400 dark:text-zinc-600 border-slate-100 dark:border-zinc-800 hover:border-slate-200 dark:hover:border-zinc-700"
                                   )}
                                 >
                                   {ind}
@@ -625,12 +629,12 @@ export default function ProfilePage() {
                  </div>
               </div>
 
-              <div className="bg-[#534AB7]/5 p-8 rounded-[2.5rem] border border-[#534AB7]/10 space-y-6">
+              <div className="bg-[#534AB7]/5 dark:bg-[#534AB7]/10 p-8 rounded-[2.5rem] border border-[#534AB7]/10 dark:border-[#534AB7]/20 space-y-6 transition-colors duration-300">
                  <div className="flex items-center gap-3">
                     <Info className="w-5 h-5 text-[#534AB7]" />
                     <p className="font-black text-[10px] uppercase tracking-widest text-[#534AB7]">Tips Karier</p>
                  </div>
-                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight leading-relaxed">
+                 <p className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-tight leading-relaxed">
                    Pastikan &quot;Tahun Lulus&quot; akurat agar sistem AI dapat menyarankan program internship atau magang yang sesuai dengan timeline-mu.
                  </p>
               </div>
@@ -642,12 +646,12 @@ export default function ProfilePage() {
            <Button 
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full h-16 bg-black hover:bg-[#1D9E75] text-white rounded-3xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all group"
+              className="w-full h-16 bg-black dark:bg-white text-white dark:text-black hover:bg-[#1D9E75] dark:hover:bg-teal rounded-3xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all group"
             >
-              {isSaving ? <Loader2 className="w-6 h-6 animate-spin mr-3 text-white" /> : <CheckCircle2 className="w-6 h-6 mr-3 text-white group-hover:scale-110 transition-transform" />}
+              {isSaving ? <Loader2 className="w-6 h-6 animate-spin mr-3 text-white dark:text-black" /> : <CheckCircle2 className="w-6 h-6 mr-3 text-white dark:text-black group-hover:scale-110 transition-transform" />}
               Sinkronisasi Seluruh Data Profil
             </Button>
-            <p className="mt-6 text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">CareerLens AI – Indonesian SMK Edition</p>
+            <p className="mt-6 text-center text-[9px] font-black text-slate-300 dark:text-zinc-700 uppercase tracking-[0.3em]">CareerLens AI – Indonesian SMK Edition</p>
         </div>
 
       </main>

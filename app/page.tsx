@@ -12,11 +12,13 @@ import {
   X,
   Star,
   ArrowRight,
-  User
+  User,
+  LayoutDashboard
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // --- Custom Hooks ---
 
@@ -113,15 +115,15 @@ const Navbar = () => {
   return (
     <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
       isScrolled 
-        ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 py-3" 
-        : "bg-white border-b border-gray-100 py-5"
+        ? "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-zinc-800 py-3" 
+        : "bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800 py-5"
     }`}>
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center">
             <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-black">
+          <span className="text-xl font-bold tracking-tight text-black dark:text-white">
             CareerLens <span className="text-[#1D9E75]">AI</span>
           </span>
         </Link>
@@ -132,7 +134,7 @@ const Navbar = () => {
             <Link 
               key={item} 
               href={`#${item.toLowerCase().replace(" ", "-")}`}
-              className="text-[14px] font-semibold text-gray-600 hover:text-black transition-colors"
+              className="text-[14px] font-semibold text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
             >
               {item}
             </Link>
@@ -140,21 +142,22 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
+          <ThemeToggle />
           {authenticated ? (
             <Link href="/dashboard">
               <motion.button 
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="bg-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                className="bg-black dark:bg-white dark:text-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-lg active:scale-95 flex items-center gap-2"
               >
-                <User size={14} />
-                Ke Dashboard
+                <LayoutDashboard size={14} />
+                Dashboard
               </motion.button>
             </Link>
           ) : (
             <>
               <Link href="/login">
-                <button className="text-[14px] font-bold text-black px-6 py-2 hover:opacity-70 transition-opacity">
+                <button className="text-[14px] font-bold text-black dark:text-white px-6 py-2 hover:opacity-70 transition-opacity">
                   Masuk
                 </button>
               </Link>
@@ -162,7 +165,7 @@ const Navbar = () => {
                 <motion.button 
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="bg-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] transition-all shadow-lg active:scale-95"
+                  className="bg-black dark:bg-white dark:text-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-lg active:scale-95"
                 >
                   Mulai Gratis
                 </motion.button>
@@ -172,12 +175,15 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button 
-          className="md:hidden text-black p-2"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
+          <button 
+            className="text-black dark:text-white p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -187,30 +193,30 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="absolute top-full left-0 w-full bg-white border-b border-gray-100 px-6 py-8 md:hidden flex flex-col gap-6 shadow-2xl overflow-hidden"
+            className="absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800 px-6 py-8 md:hidden flex flex-col gap-6 shadow-2xl overflow-hidden"
           >
             {["Fitur", "Cara Kerja", "Testimoni", "FAQ"].map((item) => (
               <Link 
                 key={item} 
                 href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className="text-lg font-bold text-black"
+                className="text-lg font-bold text-black dark:text-white"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item}
               </Link>
             ))}
-            <div className="flex flex-col gap-3 pt-6 border-t border-gray-100">
+            <div className="flex flex-col gap-3 pt-6 border-t border-gray-100 dark:border-zinc-800">
                {authenticated ? (
                  <Link href="/dashboard" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                   <button className="w-full py-4 bg-black text-white font-bold rounded-2xl shadow-lg">Ke Dashboard</button>
+                   <button className="w-full py-4 bg-black dark:bg-white dark:text-black text-white font-bold rounded-2xl shadow-lg">Ke Dashboard</button>
                  </Link>
                ) : (
                  <>
                    <Link href="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                     <button className="w-full py-4 text-black font-bold border border-gray-200 rounded-2xl">Masuk</button>
+                     <button className="w-full py-4 text-black dark:text-white font-bold border border-gray-200 dark:border-zinc-800 rounded-2xl">Masuk</button>
                    </Link>
                    <Link href="/register" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                     <button className="w-full py-4 bg-black text-white font-bold rounded-2xl shadow-lg">Mulai Gratis</button>
+                     <button className="w-full py-4 bg-black dark:bg-white dark:text-black text-white font-bold rounded-2xl shadow-lg">Mulai Gratis</button>
                    </Link>
                  </>
                )}
@@ -226,17 +232,17 @@ const Hero = () => {
   const { status } = useSession();
   const authenticated = status === "authenticated";
   return (
-    <section className="bg-white pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden px-6">
+    <section className="bg-white dark:bg-zinc-950 pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden px-6 transition-colors duration-300">
       <div className="max-w-6xl mx-auto text-center">
         <motion.div
            initial={{ opacity: 0, y: 40 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 border border-gray-100 text-[#1D9E75] text-[12px] font-bold tracking-wider uppercase mb-8">
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-[#1D9E75] text-[12px] font-bold tracking-wider uppercase mb-8">
             <Sparkles size={14} /> Terpercaya oleh 50.000+ Pelajar
           </span>
-          <h1 className="text-5xl md:text-8xl font-black text-black tracking-tighter leading-[0.95] mb-8">
+          <h1 className="text-5xl md:text-8xl font-black text-black dark:text-white tracking-tighter leading-[0.95] mb-8">
             Karier Impianmu. <br />
             <span className="text-[#1D9E75] italic">Dimulai dari Sini.</span>
           </h1>
@@ -246,7 +252,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
-          className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12"
+          className="text-gray-500 dark:text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12"
         >
           AI yang membantu kamu membangun masa depan terarah dengan presisi tingkat tinggi. Analisis CV, roadmap harian, dan pencocokan pekerjaan otomatis.
         </motion.p>
@@ -261,7 +267,7 @@ const Hero = () => {
             <motion.button 
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="h-16 px-12 bg-black text-white rounded-full font-bold text-[15px] tracking-tight hover:bg-[#1D9E75] transition-all shadow-2xl shadow-black/10 w-full"
+              className="h-16 px-12 bg-black dark:bg-white text-white dark:text-black rounded-full font-bold text-[15px] tracking-tight hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-2xl shadow-black/10 w-full"
             >
               Analisis CV Sekarang
             </motion.button>
@@ -270,7 +276,7 @@ const Hero = () => {
             <motion.button 
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="h-16 px-12 bg-white text-black border border-gray-200 rounded-full font-bold text-[15px] tracking-tight hover:bg-gray-50 transition-all w-full"
+              className="h-16 px-12 bg-white dark:bg-zinc-900 text-black dark:text-white border border-gray-200 dark:border-zinc-800 rounded-full font-bold text-[15px] tracking-tight hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all w-full"
             >
               Lihat Demo
             </motion.button>
@@ -284,49 +290,49 @@ const Hero = () => {
           transition={{ duration: 0.9, delay: 0.4 }}
           className="mt-20 relative max-w-4xl mx-auto px-4"
         >
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-[0_50px_100px_-15px_rgba(0,0,0,0.08)] overflow-hidden">
-            <div className="bg-gray-50 border-b border-gray-100 p-4 flex items-center justify-between">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl shadow-[0_50px_100px_-15px_rgba(0,0,0,0.08)] overflow-hidden">
+            <div className="bg-gray-50 dark:bg-zinc-800/50 border-b border-gray-100 dark:border-zinc-800 p-4 flex items-center justify-between">
               <div className="flex gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-400" />
                 <div className="w-3 h-3 rounded-full bg-yellow-400" />
                 <div className="w-3 h-3 rounded-full bg-green-400" />
               </div>
-              <div className="h-4 w-48 bg-gray-200 rounded-full" />
-              <div className="w-8 h-8 rounded-full bg-gray-200" />
+              <div className="h-4 w-48 bg-gray-200 dark:bg-zinc-700 rounded-full" />
+              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-zinc-700" />
             </div>
             
             <div className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
-              <div className="md:border-r border-gray-100 pr-0 md:pr-10 flex flex-col items-center justify-center text-center">
+              <div className="md:border-r border-gray-100 dark:border-zinc-800 pr-0 md:pr-10 flex flex-col items-center justify-center text-center">
                  <div className="relative w-32 h-32 flex items-center justify-center mb-6">
                     <svg className="w-full h-full -rotate-90">
-                      <circle cx="50%" cy="50%" r="46" fill="none" stroke="#F3F4F6" strokeWidth="8" />
+                      <circle cx="50%" cy="50%" r="46" fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-100 dark:text-zinc-800" />
                       <circle cx="50%" cy="50%" r="46" fill="none" stroke="#1D9E75" strokeWidth="8" strokeDasharray="289" strokeDashoffset="63" strokeLinecap="round" />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-black text-black leading-none">78%</span>
+                      <span className="text-3xl font-black text-black dark:text-white leading-none">78%</span>
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">ATS Score</span>
                     </div>
                  </div>
-                 <p className="text-gray-500 text-sm font-medium leading-relaxed">Profil profesional kamu sudah memenuhi standar industri modern.</p>
+                 <p className="text-gray-500 dark:text-zinc-400 text-sm font-medium leading-relaxed">Profil profesional kamu sudah memenuhi standar industri modern.</p>
               </div>
 
               <div className="md:col-span-2 space-y-4">
-                <h4 className="text-sm font-bold text-black uppercase tracking-widest mb-6">Pencocokan Karier:</h4>
+                <h4 className="text-sm font-bold text-black dark:text-white uppercase tracking-widest mb-6">Pencocokan Karier:</h4>
                 {[
                   { role: "Frontend Developer", score: 92, color: "bg-[#1D9E75]" },
-                  { role: "UI/UX Designer", score: 85, color: "bg-black" },
-                  { role: "Product Manager", score: 64, color: "bg-gray-300" }
+                  { role: "UI/UX Designer", score: 85, color: "bg-black dark:bg-zinc-700" },
+                  { role: "Product Manager", score: 64, color: "bg-gray-300 dark:bg-zinc-800" }
                 ].map((job, i) => (
                   <motion.div 
                     key={i} 
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.6 + (i * 0.1) }}
-                    className="p-5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between hover:bg-white transition-colors cursor-default"
+                    className="p-5 bg-gray-50 dark:bg-zinc-800/50 rounded-2xl border border-gray-100 dark:border-zinc-800 flex items-center justify-between hover:bg-white dark:hover:bg-zinc-800 transition-colors cursor-default"
                   >
                     <div className="flex items-center gap-4">
                        <div className={`w-2.5 h-2.5 rounded-full ${job.color}`} />
-                       <span className="text-[15px] font-bold text-black">{job.role}</span>
+                       <span className="text-[15px] font-bold text-black dark:text-white">{job.role}</span>
                     </div>
                     <span className="text-[14px] font-black text-[#1D9E75]">{job.score}% Match</span>
                   </motion.div>
@@ -349,14 +355,14 @@ const Stats = () => {
   ];
 
   return (
-    <section className="bg-black py-24 px-6 relative overflow-hidden">
+    <section className="bg-black dark:bg-zinc-900 py-24 px-6 relative overflow-hidden transition-colors duration-300">
       <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8 relative z-10">
         {stats.map((stat, i) => (
           <div key={i} className="text-center md:text-left">
             <h3 className="text-4xl md:text-6xl font-black mb-3 tracking-tighter text-white">
               <Counter value={stat.value} />
             </h3>
-            <p className="text-gray-500 text-xs md:text-[13px] font-bold uppercase tracking-[4px]">
+            <p className="text-gray-500 dark:text-zinc-500 text-xs md:text-[13px] font-bold uppercase tracking-[4px]">
               {stat.label}
             </p>
           </div>
@@ -388,14 +394,14 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section id="cara-kerja" ref={ref} className="bg-white py-32 px-6">
+    <section id="cara-kerja" ref={ref} className="bg-white dark:bg-zinc-950 py-32 px-6 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-24">
           <motion.h2 
             initial={{ opacity: 0, y: 30 }}
             animate={visible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-6xl font-bold text-black tracking-tight mb-6"
+            className="text-4xl md:text-6xl font-bold text-black dark:text-white tracking-tight mb-6"
           >
             Tiga Langkah Sederhana.
           </motion.h2>
@@ -403,7 +409,7 @@ const HowItWorks = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={visible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-gray-500 text-lg max-w-2xl mx-auto font-medium"
+            className="text-gray-500 dark:text-zinc-400 text-lg max-w-2xl mx-auto font-medium"
           >
             Kami memangkas kebingungan dalam mencari karier melalui proses yang transparan dan didukung data.
           </motion.p>
@@ -417,13 +423,13 @@ const HowItWorks = () => {
               animate={visible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.15 * i }}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              className="bg-gray-50 border border-gray-100 rounded-[40px] p-12 transition-all shadow-sm hover:shadow-xl hover:bg-white group"
+              className="bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-12 transition-all shadow-sm hover:shadow-xl hover:bg-white dark:hover:bg-zinc-800 group"
             >
               <span className="text-6xl font-black mb-8 block select-none opacity-20 group-hover:opacity-100 transition-opacity" style={{ WebkitTextStroke: "1.5px #1D9E75", color: "transparent" }}>
                 {step.id}
               </span>
-              <h3 className="text-2xl font-bold text-black mb-6 leading-tight">{step.title}</h3>
-              <p className="text-gray-500 text-[16px] leading-relaxed">
+              <h3 className="text-2xl font-bold text-black dark:text-white mb-6 leading-tight">{step.title}</h3>
+              <p className="text-gray-500 dark:text-zinc-400 text-[16px] leading-relaxed">
                 {step.desc}
               </p>
             </motion.div>
@@ -445,11 +451,11 @@ const FeatureItem = ({ item, i }: { item: any, i: number }) => {
         className={i % 2 !== 0 ? "lg:order-2" : ""}
       >
         <span className="text-[#1D9E75] text-[13px] font-bold tracking-[5px] uppercase mb-8 block">{item.label}</span>
-        <h3 className="text-4xl md:text-6xl font-black text-black leading-[1.05] mb-10">{item.title}</h3>
-        <p className="text-gray-500 text-xl leading-relaxed mb-12">{item.desc}</p>
+        <h3 className="text-4xl md:text-6xl font-black text-black dark:text-white leading-[1.05] mb-10">{item.title}</h3>
+        <p className="text-gray-500 dark:text-zinc-400 text-xl leading-relaxed mb-12">{item.desc}</p>
         <div className="space-y-6">
            {item.points.map((p: string, idx: number) => (
-             <div key={idx} className="flex items-center gap-4 text-black font-bold text-lg">
+             <div key={idx} className="flex items-center gap-4 text-black dark:text-white font-bold text-lg">
                 <div className="w-8 h-8 rounded-full bg-[#1D9E75]/10 flex items-center justify-center text-[#1D9E75]">
                   <Check size={20} strokeWidth={3} />
                 </div>
@@ -463,12 +469,12 @@ const FeatureItem = ({ item, i }: { item: any, i: number }) => {
         initial={{ opacity: 0, x: i % 2 === 0 ? 50 : -50 }}
         animate={visible ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7 }}
-        className={`bg-gray-50 border border-gray-100 rounded-[60px] p-12 md:p-20 h-[500px] flex items-center justify-center relative ${i % 2 !== 0 ? "lg:order-1" : ""}`}
+        className={`bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[60px] p-12 md:p-20 h-[500px] flex items-center justify-center relative ${i % 2 !== 0 ? "lg:order-1" : ""}`}
       >
          <div className="w-full max-w-[340px] z-10">
             {item.visual}
          </div>
-         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+         <div className="absolute inset-0 bg-gradient-to-br from-white/10 dark:from-zinc-800/10 to-transparent pointer-events-none" />
       </motion.div>
     </div>
   );
@@ -483,7 +489,7 @@ const Features = () => {
       points: ["Skor ATS industri nyata", "Keyword target otomatis", "Analisis visual profil"],
       visual: (
         <div className="space-y-6 flex flex-col items-center">
-           <div className="h-4 w-full bg-white rounded-full overflow-hidden border border-gray-200">
+           <div className="h-4 w-full bg-white dark:bg-zinc-800 rounded-full overflow-hidden border border-gray-200 dark:border-zinc-700">
               <motion.div initial={{ width: 0 }} whileInView={{ width: "78%" }} transition={{ duration: 1, delay: 0.2 }} className="h-full bg-[#1D9E75]" />
            </div>
            <div className="grid grid-cols-2 gap-4 w-full">
@@ -493,7 +499,7 @@ const Features = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4 + (i * 0.1) }}
-                  className="h-14 bg-white rounded-2xl border border-gray-100 shadow-sm" 
+                  className="h-14 bg-white dark:bg-zinc-800 rounded-2xl border border-gray-100 dark:border-zinc-700 shadow-sm" 
                 />
               ))}
            </div>
@@ -513,13 +519,13 @@ const Features = () => {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + (i * 0.1) }}
-              className={`p-4 rounded-2xl border ${v ? "bg-white border-[#1D9E75]/30 shadow-md" : "bg-gray-100/50 border-gray-200 opacity-60"}`}
+              className={`p-4 rounded-2xl border ${v ? "bg-white dark:bg-zinc-800 border-[#1D9E75]/30 shadow-md" : "bg-gray-100/50 dark:bg-zinc-900/50 border-gray-200 dark:border-zinc-800 opacity-60"}`}
             >
                <div className="flex items-center gap-4">
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center border ${v ? "bg-[#1D9E75] border-[#1D9E75] text-white" : "border-gray-300 text-transparent"}`}>
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center border ${v ? "bg-[#1D9E75] border-[#1D9E75] text-white" : "border-gray-300 dark:border-zinc-700 text-transparent"}`}>
                     <Check size={14} strokeWidth={4} />
                   </div>
-                  <div className={`h-2 rounded-full ${v ? "bg-gray-200 w-44" : "bg-gray-100 w-32"}`} />
+                  <div className={`h-2 rounded-full ${v ? "bg-gray-200 dark:bg-zinc-700 w-44" : "bg-gray-100 dark:bg-zinc-800 w-32"}`} />
                </div>
             </motion.div>
           ))}
@@ -529,7 +535,7 @@ const Features = () => {
   ];
 
   return (
-    <section id="fitur" className="bg-white py-32 px-6 overflow-hidden">
+    <section id="fitur" className="bg-white dark:bg-zinc-950 py-32 px-6 overflow-hidden transition-colors duration-300">
       <div className="max-w-6xl mx-auto space-y-48">
         {items.map((item, i) => (
           <FeatureItem key={i} item={item} i={i} />
@@ -563,14 +569,14 @@ const Testimonials = () => {
   ];
 
   return (
-    <section id="testimoni" ref={ref} className="bg-gray-50 py-32 px-6">
+    <section id="testimoni" ref={ref} className="bg-gray-50 dark:bg-zinc-900 py-32 px-6 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-20">
           <motion.h2 
             initial={{ opacity: 0, y: 30 }}
             animate={visible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-6xl font-bold text-black tracking-tight mb-6"
+            className="text-4xl md:text-6xl font-bold text-black dark:text-white tracking-tight mb-6"
           >
             Kisah Sukses.
           </motion.h2>
@@ -578,7 +584,7 @@ const Testimonials = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={visible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-gray-500 font-medium text-lg"
+            className="text-gray-500 dark:text-zinc-400 font-medium text-lg"
           >
             Bergabunglah dengan mereka yang telah menemukan jalannya.
           </motion.p>
@@ -592,19 +598,19 @@ const Testimonials = () => {
               animate={visible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 * i }}
               whileHover={{ y: -6 }}
-              className="bg-white border border-gray-100 rounded-[40px] p-10 shadow-sm hover:shadow-xl transition-all"
+              className="bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-[40px] p-10 shadow-sm hover:shadow-xl transition-all"
             >
               <div className="flex gap-1 text-[#1D9E75] mb-8">
                  {[...Array(5)].map((_, idx) => <Star key={idx} size={18} fill="#1D9E75" />)}
               </div>
-              <p className="text-black text-lg font-medium leading-relaxed italic mb-10">
+              <p className="text-black dark:text-white text-lg font-medium leading-relaxed italic mb-10">
                 &quot;{item.text}&quot;
               </p>
-              <div className="flex items-center gap-4 pt-4 border-t border-gray-50">
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-50 dark:border-zinc-700">
                  <div className="w-14 h-14 rounded-2xl bg-[#1D9E75] flex items-center justify-center text-white font-bold text-xl">{item.avatar}</div>
                  <div>
-                    <h4 className="text-black font-bold text-lg tracking-tight">{item.name}</h4>
-                    <p className="text-gray-400 text-[13px] font-bold uppercase tracking-wider">{item.role}</p>
+                    <h4 className="text-black dark:text-white font-bold text-lg tracking-tight">{item.name}</h4>
+                    <p className="text-gray-400 dark:text-zinc-500 text-[13px] font-bold uppercase tracking-wider">{item.role}</p>
                  </div>
               </div>
             </motion.div>
@@ -639,12 +645,12 @@ const FAQ = () => {
   ];
 
   return (
-    <section id="faq" ref={ref} className="bg-white py-32 px-6">
+    <section id="faq" ref={ref} className="bg-white dark:bg-zinc-950 py-32 px-6 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         <motion.h2 
           initial={{ opacity: 0, y: 30 }}
           animate={visible ? { opacity: 1, y: 0 } : {}}
-          className="text-4xl md:text-6xl font-black text-black text-center mb-20 tracking-tighter"
+          className="text-4xl md:text-6xl font-black text-black dark:text-white text-center mb-20 tracking-tighter"
         >
           Pertanyaan Umum.
         </motion.h2>
@@ -656,16 +662,16 @@ const FAQ = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={visible ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.1 }}
-              className="bg-gray-50 rounded-[32px] border border-gray-100 overflow-hidden"
+              className="bg-gray-50 dark:bg-zinc-900 rounded-[32px] border border-gray-100 dark:border-zinc-800 overflow-hidden"
             >
               <button 
                 className="w-full p-8 flex items-center justify-between text-left group"
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
               >
-                <span className="text-lg md:text-xl font-bold text-black transition-colors group-hover:text-[#1D9E75]">{item.q}</span>
+                <span className="text-lg md:text-xl font-bold text-black dark:text-white transition-colors group-hover:text-[#1D9E75]">{item.q}</span>
                 <motion.div 
                   animate={{ rotate: openIndex === i ? 180 : 0 }}
-                  className="text-black group-hover:text-[#1D9E75] transition-colors"
+                  className="text-black dark:text-white group-hover:text-[#1D9E75] transition-colors"
                 >
                   <ChevronDown size={28} />
                 </motion.div>
@@ -678,7 +684,7 @@ const FAQ = () => {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                   >
-                    <div className="p-8 pt-0 text-gray-500 leading-relaxed text-lg border-t border-white/40">
+                    <div className="p-8 pt-0 text-gray-500 dark:text-zinc-400 leading-relaxed text-lg border-t border-white/40 dark:border-zinc-800/40">
                        {item.a}
                     </div>
                   </motion.div>
@@ -697,18 +703,18 @@ const CTA = () => {
   const { status } = useSession();
   const authenticated = status === "authenticated";
   return (
-    <section className="bg-black py-40 px-6 relative overflow-hidden" ref={ref}>
+    <section className="bg-black dark:bg-zinc-950 py-40 px-6 relative overflow-hidden transition-colors duration-300" ref={ref}>
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={visible ? { opacity: 1, scale: 1 } : {}}
         transition={{ duration: 0.8 }}
         className="max-w-4xl mx-auto text-center relative z-10"
       >
-        <h2 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-10">
+        <h2 className="text-5xl md:text-8xl font-black text-white dark:text-zinc-100 tracking-tighter leading-[0.9] mb-10">
           Siap Membangun <br />
           <span className="text-[#1D9E75]">Masa Depanmu?</span>
         </h2>
-        <p className="text-gray-400 text-xl md:text-2xl mb-16 max-w-2xl mx-auto font-medium">
+        <p className="text-gray-400 dark:text-zinc-500 text-xl md:text-2xl mb-16 max-w-2xl mx-auto font-medium">
           Mulai sekarang — dalam 5 menit profilmu akan lebih berharga dari sebelumnya.
         </p>
         <Link href={authenticated ? "/dashboard/cv" : "/register"}>
@@ -734,17 +740,17 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-black text-gray-400 py-24 px-6 border-t border-gray-900">
+    <footer className="bg-black dark:bg-zinc-950 text-gray-400 py-24 px-6 border-t border-gray-900 dark:border-zinc-800 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-20 mb-24">
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-white/5">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 flex items-center justify-center shadow-lg shadow-white/5">
                 <BrainCircuit className="text-[#1D9E75] w-6 h-6" />
               </div>
               <span className="text-2xl font-black tracking-tight text-white mb-0.5">CareerLens <span className="text-[#1D9E75]">AI</span></span>
             </Link>
-            <p className="text-gray-500 text-lg leading-relaxed max-w-sm font-medium">
+            <p className="text-gray-500 dark:text-zinc-400 text-lg leading-relaxed max-w-sm font-medium">
               Membangun jembatan antara pendidikan dan industri modern melalui kekuatan AI yang presisi.
             </p>
           </div>
@@ -765,7 +771,7 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-900 pt-16 gap-10">
+        <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-900 dark:border-zinc-800 pt-16 gap-10">
           <p className="text-sm font-bold tracking-wide">© 2024 CAREERLENS AI. DIBUAT DENGAN SEMANGAT UNTUK TALENTA MUDA.</p>
           <div className="flex gap-10">
              {["Instagram", "Twitter", "LinkedIn", "YouTube"].map((social) => (
@@ -782,7 +788,7 @@ const Footer = () => {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white overflow-x-hidden selection:bg-[#1D9E75] selection:text-white">
+    <main className="min-h-screen bg-white dark:bg-zinc-950 overflow-x-hidden selection:bg-[#1D9E75] selection:text-white transition-colors duration-300">
       <Navbar />
       <Hero />
       <Stats />

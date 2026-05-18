@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -156,21 +157,24 @@ export default function LoginPage() {
         html, body { overflow: hidden; height: 100%; }
       `}} />
       {/* Form Section */}
-      <div className="w-full lg:w-[45%] bg-white flex flex-col p-8 md:p-12 overflow-y-auto h-full">
+      <div className="w-full lg:w-[45%] bg-white dark:bg-zinc-950 flex flex-col p-8 md:p-12 overflow-y-auto h-full transition-colors duration-300">
         <div className="max-w-md w-full mx-auto flex flex-col min-h-full pb-8">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 mb-8 w-fit group">
-            <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center transition-transform group-hover:scale-105">
-              <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-black">
-              CareerLens <span className="text-[#1D9E75]">AI</span>
-            </span>
-          </Link>
+          {/* Logo & Toggle */}
+          <div className="flex items-center justify-between mb-8">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center transition-transform group-hover:scale-105">
+                <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
+              </div>
+              <span className="text-lg font-bold tracking-tight text-black dark:text-white">
+                CareerLens <span className="text-[#1D9E75]">AI</span>
+              </span>
+            </Link>
+            <ThemeToggle />
+          </div>
 
           <div className="mb-6">
-            <h1 className="text-2xl font-black tracking-tight text-black mb-1">Selamat Datang Kembali!</h1>
-            <p className="text-sm text-gray-500 font-medium">Masuk untuk melanjutkan perjalanan kariermu.</p>
+            <h1 className="text-2xl font-black tracking-tight text-black dark:text-white mb-1">Selamat Datang Kembali!</h1>
+            <p className="text-sm text-gray-500 dark:text-zinc-400 font-medium">Masuk untuk melanjutkan perjalanan kariermu.</p>
           </div>
 
           <Form {...form}>
@@ -183,12 +187,12 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-bold text-gray-700 ml-1">Email</FormLabel>
+                    <FormLabel className="text-xs font-bold text-gray-700 dark:text-zinc-300 ml-1">Email</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="nama@email.com" 
                         {...field} 
-                        className="h-12 bg-white border-gray-200 rounded-xl px-5 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] transition-all text-sm font-medium"
+                        className="h-12 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl px-5 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] dark:text-white transition-all text-sm font-medium"
                       />
                     </FormControl>
                     <FormMessage className="text-[10px]" />
@@ -201,7 +205,7 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem className="space-y-1">
                     <div className="flex items-center justify-between ml-1">
-                      <FormLabel className="text-xs font-bold text-gray-700">Password</FormLabel>
+                      <FormLabel className="text-xs font-bold text-gray-700 dark:text-zinc-300">Password</FormLabel>
                       <Link href="#" className="text-[10px] font-bold text-[#1D9E75] hover:underline">Lupa Password?</Link>
                     </div>
                     <FormControl>
@@ -210,12 +214,12 @@ export default function LoginPage() {
                           type={showPassword ? "text" : "password"} 
                           placeholder="••••••••" 
                           {...field} 
-                          className="h-12 bg-white border-gray-200 rounded-xl px-5 pr-12 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] transition-all text-sm font-medium"
+                          className="h-12 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl px-5 pr-12 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] dark:text-white transition-all text-sm font-medium"
                         />
                         <button 
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                         >
                           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
@@ -227,7 +231,7 @@ export default function LoginPage() {
               />
               <Button 
                 type="submit" 
-                className="w-full h-12 bg-black hover:bg-gray-900 text-white rounded-xl font-bold text-base shadow-lg shadow-black/10 transition-all active:scale-[0.98] mt-2"
+                className="w-full h-12 bg-black dark:bg-white hover:bg-gray-900 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-bold text-base shadow-lg shadow-black/10 transition-all active:scale-[0.98] mt-2"
                 disabled={isLoading}
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Masuk"}
@@ -237,17 +241,17 @@ export default function LoginPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-100" />
+              <span className="w-full border-t border-gray-100 dark:border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-[9px] uppercase tracking-[2px] font-bold">
-              <span className="bg-white px-3 text-gray-400">Atau masuk dengan</span>
+              <span className="bg-white dark:bg-zinc-950 px-3 text-gray-400 dark:text-zinc-500">Atau masuk dengan</span>
             </div>
           </div>
 
           <Button 
             variant="outline" 
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full h-12 rounded-xl border-gray-200 font-bold flex gap-3 hover:bg-gray-50 transition-all text-sm mb-8"
+            className="w-full h-12 rounded-xl border-gray-200 dark:border-zinc-800 font-bold flex gap-3 hover:bg-gray-50 dark:hover:bg-zinc-900 dark:text-white transition-all text-sm mb-8"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -270,7 +274,7 @@ export default function LoginPage() {
             Masuk dengan Google
           </Button>
 
-          <p className="text-center text-gray-500 font-medium pb-4 text-sm mt-auto">
+          <p className="text-center text-gray-500 dark:text-zinc-400 font-medium pb-4 text-sm mt-auto">
             Belum punya akun?{" "}
             <Link href="/register" className="text-[#1D9E75] font-black hover:underline inline-flex items-center gap-1">
               Daftar Sekarang <ChevronRight size={14} />

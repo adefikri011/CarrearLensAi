@@ -19,7 +19,8 @@ import Image from "next/image";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { useSession, signOut } from "next-auth/react";
 import { useAppStore } from "@/store/useAppStore";
-import {
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { 
   Dialog,
   DialogContent,
   DialogDescription,
@@ -152,6 +153,7 @@ export default function SettingsPage() {
   const menuItems = [
     { id: "profile", label: "Profil Publik", icon: User },
     { id: "account", label: "Akun & Keamanan", icon: Lock },
+    { id: "appearance", label: "Tampilan", icon: Camera, mobileOnly: true },
     { id: "danger", label: "Zona Bahaya", icon: ShieldAlert, color: "text-red-500" },
   ];
 
@@ -166,8 +168,8 @@ export default function SettingsPage() {
             className={cn(
               "flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
               activeSection === item.id
-                ? "bg-black text-white shadow-lg shadow-black/10"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-black dark:bg-white text-white dark:text-black shadow-lg shadow-black/10"
+                : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-zinc-700"
             )}
           >
             {item.label}
@@ -179,23 +181,23 @@ export default function SettingsPage() {
         
         {/* Navigation Sidebar (Desktop) */}
         <aside className="hidden md:block w-72 sticky top-24 shrink-0 space-y-8">
-           <div className="bg-white p-4 rounded-[32px] border border-gray-100 shadow-sm space-y-1">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 py-4">PENGATURAN</p>
-              {menuItems.map((item) => (
+           <div className="bg-white dark:bg-zinc-950 p-4 rounded-[32px] border border-gray-100 dark:border-zinc-800 shadow-sm space-y-1 transition-colors duration-300">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 py-4 dark:text-zinc-500">PENGATURAN</p>
+              {menuItems.filter(item => !item.mobileOnly).map((item) => (
                  <button
                     key={item.id}
                     onClick={() => setActiveSection(item.id)}
                     className={cn(
                        "w-full flex items-center justify-between p-4 rounded-2xl transition-all group",
                        activeSection === item.id 
-                        ? "bg-black text-white shadow-xl shadow-black/5" 
-                        : "text-gray-500 hover:bg-gray-50"
+                        ? "bg-black dark:bg-white text-white dark:text-black shadow-xl shadow-black/5" 
+                        : "text-gray-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900"
                     )}
                  >
                     <div className="flex items-center gap-3">
                        <item.icon className={cn(
                           "w-5 h-5", 
-                          activeSection === item.id ? "text-teal" : item.color || "text-gray-300 group-hover:text-black"
+                          activeSection === item.id ? "text-teal" : item.color || "text-gray-300 group-hover:text-black dark:group-hover:text-white"
                         )} />
                        <span className="font-bold text-sm">{item.label}</span>
                     </div>
@@ -207,8 +209,8 @@ export default function SettingsPage() {
               ))}
            </div>
 
-           <div className="p-8 bg-gray-50 rounded-[32px] border border-gray-100">
-              <p className="text-xs text-gray-400 font-medium leading-relaxed">
+           <div className="p-8 bg-gray-50 dark:bg-zinc-900/50 rounded-[32px] border border-gray-100 dark:border-zinc-800 transition-colors duration-300">
+              <p className="text-xs text-gray-400 dark:text-zinc-500 font-medium leading-relaxed">
                  Butuh bantuan dengan akunmu? Hubungi tim support kami di <span className="text-teal font-bold">support@careerlens.ai</span>
               </p>
            </div>
@@ -219,16 +221,16 @@ export default function SettingsPage() {
            <AnimatePresence mode="wait">
               {activeSection === "profile" && (
                  <motion.div key="profile" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-10">
-                    <div className="pb-6 sm:pb-8 border-b border-gray-100">
-                       <h1 className="text-xl sm:text-2xl font-black text-black mb-1">Profil Publik</h1>
-                       <p className="text-gray-500 text-xs sm:text-sm">Informasi ini akan muncul di profil publik dan CV yang kamu buat.</p>
+                    <div className="pb-6 sm:pb-8 border-b border-gray-100 dark:border-zinc-800">
+                       <h1 className="text-xl sm:text-2xl font-black text-black dark:text-white mb-1">Profil Publik</h1>
+                       <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm">Informasi ini akan muncul di profil publik dan CV yang kamu buat.</p>
                     </div>
 
                     <div className="space-y-8 sm:space-y-10">
                        {/* Avatar Section */}
                        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
                           <div className="relative group shrink-0">
-                             <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center relative">
+                             <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-50 dark:bg-zinc-900 border-4 border-white dark:border-zinc-800 shadow-2xl overflow-hidden flex items-center justify-center relative transition-colors duration-300">
                                 {avatarUrl ? (
                                   <Image 
                                     src={avatarUrl} 
@@ -238,7 +240,7 @@ export default function SettingsPage() {
                                     referrerPolicy="no-referrer"
                                   />
                                 ) : (
-                                  <User className="w-12 h-12 text-gray-200" />
+                                  <User className="w-12 h-12 text-gray-200 dark:text-zinc-800" />
                                 )}
                                 {isSaving && (
                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -272,20 +274,20 @@ export default function SettingsPage() {
                              <button 
                                onClick={() => document.getElementById("avatar-upload")?.click()}
                                disabled={isSaving}
-                               className="absolute bottom-0 right-0 p-2 sm:p-3 bg-black text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
+                               className="absolute bottom-0 right-0 p-2 sm:p-3 bg-black dark:bg-white text-white dark:text-black rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
                              >
                                 <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
                              </button>
                           </div>
                           <div className="text-center sm:text-left">
-                             <h4 className="font-bold text-lg text-black">Foto Profil</h4>
-                             <p className="text-sm text-gray-500 mb-4">Direkomendasikan 400x400px. Max 2MB.</p>
+                             <h4 className="font-bold text-lg text-black dark:text-white">Foto Profil</h4>
+                             <p className="text-sm text-gray-500 dark:text-zinc-400 mb-4">Direkomendasikan 400x400px. Max 2MB.</p>
                              <div className="flex justify-center sm:justify-start gap-2">
                                 <Button 
                                   onClick={() => document.getElementById("avatar-upload")?.click()}
                                   disabled={isSaving}
                                   variant="outline" 
-                                  className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold border-gray-100"
+                                  className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold border-gray-100 dark:border-zinc-800 dark:text-white dark:hover:bg-zinc-900"
                                 >
                                   Ganti Foto
                                 </Button>
@@ -308,7 +310,7 @@ export default function SettingsPage() {
                                   }}
                                   disabled={isSaving}
                                   variant="ghost" 
-                                  className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold text-red-500 hover:bg-red-50"
+                                  className="h-9 sm:h-10 rounded-xl px-4 sm:px-6 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                                 >
                                   Hapus
                                 </Button>
@@ -318,28 +320,28 @@ export default function SettingsPage() {
 
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                           <div className="space-y-2">
-                             <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">NAMA DISPLAY</Label>
+                             <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2">NAMA DISPLAY</Label>
                              <Input 
                                value={displayName} 
                                onChange={(e) => setDisplayName(e.target.value)}
-                               className="h-12 sm:h-14 rounded-2xl border-gray-100 focus:border-teal" 
+                               className="h-12 sm:h-14 rounded-2xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white focus:border-teal transition-colors duration-300" 
                              />
                           </div>
                           <div className="space-y-2">
-                             <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">USERNAME AI</Label>
+                             <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2">USERNAME AI</Label>
                              <div className="relative">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 font-bold font-mono">@</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 dark:text-zinc-700 font-bold font-mono transition-colors">@</span>
                                 <Input 
                                   value={username}
                                   onChange={(e) => setUsername(e.target.value)}
-                                  className="h-12 sm:h-14 pl-10 rounded-2xl border-gray-100 focus:border-teal" 
+                                  className="h-12 sm:h-14 pl-10 rounded-2xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white focus:border-teal transition-colors duration-300" 
                                 />
                              </div>
                           </div>
                           <div className="md:col-span-2 space-y-2">
-                             <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">BIO SINGKAT</Label>
+                             <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2">BIO SINGKAT</Label>
                              <textarea 
-                               className="w-full h-28 sm:h-32 p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-gray-100 focus:border-teal focus:ring-0 outline-none text-black font-medium resize-none text-sm"
+                               className="w-full h-28 sm:h-32 p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white focus:border-teal focus:ring-0 outline-none font-medium resize-none text-sm transition-colors duration-300"
                                placeholder="Tuliskan tentang dirimu..."
                                value={bio}
                                onChange={(e) => setBio(e.target.value)}
@@ -349,32 +351,32 @@ export default function SettingsPage() {
 
                        {/* Social Links */}
                        <div className="space-y-5 sm:space-y-6">
-                          <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">SOCIAL LINKS</Label>
+                          <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2">SOCIAL LINKS</Label>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                              <div className="relative">
-                                <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                                <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 dark:text-zinc-700" />
                                 <Input 
                                   value={linkedin}
                                   onChange={(e) => setLinkedin(e.target.value)}
-                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" 
+                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-300 text-sm" 
                                   placeholder="LinkedIn" 
                                 />
                              </div>
                              <div className="relative">
-                                <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                                <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 dark:text-zinc-700" />
                                 <Input 
                                   value={github}
                                   onChange={(e) => setGithub(e.target.value)}
-                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" 
+                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-300 text-sm" 
                                   placeholder="GitHub" 
                                 />
                              </div>
                              <div className="relative">
-                                <Twitter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                                <Twitter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 dark:text-zinc-700" />
                                 <Input 
                                   value={twitter}
                                   onChange={(e) => setTwitter(e.target.value)}
-                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 text-sm" 
+                                  className="h-11 sm:h-12 pl-12 rounded-xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-300 text-sm" 
                                   placeholder="Twitter" 
                                 />
                              </div>
@@ -382,8 +384,8 @@ export default function SettingsPage() {
                        </div>
                     </div>
 
-                    <div className="pt-6 sm:pt-8 border-t border-gray-100 flex justify-end">
-                       <Button onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
+                    <div className="pt-6 sm:pt-8 border-t border-gray-100 dark:border-zinc-800 flex justify-end">
+                       <Button onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
                           {isSaving ? <LoadingSpinner size="sm" /> : <>Simpan Profil <Save className="w-4 h-4 ml-2" /></>}
                        </Button>
                     </div>
@@ -392,10 +394,10 @@ export default function SettingsPage() {
 
               {activeSection === "account" && (
                  <motion.div key="account" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-10">
-                    <div className="pb-6 sm:pb-8 border-b border-gray-100 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div className="pb-6 sm:pb-8 border-b border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                        <div>
-                          <h1 className="text-xl sm:text-2xl font-black text-black mb-1">Akun & Keamanan</h1>
-                          <p className="text-gray-500 text-xs sm:text-sm">Kelola kredensial login dan pengaturan keamanan akunmu.</p>
+                          <h1 className="text-xl sm:text-2xl font-black text-black dark:text-white mb-1">Akun & Keamanan</h1>
+                          <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm">Kelola kredensial login dan pengaturan keamanan akunmu.</p>
                        </div>
                        <Badge className="w-fit bg-teal text-white border-none rounded-full px-4 py-1.5 font-bold flex items-center gap-1.5 text-[10px]">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi
@@ -405,22 +407,22 @@ export default function SettingsPage() {
                     <div className="space-y-8 sm:space-y-10">
                        <div className="space-y-6">
                           <div className="space-y-2">
-                             <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">EMAIL ADDRESS</Label>
+                             <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2">EMAIL ADDRESS</Label>
                              <div className="flex flex-col sm:flex-row gap-3">
-                                <Input disabled value={email} className="h-12 sm:h-14 flex-1 rounded-2xl border-gray-100 bg-gray-50 opacity-60 text-sm" />
-                                <Button variant="outline" onClick={() => toast.info("Email tidak dapat diubah secara mandiri.")} className="h-12 sm:h-14 px-6 rounded-2xl border-gray-100 font-bold text-xs">Ganti Email</Button>
+                                <Input disabled value={email} className="h-12 sm:h-14 flex-1 rounded-2xl border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 opacity-60 text-sm dark:text-white" />
+                                <Button variant="outline" onClick={() => toast.info("Email tidak dapat diubah secara mandiri.")} className="h-12 sm:h-14 px-6 rounded-2xl border-gray-100 dark:border-zinc-800 font-bold text-xs dark:text-white dark:hover:bg-zinc-900">Ganti Email</Button>
                              </div>
                           </div>
                           
                           <div className="space-y-5 sm:space-y-6 pt-4">
-                             <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">UPDATE PASSWORD</Label>
+                             <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2">UPDATE PASSWORD</Label>
                              <div className="space-y-3 sm:space-y-4">
                                 <Input 
                                   type="password" 
                                   placeholder="Password Saat Ini" 
                                   value={currentPassword}
                                   onChange={(e) => setCurrentPassword(e.target.value)}
-                                  className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" 
+                                  className="h-12 sm:h-14 rounded-2xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white text-sm" 
                                 />
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                    <Input 
@@ -428,14 +430,14 @@ export default function SettingsPage() {
                                      placeholder="Password Baru" 
                                      value={newPassword}
                                      onChange={(e) => setNewPassword(e.target.value)}
-                                     className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" 
+                                     className="h-12 sm:h-14 rounded-2xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white text-sm" 
                                    />
                                    <Input 
                                      type="password" 
                                      placeholder="Ulangi Password Baru" 
                                      value={confirmPassword}
                                      onChange={(e) => setConfirmPassword(e.target.value)}
-                                     className="h-12 sm:h-14 rounded-2xl border-gray-100 text-sm" 
+                                     className="h-12 sm:h-14 rounded-2xl border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-black dark:text-white text-sm" 
                                    />
                                 </div>
                              </div>
@@ -443,34 +445,53 @@ export default function SettingsPage() {
                        </div>
                     </div>
 
-                    <div className="pt-6 sm:pt-8 border-t border-gray-100 flex justify-end">
-                       <Button onClick={handleChangePassword} disabled={isLoading} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
+                    <div className="pt-6 sm:pt-8 border-t border-gray-100 dark:border-zinc-800 flex justify-end">
+                       <Button onClick={handleChangePassword} disabled={isLoading} className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-teal transition-all">
                           {isLoading ? <LoadingSpinner size="sm" /> : "Update Password"}
                        </Button>
                     </div>
                  </motion.div>
               )}
 
-              {activeSection === "danger" && (
-                 <motion.div key="danger" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-10">
-                    <div className="pb-6 sm:pb-8 border-b border-gray-100">
-                       <h1 className="text-xl sm:text-2xl font-black text-red-600 mb-1">Zona Bahaya</h1>
-                       <p className="text-gray-500 text-xs sm:text-sm">Tindakan di seksi ini tidak dapat dibatalkan. Berhati-hatilah.</p>
+              {activeSection === "appearance" && (
+                 <motion.div key="appearance" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-10">
+                    <div className="pb-6 sm:pb-8 border-b border-gray-100 dark:border-zinc-800">
+                       <h1 className="text-xl sm:text-2xl font-black text-black dark:text-white mb-1">Tampilan</h1>
+                       <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm">Sesuaikan tema aplikasi sesuai preferensi Anda.</p>
                     </div>
 
                     <div className="space-y-6">
-                       <div className="p-6 sm:p-10 border-2 border-red-500/20 bg-red-50/30 rounded-[24px] sm:rounded-[48px] space-y-6 sm:space-y-8">
+                        <div className="p-6 bg-gray-50 dark:bg-zinc-900/50 rounded-3xl border border-gray-100 dark:border-zinc-800">
+                            <Label className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-2 mb-4 block">TEMA APLIKASI</Label>
+                            <ThemeToggle />
+                            <p className="text-xs text-gray-400 dark:text-zinc-500 mt-4 leading-relaxed">
+                                Pilih antara mode terang untuk kejernihan di siang hari, atau mode gelap untuk kenyamanan mata di malam hari.
+                            </p>
+                        </div>
+                    </div>
+                 </motion.div>
+              )}
+
+              {activeSection === "danger" && (
+                 <motion.div key="danger" variants={fadeUp} initial="hidden" animate="visible" className="space-y-8 sm:space-y-10">
+                    <div className="pb-6 sm:pb-8 border-b border-gray-100 dark:border-zinc-800">
+                       <h1 className="text-xl sm:text-2xl font-black text-red-600 mb-1">Zona Bahaya</h1>
+                       <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm">Tindakan di seksi ini tidak dapat dibatalkan. Berhati-hatilah.</p>
+                    </div>
+
+                    <div className="space-y-6">
+                       <div className="p-6 sm:p-10 border-2 border-red-500/20 bg-red-50/30 dark:bg-red-500/5 rounded-[24px] sm:rounded-[48px] space-y-6 sm:space-y-8">
                           <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 justify-between">
                              <div className="space-y-2 text-center lg:text-left">
                                 <h4 className="text-xl sm:text-2xl font-black text-red-600 italic">Hapus Seluruh Akun</h4>
-                                <p className="text-red-900/60 max-w-md font-medium text-xs sm:text-sm leading-relaxed">
+                                <p className="text-red-900/60 dark:text-red-400/60 max-w-md font-medium text-xs sm:text-sm leading-relaxed">
                                    Semua data kamu termasuk CV, hasil analisis, dan progres roadmap akan dihapus secara permanen dari database kami.
                                 </p>
                              </div>
                              <Button 
-                               onClick={() => setShowDeleteConfirm(true)}
-                               variant="ghost" 
-                               className="w-full lg:w-auto h-14 sm:h-16 px-8 sm:px-10 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center justify-center gap-2 group"
+                                onClick={() => setShowDeleteConfirm(true)}
+                                variant="ghost" 
+                                className="w-full lg:w-auto h-14 sm:h-16 px-8 sm:px-10 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center justify-center gap-2 group"
                              >
                                 <Trash2 className="w-4 h-4 sm:w-5 h-5 group-hover:animate-bounce" /> Hapus Permanen
                              </Button>
@@ -478,7 +499,7 @@ export default function SettingsPage() {
                           
                           <div className="flex items-start gap-4 p-4 sm:p-6 bg-red-600/5 rounded-2xl sm:rounded-3xl">
                              <AlertCircle className="w-4 h-4 sm:w-5 h-5 text-red-600 mt-1 shrink-0" />
-                             <p className="text-[10px] sm:text-xs text-red-900/80 font-bold leading-relaxed">
+                             <p className="text-[10px] sm:text-xs text-red-900/80 dark:text-red-400 font-bold leading-relaxed">
                                 Perhatian: Menghapus akun berarti kamu akan kehilangan akses ke semua data dan riwayat analisis kamu secara permanen.
                              </p>
                           </div>
@@ -486,18 +507,18 @@ export default function SettingsPage() {
                     </div>
 
                     <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-                       <DialogContent className="rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 max-w-md w-[90%] sm:w-full">
+                       <DialogContent className="rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 max-w-md w-[90%] sm:w-full bg-white dark:bg-zinc-950 border-gray-100 dark:border-zinc-800">
                           <DialogHeader>
-                             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-50 rounded-[18px] sm:rounded-[24px] flex items-center justify-center text-red-600 mb-4 sm:mb-6 mx-auto">
+                             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-50 dark:bg-red-500/10 rounded-[18px] sm:rounded-[24px] flex items-center justify-center text-red-600 mb-4 sm:mb-6 mx-auto transition-colors">
                                 <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8" />
                              </div>
-                             <DialogTitle className="text-xl sm:text-2xl font-black text-center text-black">Hapus Akun Anda?</DialogTitle>
-                             <DialogDescription className="text-center text-gray-500 pt-3 sm:pt-4 text-xs sm:text-sm leading-relaxed">
+                             <DialogTitle className="text-xl sm:text-2xl font-black text-center text-black dark:text-white">Hapus Akun Anda?</DialogTitle>
+                             <DialogDescription className="text-center text-gray-500 dark:text-zinc-500 pt-3 sm:pt-4 text-xs sm:text-sm leading-relaxed">
                                 Apa kamu yakin ingin menghapus akun? Semua data profil, CV, dan pencapaian roadmap kamu akan hilang selamanya.
                              </DialogDescription>
                           </DialogHeader>
                           <DialogFooter className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-6 sm:mt-8">
-                             <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="w-full sm:flex-1 h-11 sm:h-12 rounded-xl font-bold border-gray-100 text-sm">Batal</Button>
+                             <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="w-full sm:flex-1 h-11 sm:h-12 rounded-xl font-bold border-gray-100 dark:border-zinc-800 dark:text-white dark:hover:bg-zinc-900 text-sm">Batal</Button>
                              <Button onClick={handleDeleteAccount} className="w-full sm:flex-1 h-11 sm:h-12 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 text-sm">
                                 {isLoading ? <LoadingSpinner size="sm" /> : "Ya, Hapus"}
                              </Button>

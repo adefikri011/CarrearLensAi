@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={cn(inter.variable)}>
+    <html lang="id" className={cn(inter.variable)} suppressHydrationWarning>
       <body className="font-sans antialiased selection:bg-teal-50 selection:text-teal-900">
         <script
           type="application/ld+json"

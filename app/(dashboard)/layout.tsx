@@ -32,7 +32,7 @@ function BottomNavItem({ href, icon: Icon, label, isActive }: BottomNavItemProps
       href={href}
       className={cn(
         "flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all active:scale-95",
-        isActive ? "text-[#1D9E75]" : "text-[#9CA3AF]"
+        isActive ? "text-[#1D9E75]" : "text-[#9CA3AF] dark:text-zinc-500"
       )}
     >
       <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
@@ -53,7 +53,7 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 px-1 pb-safe z-50 flex items-center justify-around shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-zinc-950 border-t border-gray-100 dark:border-zinc-800 px-1 pb-safe z-50 flex items-center justify-around shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] dark:shadow-none transition-colors duration-300">
       {items.map((item) => (
         <BottomNavItem
           key={item.href}
@@ -73,12 +73,12 @@ function MobileHeader({ session }: { session: any }) {
   };
 
   return (
-    <header className="md:hidden relative h-16 bg-white border-b border-gray-100 px-4 flex items-center justify-between z-40">
+    <header className="md:hidden relative h-16 bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800 px-4 flex items-center justify-between z-40 transition-colors duration-300">
       <Link href="/dashboard" className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center">
           <BrainCircuit className="w-5 h-5 text-[#1D9E75]" />
         </div>
-        <span className="font-black text-sm tracking-tighter uppercase italic">CareerLens AI</span>
+        <span className="font-black text-sm tracking-tighter uppercase italic dark:text-white transition-colors duration-300">CareerLens AI</span>
       </Link>
 
       <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ function MobileHeader({ session }: { session: any }) {
         </Link>
         <button 
           onClick={handleLogout}
-          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+          className="p-2 text-gray-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
           title="Keluar"
         >
           <LogOut className="w-5 h-5" />
@@ -128,7 +128,7 @@ function DashboardLayoutContent({
 
   if (status === "loading") {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex h-screen items-center justify-center bg-white dark:bg-zinc-950 transition-colors duration-300">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
              <div className="w-16 h-16 rounded-2xl bg-[#1D9E75]/10 flex items-center justify-center">
@@ -145,7 +145,7 @@ function DashboardLayoutContent({
   if (!session) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F9FAFB]">
+    <div className="flex h-screen overflow-hidden bg-[#F9FAFB] dark:bg-zinc-900 transition-colors duration-300">
       {/* Sidebar - Desktop Only */}
       <Sidebar />
 

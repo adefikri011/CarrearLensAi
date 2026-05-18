@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -185,21 +186,24 @@ export default function RegisterPage() {
         html, body { overflow: hidden; height: 100%; }
       `}} />
       {/* Form Section */}
-      <div className="w-full lg:w-[45%] bg-white flex flex-col p-6 md:p-8 overflow-y-auto h-full px-4">
+      <div className="w-full lg:w-[45%] bg-white dark:bg-zinc-950 flex flex-col p-6 md:p-8 overflow-y-auto h-full px-4 transition-colors duration-300">
         <div className="max-w-md w-full mx-auto flex flex-col min-h-full pb-10">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 mb-4 w-fit group">
-            <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center transition-transform group-hover:scale-105">
-              <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-black">
-              CareerLens <span className="text-[#1D9E75]">AI</span>
-            </span>
-          </Link>
+          {/* Logo & Toggle */}
+          <div className="flex items-center justify-between mb-4">
+            <Link href="/" className="flex items-center gap-2 w-fit group">
+              <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center transition-transform group-hover:scale-105">
+                <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
+              </div>
+              <span className="text-lg font-bold tracking-tight text-black dark:text-white">
+                CareerLens <span className="text-[#1D9E75]">AI</span>
+              </span>
+            </Link>
+            <ThemeToggle />
+          </div>
 
           <div className="mb-4">
-            <h1 className="text-2xl font-black tracking-tight text-black mb-1">Buat Akun Baru</h1>
-            <p className="text-xs text-gray-500 font-medium">Lengkapi langkah awal menuju cerahnya masa depanmu.</p>
+            <h1 className="text-2xl font-black tracking-tight text-black dark:text-white mb-1">Buat Akun Baru</h1>
+            <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">Lengkapi langkah awal menuju cerahnya masa depanmu.</p>
           </div>
 
           <Form {...form}>
@@ -212,12 +216,12 @@ export default function RegisterPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem className="space-y-0.5">
-                    <FormLabel className="text-[10px] font-bold text-gray-700 ml-1">Nama Lengkap</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 ml-1">Nama Lengkap</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="John Doe" 
                         {...field} 
-                        className="h-10 bg-white border-gray-200 rounded-xl px-4 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] transition-all text-sm font-medium"
+                        className="h-10 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl px-4 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] dark:text-white transition-all text-sm font-medium"
                       />
                     </FormControl>
                     <FormMessage className="text-[9px]" />
@@ -229,12 +233,12 @@ export default function RegisterPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-0.5">
-                    <FormLabel className="text-[10px] font-bold text-gray-700 ml-1">Email</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 ml-1">Email</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="nama@email.com" 
                         {...field} 
-                        className="h-10 bg-white border-gray-200 rounded-xl px-4 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] transition-all text-sm font-medium"
+                        className="h-10 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl px-4 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] dark:text-white transition-all text-sm font-medium"
                       />
                     </FormControl>
                     <FormMessage className="text-[9px]" />
@@ -246,29 +250,29 @@ export default function RegisterPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="space-y-0.5">
-                    <FormLabel className="text-[10px] font-bold text-gray-700 ml-1">Password</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 ml-1">Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input 
                           type={showPassword ? "text" : "password"} 
                           placeholder="••••••••" 
                           {...field} 
-                          className="h-10 bg-white border-gray-200 rounded-xl px-4 pr-12 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] transition-all text-sm font-medium"
+                          className="h-10 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl px-4 pr-12 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] dark:text-white transition-all text-sm font-medium"
                         />
                         <button 
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                         >
                           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                       </div>
                     </FormControl>
                     <div className="mt-1 flex gap-1 h-0.5">
-                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 25 ? (passwordStrength >= 75 ? "bg-[#1D9E75]" : "bg-yellow-400") : "bg-gray-100"}`} />
-                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 50 ? (passwordStrength >= 75 ? "bg-[#1D9E75]" : "bg-yellow-400") : "bg-gray-100"}`} />
-                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 75 ? "bg-[#1D9E75]" : "bg-gray-100"}`} />
-                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 100 ? "bg-[#1D9E75]" : "bg-gray-100"}`} />
+                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 25 ? (passwordStrength >= 75 ? "bg-[#1D9E75]" : "bg-yellow-400") : "bg-gray-100 dark:bg-zinc-800"}`} />
+                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 50 ? (passwordStrength >= 75 ? "bg-[#1D9E75]" : "bg-yellow-400") : "bg-gray-100 dark:bg-zinc-800"}`} />
+                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 75 ? "bg-[#1D9E75]" : "bg-gray-100 dark:bg-zinc-800"}`} />
+                       <div className={`h-full rounded-full flex-1 transition-all ${passwordStrength >= 100 ? "bg-[#1D9E75]" : "bg-gray-100 dark:bg-zinc-800"}`} />
                     </div>
                     <FormMessage className="text-[9px]" />
                   </FormItem>
@@ -279,13 +283,13 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="space-y-0.5">
-                    <FormLabel className="text-[10px] font-bold text-gray-700 ml-1">Konfirmasi Password</FormLabel>
+                    <FormLabel className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 ml-1">Konfirmasi Password</FormLabel>
                     <FormControl>
                       <Input 
                         type="password" 
                         placeholder="••••••••" 
                         {...field} 
-                        className="h-10 bg-white border-gray-200 rounded-xl px-4 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] transition-all text-sm font-medium"
+                        className="h-10 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl px-4 focus:ring-2 focus:ring-[#1D9E75] focus:border-[#1D9E75] dark:text-white transition-all text-sm font-medium"
                       />
                     </FormControl>
                     <FormMessage className="text-[9px]" />
@@ -306,17 +310,17 @@ export default function RegisterPage() {
 
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-100" />
+              <span className="w-full border-t border-gray-100 dark:border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-[8px] uppercase tracking-[2px] font-bold">
-              <span className="bg-white px-3 text-gray-400">Atau daftar dengan</span>
+              <span className="bg-white dark:bg-zinc-950 px-3 text-gray-400 dark:text-zinc-500">Atau daftar dengan</span>
             </div>
           </div>
 
           <Button 
             variant="outline" 
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full h-11 rounded-xl border-gray-200 font-bold flex gap-3 hover:bg-gray-50 transition-all text-[13px] mb-8"
+            className="w-full h-11 rounded-xl border-gray-200 dark:border-zinc-800 font-bold flex gap-3 hover:bg-gray-50 dark:hover:bg-zinc-900 dark:text-zinc-300 transition-all text-[13px] mb-8"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -339,7 +343,7 @@ export default function RegisterPage() {
             Daftar dengan Google
           </Button>
 
-          <p className="text-center text-gray-500 font-medium pb-4 text-[13px] mt-auto">
+          <p className="text-center text-gray-500 dark:text-zinc-400 font-medium pb-4 text-[13px] mt-auto">
             Sudah punya akun?{" "}
             <Link href="/login" className="text-[#1D9E75] font-black hover:underline inline-flex items-center gap-1">
               Masuk di sini <ChevronRight size={14} />
