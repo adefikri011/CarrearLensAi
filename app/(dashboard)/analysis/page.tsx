@@ -183,7 +183,11 @@ export default function AnalysisPage() {
   };
 
   const handleShare = (platform: 'whatsapp' | 'copy' | 'instagram') => {
-    const shareUrl = window.location.origin + "/analysis";
+    if (!analysis?.id) {
+       toast.error("Data analisis tidak ditemukan untuk dibagikan.");
+       return;
+    }
+    const shareUrl = window.location.origin + "/share/" + analysis.id;
     const shareText = `Halo! Lihat hasil analisis karier saya di CareerLens AI. Saya cocok menjadi ${analysis?.selectedPath || "Profesional"} dengan tingkat kesiapan ${analysis?.overallReadiness}%! Coba juga di: ${shareUrl}`;
 
     if (platform === 'whatsapp') {
@@ -338,38 +342,51 @@ export default function AnalysisPage() {
                             <DropdownMenuTrigger asChild>
                               <Button 
                                 variant="outline" 
-                                className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
+                                className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs hover:border-teal hover:text-teal transition-all flex items-center gap-2"
                               >
+                                 <Share2 className="w-4 h-4" />
                                  Bagikan
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="rounded-2xl p-2 min-w-[200px] z-[100]">
+                            <DropdownMenuContent align="end" className="rounded-[24px] p-2 min-w-[240px] z-[100] border-gray-100 shadow-2xl">
+                              <div className="px-4 py-3 mb-1 border-b border-gray-50">
+                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Platform</p>
+                              </div>
                               <DropdownMenuItem 
                                 onClick={() => handleShare('whatsapp')}
-                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs"
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-green-50 transition-colors group"
                               >
-                                <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600">
+                                <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
                                   <Share2 className="w-4 h-4" />
                                 </div>
-                                Berbagi ke WhatsApp
+                                <div className="flex flex-col">
+                                  <span>WhatsApp</span>
+                                  <span className="text-[9px] font-medium text-gray-400">Kirim langsung ke kontak</span>
+                                </div>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleShare('instagram')}
-                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs"
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-pink-50 transition-colors group"
                               >
-                                <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600">
+                                <div className="w-9 h-9 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600 group-hover:scale-110 transition-transform">
                                   <Instagram className="w-4 h-4" />
                                 </div>
-                                Salin untuk Instagram
+                                <div className="flex flex-col">
+                                  <span>Instagram</span>
+                                  <span className="text-[9px] font-medium text-gray-400">Salin link untuk bio/story</span>
+                                </div>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleShare('copy')}
-                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs"
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs hover:bg-gray-50 transition-colors group"
                               >
-                                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600">
+                                <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 group-hover:scale-110 transition-transform">
                                   <FileText className="w-4 h-4" />
                                 </div>
-                                Salin Link
+                                <div className="flex flex-col">
+                                  <span>Salin Link</span>
+                                  <span className="text-[9px] font-medium text-gray-400">Gunakan di platform lain</span>
+                                </div>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>

@@ -35,6 +35,11 @@ export const db = {
       prisma.analysis.update({ where: { id }, data }),
     getAll: (userId: string) =>
       prisma.analysis.findMany({ where: { userId } }),
+    getById: (id: string) =>
+      prisma.analysis.findUnique({
+        where: { id },
+        include: { user: { select: { name: true, image: true } } }
+      }),
     upsertLatest: async (userId: string, data: any) => {
       const latest = await prisma.analysis.findFirst({
         where: { userId },
