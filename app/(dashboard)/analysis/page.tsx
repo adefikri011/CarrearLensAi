@@ -348,7 +348,7 @@ export default function AnalysisPage() {
                                  Bagikan
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="rounded-[24px] p-2 min-w-[240px] z-[100] border-gray-100 shadow-2xl">
+                            <DropdownMenuContent align="end" className="rounded-[24px] p-2 min-w-[240px] z-[100] border-gray-100 shadow-2xl bg-white">
                               <div className="px-4 py-3 mb-1 border-b border-gray-50">
                                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Platform</p>
                               </div>
