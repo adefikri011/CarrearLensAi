@@ -107,7 +107,7 @@ export default function DashboardPage() {
            <p className="text-gray-500 dark:text-zinc-500 text-xs md:text-sm font-medium transition-colors">Pantau progres kariermu di sini.</p>
         </div>
         
-        <div className="flex items-center justify-between md:justify-end gap-6 p-1.5 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm md:min-w-[240px] transition-all">
+        <div className="flex items-center justify-between md:justify-end gap-6 p-1.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm md:min-w-[240px] transition-all">
            <div className="flex flex-col items-start md:items-end px-4 md:px-6">
               <span className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-widest uppercase">READINESS SCORE</span>
               <span className="text-xl md:text-2xl font-black text-black dark:text-white transition-colors">{readinessScore}%</span>
@@ -124,12 +124,12 @@ export default function DashboardPage() {
       {/* --- Stats Grid --- */}
       <motion.section variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {[
-          { icon: <FileText className="text-black dark:text-white" />, label: "Analisis CV", val: analysisCount.toString(), desc: "Dokumen", bg: "bg-gray-50 dark:bg-zinc-800" },
+          { icon: <FileText className="text-black dark:text-white" />, label: "Analisis CV", val: analysisCount.toString(), desc: "Dokumen", bg: "bg-gray-50 dark:bg-zinc-800/50" },
           { icon: <Target className="text-teal" />, label: "Posisi", val: tasks.careerSelected ? "1" : "0", desc: "Target", bg: "bg-teal/10" },
-          { icon: <CheckCircle2 className="text-black dark:text-white" />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan", bg: "bg-gray-50 dark:bg-zinc-800" },
+          { icon: <CheckCircle2 className="text-black dark:text-white" />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan", bg: "bg-gray-50 dark:bg-zinc-800/50" },
           { icon: <Zap className="text-teal" />, label: "Skill Match", val: skillMatch > 0 ? `${skillMatch}%` : "-", desc: "Kecocokan", bg: "bg-teal/10" },
         ].map((stat, i) => (
-          <div key={i} className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-2xl border border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 hover:border-black/5 dark:hover:border-white/5 transition-all group shadow-sm">
+          <div key={i} className="bg-white/80 dark:bg-zinc-900/60 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-gray-100 dark:border-zinc-800/50 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 hover:border-teal/30 dark:hover:border-teal/40 transition-all group shadow-sm">
             <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-500", stat.bg)}>
               {React.cloneElement(stat.icon as React.ReactElement, { className: "w-5 h-5 md:w-6 md:h-6" })}
             </div>
@@ -150,29 +150,30 @@ export default function DashboardPage() {
         {/* Left: Active Mission or Empty State */}
         <div className="lg:col-span-2 space-y-8">
            {!tasks.cvUploaded ? (
-             <motion.div variants={fadeUp} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[32px] md:rounded-[40px] p-8 md:p-12 text-center flex flex-col items-center space-y-6 shadow-sm transition-all">
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-[20px] md:rounded-[24px] bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-gray-300 dark:text-zinc-700">
+             <motion.div variants={fadeUp} className="bg-white dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/40 rounded-[32px] md:rounded-[40px] p-8 md:p-12 text-center flex flex-col items-center space-y-6 shadow-sm transition-all group overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-teal/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-[20px] md:rounded-[24px] bg-gray-50 dark:bg-zinc-800/50 flex items-center justify-center text-gray-300 dark:text-zinc-600 relative z-10 transition-colors group-hover:bg-teal/10 group-hover:text-teal">
                    <AlertCircle className="w-7 h-7 md:w-8 md:h-8" />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 relative z-10">
                    <h2 className="text-xl md:text-2xl font-black text-black dark:text-white italic transition-colors">Upload CV Pertama Kamu</h2>
-                   <p className="text-gray-500 dark:text-zinc-500 text-sm max-w-sm mx-auto leading-relaxed transition-colors">Mulai perjalanan kariermu dengan mengunggah CV untuk dianalisis oleh AI kami.</p>
+                   <p className="text-gray-500 dark:text-zinc-400 text-sm max-w-sm mx-auto leading-relaxed transition-colors">Mulai perjalanan kariermu dengan mengunggah CV untuk dianalisis oleh AI kami.</p>
                 </div>
-                <Link href="/cv-builder" className="w-full sm:w-auto">
+                <Link href="/cv-builder" className="w-full sm:w-auto relative z-10">
                    <Button className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-teal dark:hover:bg-teal dark:hover:text-white rounded-full px-8 md:px-10 h-12 md:h-14 font-black text-[11px] md:text-[12px] uppercase tracking-widest transition-all">
                       UPLOAD CV SEKARANG <ArrowUpRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
                    </Button>
                 </Link>
              </motion.div>
            ) : !tasks.analysisComplete ? (
-             <motion.div variants={fadeUp} className="bg-white dark:bg-zinc-900 border-2 border-teal/20 dark:border-teal/40 rounded-[32px] md:rounded-[40px] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-teal/5 transition-all">
+             <motion.div variants={fadeUp} className="bg-white dark:bg-zinc-900/50 border-2 border-teal/20 dark:border-teal/30 rounded-[32px] md:rounded-[40px] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-teal/5 transition-all">
                 <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-4 md:gap-6">
-                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-[20px] md:rounded-[28px] bg-teal flex items-center justify-center text-white shadow-lg shadow-teal/20">
+                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-[20px] md:rounded-[28px] bg-teal flex items-center justify-center text-white shadow-lg shadow-teal/20 transition-transform hover:scale-105">
                       <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10" />
                    </div>
                    <div className="space-y-1">
                       <h3 className="text-xl md:text-2xl font-black text-black dark:text-white italic leading-tight transition-colors">CV Berhasil Diupload</h3>
-                      <p className="text-gray-500 dark:text-zinc-500 text-xs md:text-sm font-medium transition-colors">{cvData.filename} • {new Date(cvData.createdAt).toLocaleDateString('id-ID')}</p>
+                      <p className="text-gray-500 dark:text-zinc-400 text-xs md:text-sm font-medium transition-colors">{cvData.filename} • {new Date(cvData.createdAt).toLocaleDateString('id-ID')}</p>
                    </div>
                 </div>
                 <Link href="/cv-builder" className="w-full md:w-auto">
@@ -182,7 +183,7 @@ export default function DashboardPage() {
                 </Link>
              </motion.div>
            ) : (
-             <motion.div variants={fadeUp} className="bg-black dark:bg-zinc-900 rounded-[32px] md:rounded-[40px] p-8 md:p-10 text-white relative overflow-hidden group shadow-2xl shadow-black/10 transition-all">
+             <motion.div variants={fadeUp} className="bg-black dark:bg-zinc-900 rounded-[32px] md:rounded-[40px] p-8 md:p-10 text-white relative overflow-hidden group shadow-2xl shadow-black/10 transition-all border border-transparent dark:border-zinc-800">
                 <div className="relative z-10">
                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-12 gap-6">
                       <div className="space-y-2">
@@ -190,7 +191,7 @@ export default function DashboardPage() {
                             ANALISIS TERFAVORIT
                          </div>
                          <h2 className="text-2xl md:text-4xl font-black italic tracking-tighter transition-colors">Kesiapan: {readinessScore}%</h2>
-                         <p className="text-gray-400 dark:text-zinc-500 text-[10px] md:text-sm font-medium transition-colors">Berdasarkan data terbaru dari CV kamu.</p>
+                         <p className="text-gray-400 dark:text-zinc-400 text-[10px] md:text-sm font-medium transition-colors">Berdasarkan data terbaru dari CV kamu.</p>
                       </div>
                       <div className="hidden sm:flex -space-x-4">
                          {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
@@ -248,9 +249,9 @@ export default function DashboardPage() {
 
         {/* Right: Task List */}
         <div className="space-y-6 md:space-y-8">
-           <motion.div variants={fadeUp} className="bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-gray-100 dark:border-zinc-800 shadow-sm transition-all">
+           <motion.div variants={fadeUp} className="bg-white/80 dark:bg-zinc-900/60 backdrop-blur-md p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-gray-100 dark:border-zinc-800/50 shadow-sm transition-all">
               <div className="flex items-center justify-between mb-6 md:mb-8">
-                 <h3 className="text-[10px] md:text-[11px] font-black text-gray-400 dark:text-zinc-600 tracking-widest uppercase flex items-center gap-2 transition-colors">
+                 <h3 className="text-[10px] md:text-[11px] font-black text-gray-400 dark:text-zinc-500 tracking-widest uppercase flex items-center gap-2 transition-colors">
                     <CheckCircle2 className="w-4 h-4 text-teal" />
                     DAFTAR TUGAS
                  </h3>
@@ -279,7 +280,7 @@ export default function DashboardPage() {
                  ))}
               </div>
 
-              <button className="w-full mt-8 md:mt-10 p-4 bg-gray-50 dark:bg-zinc-800/50 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black rounded-2xl text-[9px] md:text-[10px] font-black text-gray-400 dark:text-zinc-600 uppercase tracking-widest transition-all">
+              <button className="w-full mt-8 md:mt-10 p-4 bg-gray-50 dark:bg-zinc-800/40 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black rounded-2xl text-[9px] md:text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-widest transition-all">
                 LIHAT SEMUA TUGAS
               </button>
            </motion.div>

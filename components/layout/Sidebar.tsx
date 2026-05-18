@@ -55,7 +55,7 @@ export default function Sidebar({
       inDrawer && "w-full"
     )}>
       {/* Logo Section */}
-      <div className="h-20 flex items-center px-6 border-b border-gray-50 dark:border-zinc-800/50">
+      <div className="h-20 flex items-center px-6 border-b border-gray-50 dark:border-zinc-900">
         <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
           <div className="w-10 h-10 shrink-0 rounded-xl bg-black dark:bg-white flex items-center justify-center shadow-sm transition-colors duration-300">
             <BrainCircuit className="w-6 h-6 text-teal" />
@@ -87,7 +87,7 @@ export default function Sidebar({
                   "flex items-center gap-4 px-3 py-3.5 rounded-xl transition-all duration-200 group relative",
                   isActive 
                     ? "bg-teal-light/30 dark:bg-teal/10 text-teal" 
-                    : "text-gray-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-black dark:hover:text-white"
+                    : "text-gray-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900/50 hover:text-black dark:hover:text-white"
                 )}
               >
                 <item.icon className={cn("w-5 h-5 shrink-0 transition-colors", isActive ? "text-teal" : "text-gray-400 group-hover:text-black dark:group-hover:text-white")} />
@@ -98,7 +98,7 @@ export default function Sidebar({
                 )}
                 {/* Tooltip for collapsed state */}
                 {!isSidebarOpen && !inDrawer && hoveredItem === item.label && (
-                  <div className="absolute left-16 bg-black dark:bg-zinc-800 text-white text-[10px] font-bold py-2 px-3 rounded-lg whitespace-nowrap z-50 shadow-xl border border-white/10">
+                  <div className="absolute left-16 bg-black dark:bg-zinc-900 text-white text-[10px] font-bold py-2 px-3 rounded-lg whitespace-nowrap z-50 shadow-xl border border-white/10">
                     {item.label}
                   </div>
                 )}
@@ -109,9 +109,9 @@ export default function Sidebar({
       </nav>
 
       {/* Footer / User Section */}
-      <div className="p-4 space-y-3 border-t border-gray-50 dark:border-zinc-800/50">
+      <div className="p-4 space-y-3 border-t border-gray-50 dark:border-zinc-900">
         <div className={cn(
-          "flex items-center gap-3 p-3 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50",
+          "flex items-center gap-3 p-3 rounded-2xl border border-gray-100 dark:border-zinc-900 bg-gray-50/50 dark:bg-zinc-900/30",
           !isSidebarOpen && !inDrawer && "justify-center"
         )}>
           <UserAvatar size="sm" />

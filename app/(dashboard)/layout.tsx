@@ -145,7 +145,7 @@ function DashboardLayoutContent({
   if (!session) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F9FAFB] dark:bg-zinc-900 transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-[#F9FAFB] dark:bg-zinc-950 transition-colors duration-300">
       {/* Sidebar - Desktop Only */}
       <Sidebar />
 
