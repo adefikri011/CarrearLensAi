@@ -177,7 +177,6 @@ export default function LoginPage() {
             <form 
               onSubmit={form.handleSubmit(onSubmit)} 
               className="space-y-4"
-              method="POST"
             >
               <FormField
                 control={form.control}

@@ -27,7 +27,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         if (!user || !user.password) return null;
 
-        const isPasswordValid = bcrypt.compareSync(
+        const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
@@ -45,33 +45,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   ],
   session: {
     strategy: "jwt",
-  },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-    callbackUrl: {
-      name: `next-auth.callback-url`,
-      options: {
-        sameSite: "none",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-    csrfToken: {
-      name: `next-auth.csrf-token`,
-      options: {
-        sameSite: "none",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
   },
   trustHost: true,
   pages: {
