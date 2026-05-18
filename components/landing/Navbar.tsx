@@ -44,18 +44,18 @@ export const Navbar = () => {
         className={cn(
           "fixed top-0 left-0 right-0 z-[100] transition-all duration-300",
           isScrolled 
-            ? "bg-white/90 backdrop-blur-xl border-b border-[#EFEFEF] py-4" 
+            ? "bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-100 dark:border-zinc-900 py-4" 
             : "bg-transparent py-4 lg:py-6"
         )}
       >
         <div className="container max-w-7xl mx-auto px-5 lg:px-6 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group relative z-[101]">
-            <div className="w-8 h-8 rounded-lg bg-[#0A0A0A] flex items-center justify-center transition-transform group-hover:rotate-[10deg]">
-              <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center transition-transform group-hover:rotate-[10deg]">
+              <BrainCircuit className="text-teal w-5 h-5" />
             </div>
-            <span className="text-xl lg:text-xl font-bold tracking-[-1px] text-[#0A0A0A]">
-              CareerLens <span className="text-[#1D9E75]">AI</span>
+            <span className="text-xl lg:text-xl font-black tracking-[-1px] text-black dark:text-white uppercase italic">
+              CareerLens <span className="text-teal">AI</span>
             </span>
           </Link>
 
@@ -65,7 +65,7 @@ export const Navbar = () => {
               <button 
                 key={link.name} 
                 onClick={() => scrollToSection(link.href)}
-                className="text-[14px] font-medium text-[#888888] hover:text-[#0A0A0A] transition-colors"
+                className="text-[13px] font-black uppercase tracking-widest text-gray-400 hover:text-black dark:hover:text-white transition-colors"
               >
                 {link.name}
               </button>
@@ -76,13 +76,13 @@ export const Navbar = () => {
           <div className="hidden md:flex items-center gap-6">
             <Link 
               href="/login" 
-              className="text-[14px] font-medium text-[#0A0A0A] hover:opacity-70 transition-opacity"
+              className="text-[13px] font-black uppercase tracking-widest text-black dark:text-white hover:text-teal transition-colors"
             >
               Masuk
             </Link>
             <Link 
               href="/register" 
-              className="bg-[#0A0A0A] text-white px-6 py-2.5 rounded-full text-[14px] font-semibold hover:bg-[#1D9E75] transition-all"
+              className="bg-black dark:bg-white text-white dark:text-black px-8 py-3 rounded-full text-[12px] font-black uppercase tracking-widest hover:bg-teal dark:hover:bg-teal dark:hover:text-white transition-all shadow-xl shadow-black/10 transition-all hover:scale-105 active:scale-95"
             >
               Mulai Gratis
             </Link>
@@ -90,7 +90,7 @@ export const Navbar = () => {
 
           {/* Mobile Toggle */}
           <button 
-            className="md:hidden p-2 text-[#0A0A0A] relative z-[101] min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="md:hidden p-2 text-black dark:text-white relative z-[101] min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -113,26 +113,26 @@ export const Navbar = () => {
                 <button 
                   key={link.name} 
                   onClick={() => scrollToSection(link.href)}
-                  className="text-4xl font-bold tracking-tight text-[#0A0A0A] text-left"
+                  className="text-4xl font-black tracking-tighter text-black dark:text-white text-left uppercase italic"
                 >
                   {link.name}
                 </button>
               ))}
               
-              <div className="h-px bg-[#EFEFEF] my-4" />
+              <div className="h-px bg-gray-100 dark:bg-zinc-900 my-4 transition-colors" />
               
               <div className="flex flex-col gap-4">
                 <Link 
                   href="/login" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-5 text-center text-lg font-semibold border border-[#EFEFEF] rounded-2xl active:scale-[0.98] transition-transform"
+                  className="w-full py-5 text-center text-lg font-black uppercase tracking-widest border border-gray-100 dark:border-zinc-800 dark:text-white rounded-2xl active:scale-[0.98] transition-all"
                 >
                   Masuk
                 </Link>
                 <Link 
                   href="/register" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-5 text-center text-lg font-semibold bg-[#0A0A0A] text-white rounded-2xl active:scale-[0.98] transition-transform"
+                  className="w-full py-5 text-center text-lg font-black uppercase tracking-widest bg-black dark:bg-white text-white dark:text-black rounded-2xl active:scale-[0.98] transition-all"
                 >
                   Mulai Sekarang
                 </Link>

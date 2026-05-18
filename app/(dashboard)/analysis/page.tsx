@@ -257,32 +257,42 @@ export default function AnalysisPage() {
       </div>
 
       {!analysis && !isAnalyzing ? (
-        <div className="bg-white dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 rounded-[40px] p-20 text-center flex flex-col items-center space-y-6 transition-all shadow-sm">
-           <div className="w-20 h-20 rounded-[32px] bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-gray-300 dark:text-zinc-600">
-              <AlertCircle className="w-10 h-10" />
+        <div className="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-zinc-900 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all shadow-sm group relative overflow-hidden">
+           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(29,158,117,0.03),transparent_70%)]" />
+           <div className="w-24 h-24 rounded-[32px] bg-gray-50 dark:bg-zinc-900 flex items-center justify-center text-gray-300 dark:text-zinc-700 relative z-10 group-hover:text-teal group-hover:bg-teal/5 transition-all">
+              <AlertCircle className="w-12 h-12" />
            </div>
-           <div>
-              <h3 className="text-xl font-black text-black dark:text-white mb-2 italic transition-colors">Belum Ada Analisis</h3>
-              <p className="text-gray-500 dark:text-zinc-500 max-w-xs mx-auto font-medium transition-colors">Upload CV kamu terlebih dahulu untuk mendapatkan analisis jalur karier yang mendalam.</p>
+           <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-black text-black dark:text-white mb-3 italic tracking-tight transition-colors uppercase">Belum Ada Analisis</h3>
+              <p className="text-gray-400 dark:text-zinc-500 max-w-sm mx-auto font-bold uppercase tracking-tighter text-xs md:text-sm transition-colors">
+                Upload CV kamu hari ini untuk mendapatkan peta jalan karier masa depan yang presisi.
+              </p>
            </div>
-           <Link href="/cv-builder">
-              <Button className="bg-teal hover:bg-teal-dark rounded-full px-12 h-14 font-black text-white uppercase text-[11px] tracking-widest shadow-xl shadow-teal/20 transition-all hover:scale-105 active:scale-95">
+           <Link href="/cv-builder" className="relative z-10">
+              <Button className="bg-black dark:bg-white text-white dark:text-black hover:bg-teal dark:hover:bg-teal dark:hover:text-white rounded-full px-12 h-16 font-black text-[12px] tracking-[0.2em] uppercase shadow-2xl shadow-black/10 transition-all hover:scale-105 active:scale-95">
                  UPLOAD CV SEKARANG
               </Button>
            </Link>
         </div>
       ) : isAnalyzing ? (
-        <div className="bg-white dark:bg-zinc-900/40 border border-gray-100 dark:border-zinc-800/40 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all relative overflow-hidden group shadow-2xl shadow-teal/5">
-           <div className="absolute inset-0 bg-gradient-to-b from-teal/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-           <div className="relative z-10 space-y-8 flex flex-col items-center">
-              <div className="relative">
-                 <div className="absolute inset-0 bg-teal/20 blur-2xl rounded-full" />
-                 <LoadingSpinner size="lg" className="relative z-10" />
-                 <Sparkles className="absolute -top-3 -right-3 w-8 h-8 text-teal animate-pulse" />
+        <div className="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-zinc-900 rounded-[40px] p-24 text-center flex flex-col items-center space-y-10 transition-all relative overflow-hidden shadow-2xl shadow-black/5">
+           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1D9E7510,transparent_70%)]" />
+           <div className="relative z-10 space-y-10 flex flex-col items-center">
+              <div className="relative mb-4">
+                 <div className="absolute inset-0 bg-teal/20 blur-[60px] rounded-full animate-pulse" />
+                 <div className="w-24 h-24 relative z-10 bg-white dark:bg-zinc-900 rounded-[32px] border border-teal/20 flex items-center justify-center shadow-2xl shadow-teal/20">
+                    <LoadingSpinner size="lg" className="w-12 h-12" />
+                 </div>
+                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-white dark:bg-zinc-900 rounded-2xl border border-teal/20 flex items-center justify-center shadow-lg animate-bounce">
+                    <Sparkles className="w-6 h-6 text-teal" />
+                 </div>
               </div>
-              <div className="space-y-3">
-                 <h3 className="text-3xl font-black text-black dark:text-white italic tracking-tighter uppercase transition-colors">Gemini AI sedang berpikir...</h3>
-                 <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto leading-relaxed font-bold transition-colors">Menghubungkan profil unikmu dengan peluang industri terbaru. Mohon tunggu sejenak.</p>
+              <div className="space-y-4">
+                 <h3 className="text-3xl md:text-5xl font-black text-black dark:text-white italic tracking-tighter uppercase transition-colors">Gemini AI <br/> Sedang Berpikir...</h3>
+                 <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto leading-relaxed font-bold tracking-tight transition-colors uppercase text-[10px] md:text-xs">
+                   Kami sedang meracik strategi terbaik untuk masa depanmu. <br/>
+                   <span className="text-teal">Duduk tenang sejenak, ini akan luar biasa.</span>
+                 </p>
               </div>
            </div>
         </div>

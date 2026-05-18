@@ -124,31 +124,75 @@ export default function DashboardPage() {
       </motion.section>
 
       {/* --- Stats Grid --- */}
-      <motion.section variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        {[
-          { icon: <FileText />, label: "Analisis CV", val: analysisCount.toString(), desc: "Dokumen", c: "zinc" },
-          { icon: <Target />, label: "Posisi", val: tasks.careerSelected ? "1" : "0", desc: "Target", c: "teal" },
-          { icon: <CheckCircle2 />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan", c: "zinc" },
-          { icon: <Zap />, label: "Skill Match", val: skillMatch > 0 ? `${skillMatch}%` : "-", desc: "Kecocokan", c: "teal" },
-        ].map((stat, i) => (
-          <div key={i} className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-3xl border border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 hover:border-teal/30 dark:hover:border-teal/40 transition-all group shadow-sm hover:shadow-xl hover:shadow-teal/5">
-            <div className={cn(
-              "w-11 h-11 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500",
-              stat.c === "teal" 
-                ? "bg-teal text-white shadow-lg shadow-teal/20" 
-                : "bg-gray-50 dark:bg-zinc-800 text-black dark:text-white"
-            )}>
-              {React.cloneElement(stat.icon as React.ReactElement, { className: "w-5 h-5 md:w-6 md:h-6" })}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-500 tracking-wider uppercase mb-0.5">{stat.label}</p>
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-2">
-                 <span className="text-lg md:text-xl font-black text-black dark:text-white transition-colors">{stat.val}</span>
-                 <span className="text-[8px] md:text-[9px] font-bold text-gray-300 dark:text-zinc-700 uppercase truncate transition-colors">{stat.desc}</span>
+      <motion.section variants={fadeUp}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+          {[
+            { 
+              icon: <FileText />, 
+              label: "Analisis CV", 
+              val: analysisCount.toString(), 
+              desc: "Dokumen", 
+              color: "text-black dark:text-white",
+              bg: "bg-gray-50 dark:bg-zinc-800",
+              border: "border-gray-100 dark:border-zinc-800"
+            },
+            { 
+              icon: <Target />, 
+              label: "Posisi", 
+              val: tasks.careerSelected ? "1" : "0", 
+              desc: "Target", 
+              color: "text-teal",
+              bg: "bg-teal/5 dark:bg-teal/10",
+              border: "border-teal/10 dark:border-teal/20"
+            },
+            { 
+              icon: <CheckCircle2 />, 
+              label: "Data Profil", 
+              val: `${profileCompleteness}%`, 
+              desc: "Kelengkapan", 
+              color: "text-black dark:text-white",
+              bg: "bg-gray-50 dark:bg-zinc-800",
+              border: "border-gray-100 dark:border-zinc-800"
+            },
+            { 
+              icon: <Zap />, 
+              label: "Skill Match", 
+              val: skillMatch > 0 ? `${skillMatch}%` : "-", 
+              desc: "Kecocokan", 
+              color: "text-teal",
+              bg: "bg-teal/5 dark:bg-teal/10",
+              border: "border-teal/10 dark:border-teal/20"
+            },
+          ].map((stat, i) => (
+            <motion.div 
+              key={i} 
+              whileHover={{ y: -4 }}
+              className={cn(
+                "p-5 md:p-7 rounded-[32px] border transition-all duration-300 group relative overflow-hidden",
+                "bg-white dark:bg-zinc-950",
+                stat.border,
+                "hover:shadow-2xl hover:shadow-teal/5"
+              )}
+            >
+              <div className="relative z-10 flex flex-col gap-4">
+                <div className={cn(
+                  "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all duration-500",
+                  stat.bg,
+                  stat.color
+                )}>
+                  {React.cloneElement(stat.icon as React.ReactElement, { className: "w-6 h-6 md:w-7 md:h-7" })}
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-[0.2em] uppercase mb-1">{stat.label}</p>
+                  <div className="flex items-baseline gap-2">
+                     <span className="text-2xl md:text-3xl font-black text-black dark:text-white italic transition-colors leading-none">{stat.val}</span>
+                     <span className="text-[10px] font-black text-gray-300 dark:text-zinc-700 uppercase tracking-wider">{stat.desc}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </motion.section>
 
       {/* --- Main Content Area --- */}

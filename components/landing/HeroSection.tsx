@@ -36,16 +36,16 @@ const DashboardMockup = ({
 
   return (
     <div className={cn(
-      "w-full max-w-[1000px] aspect-[16/10] bg-white rounded-[24px] lg:rounded-[32px] border border-[#EFEFEF] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden relative",
+      "w-full max-w-[1000px] aspect-[16/10] bg-white dark:bg-zinc-950 rounded-[24px] lg:rounded-[32px] border border-gray-100 dark:border-zinc-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] dark:shadow-none overflow-hidden relative transition-colors",
       isMobile && "max-w-[90vw] mx-auto"
     )}>
       {/* Sidebar */}
-      <div className="absolute left-0 top-0 bottom-0 w-12 lg:w-16 border-r border-[#EFEFEF] bg-[#F8F8F8] hidden sm:flex flex-col items-center py-6 gap-6">
-        <div className="w-8 h-8 rounded-lg bg-[#0A0A0A] flex items-center justify-center">
-            <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
+      <div className="absolute left-0 top-0 bottom-0 w-12 lg:w-16 border-r border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 hidden sm:flex flex-col items-center py-6 gap-6 transition-colors">
+        <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center transition-colors">
+            <BrainCircuit className="text-teal w-5 h-5" />
         </div>
         {[Layout, Target, Sparkles].map((Icon, i) => (
-          <div key={i} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#888888]">
+          <div key={i} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-zinc-600">
             <Icon size={20} />
           </div>
         ))}
@@ -53,21 +53,21 @@ const DashboardMockup = ({
 
       {/* Main Content */}
       <div className={cn(
-        "absolute top-0 right-0 bottom-0 p-4 lg:p-8 flex flex-col gap-4 lg:gap-8 bg-white",
+        "absolute top-0 right-0 bottom-0 p-4 lg:p-8 flex flex-col gap-4 lg:gap-8 bg-white dark:bg-zinc-950 transition-colors",
         "left-0 sm:left-12 lg:left-16"
       )}>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <div className="h-4 w-24 lg:w-32 bg-[#F8F8F8] rounded-full" />
-            <div className="h-2 w-16 lg:w-20 bg-[#F8F8F8] rounded-full" />
+            <div className="h-4 w-24 lg:w-32 bg-gray-50 dark:bg-zinc-900 rounded-full" />
+            <div className="h-2 w-16 lg:w-20 bg-gray-50 dark:bg-zinc-900 rounded-full" />
           </div>
-          <div className="h-8 w-8 rounded-full bg-[#F8F8F8]" />
+          <div className="h-8 w-8 rounded-full bg-gray-50 dark:bg-zinc-900" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
           <motion.div 
             style={{ borderColor: scoreBorder, boxShadow: scoreShadow }}
-            className="p-6 lg:p-8 rounded-2xl lg:rounded-3xl border transition-colors duration-300 flex flex-col items-center justify-center text-center bg-white"
+            className="p-6 lg:p-8 rounded-2xl lg:rounded-3xl border transition-all duration-300 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900"
           >
             <div className="relative w-20 h-20 lg:w-32 lg:h-32 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
@@ -76,8 +76,9 @@ const DashboardMockup = ({
                   cy="50%"
                   r="45%"
                   fill="none"
-                  stroke="#F8F8F8"
+                  stroke="currentColor"
                   strokeWidth="8"
+                  className="text-gray-50 dark:text-zinc-800"
                 />
                 <motion.circle
                   cx="50%"
@@ -93,47 +94,47 @@ const DashboardMockup = ({
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xl lg:text-3xl font-bold tracking-tighter text-[#0A0A0A]">
+                <span className="text-xl lg:text-3xl font-black tracking-tighter text-black dark:text-white uppercase italic">
                   <Ticker value={progress} />%
                 </span>
-                <span className="text-[8px] lg:text-[10px] font-bold text-[#888888] uppercase tracking-widest">ATS Score</span>
+                <span className="text-[8px] lg:text-[10px] font-black text-gray-400 dark:text-zinc-600 uppercase tracking-widest">ATS Score</span>
               </div>
             </div>
-            <p className="mt-4 text-[10px] lg:text-xs font-medium text-[#888888] max-w-[120px]">CV kamu sudah cukup baik untuk industri modern.</p>
+            <p className="mt-4 text-[10px] lg:text-xs font-bold text-gray-400 dark:text-zinc-500 max-w-[120px] uppercase tracking-tight">Kesiapan Industri</p>
           </motion.div>
 
 
-          <div className="p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-[#EFEFEF] bg-[#F8F8F8] space-y-4">
-             <div className="h-3 w-16 lg:w-24 bg-white rounded-full" />
+          <div className="p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-gray-100 dark:border-zinc-800/50 bg-gray-50 dark:bg-zinc-900/40 space-y-4">
+             <div className="h-3 w-16 lg:w-24 bg-white dark:bg-black rounded-full" />
              <div className="space-y-2">
                 {[
                   { label: "Frontend Developer", percent: 92 },
                   { label: "UI/UX Designer", percent: 85 },
                   { label: "QA Engineer", percent: 64 }
                 ].map((path, i) => (
-                  <div key={i} className="p-2 lg:p-3 bg-white rounded-lg lg:rounded-xl border border-[#EFEFEF] flex items-center justify-between">
-                    <span className="text-[10px] lg:text-xs font-bold text-[#0A0A0A]">{path.label}</span>
-                    <span className="text-[9px] lg:text-[10px] font-bold text-[#1D9E75]">{path.percent}%</span>
+                  <div key={i} className="p-2 lg:p-3 bg-white dark:bg-zinc-900 rounded-lg lg:rounded-xl border border-gray-100 dark:border-zinc-800/80 flex items-center justify-between shadow-sm">
+                    <span className="text-[10px] lg:text-xs font-black text-black dark:text-white uppercase italic">{path.label}</span>
+                    <span className="text-[9px] lg:text-[10px] font-black text-teal">{path.percent}%</span>
                   </div>
                 ))}
              </div>
           </div>
         </div>
 
-        <div className="flex-1 p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-[#EFEFEF] bg-white hidden sm:block">
+        <div className="flex-1 p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hidden sm:block">
            <div className="flex items-center gap-4 mb-4 lg:mb-6">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl bg-[#1D9E75]/10 flex items-center justify-center text-[#1D9E75]">
+              <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl bg-teal/10 flex items-center justify-center text-teal">
                 <Target size={18} />
               </div>
               <div className="space-y-1">
-                 <div className="h-3 w-20 lg:w-32 bg-[#F8F8F8] rounded-full" />
-                 <div className="h-2 w-16 lg:w-20 bg-[#F8F8F8] rounded-full opacity-50" />
+                 <div className="h-3 w-20 lg:w-32 bg-gray-50 dark:bg-zinc-800 rounded-full" />
+                 <div className="h-2 w-16 lg:w-20 bg-gray-50 dark:bg-zinc-800 rounded-full opacity-50" />
               </div>
            </div>
            <div className="grid grid-cols-4 gap-2 lg:gap-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-12 lg:h-20 bg-[#F8F8F8] rounded-xl lg:rounded-2xl border border-dashed border-[#EFEFEF] flex items-center justify-center">
-                  <Check className="text-[#EFEFEF] w-4 h-4 lg:w-5 lg:h-5" />
+                <div key={i} className="h-12 lg:h-20 bg-gray-50 dark:bg-zinc-800 rounded-xl lg:rounded-2xl border border-dashed border-gray-100 dark:border-zinc-800 flex items-center justify-center">
+                  <Check className="text-gray-100 dark:text-zinc-800 w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
               ))}
            </div>
@@ -191,19 +192,19 @@ export const HeroSection = () => {
   const mobileProgress = useMotionValue(78);
   const mobileHighlight = useMotionValue(1);
 
-  if (!isMounted) return <div className="h-screen bg-white" />;
+  if (!isMounted) return <div className="h-screen bg-white dark:bg-black transition-colors" />;
 
   if (isMobile) {
     return (
-      <section className="bg-white px-5 pt-32 pb-20 overflow-hidden flex flex-col items-center relative">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
-             style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+      <section className="bg-white dark:bg-black px-5 pt-32 pb-20 overflow-hidden flex flex-col items-center relative transition-colors">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]" 
+             style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
         
         <div className="text-center mb-16 z-10 w-full">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[clamp(36px,10vw,56px)] font-bold tracking-[-2px] leading-[1.1] text-[#0A0A0A] mb-6"
+            className="text-[clamp(36px,10vw,56px)] font-black tracking-[-2px] leading-[1.1] text-black dark:text-white mb-6 uppercase italic"
           >
             Karier Impianmu.<br />
             Dimulai dari Sini.
@@ -212,7 +213,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-[15px] sm:text-[16px] text-[#888888] font-medium max-w-sm mx-auto mb-10 leading-relaxed"
+            className="text-[15px] sm:text-[16px] text-gray-500 dark:text-zinc-500 font-bold max-w-sm mx-auto mb-10 leading-relaxed uppercase tracking-tight"
           >
             AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.
           </motion.p>
@@ -220,7 +221,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="h-16 w-full max-w-[280px] bg-[#0A0A0A] text-white rounded-full font-bold text-[14px] tracking-[1px] uppercase hover:bg-[#1D9E75] transition-all shadow-xl active:scale-95"
+            className="h-16 w-full max-w-[300px] bg-black dark:bg-white text-white dark:text-black rounded-full font-black text-[11px] tracking-[2px] uppercase hover:bg-teal dark:hover:bg-teal dark:hover:text-white transition-all shadow-xl active:scale-95"
           >
              Analisis CV Sekarang
            </motion.button>
@@ -234,29 +235,29 @@ export const HeroSection = () => {
   }
 
   return (
-    <section ref={containerRef} className="h-[400vh] relative bg-white">
-       <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
-             style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+    <section ref={containerRef} className="h-[400vh] relative bg-white dark:bg-black transition-colors">
+       <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]" 
+             style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
       <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center px-6">
         
         {/* Texts */}
         <motion.div style={{ opacity: h1Opacity, y: h1Y, zIndex: 10 }} className="absolute top-[18%] text-center pointer-events-none w-full px-10">
-          <h1 className="text-[90px] font-bold tracking-[-4px] leading-[0.95] text-[#0A0A0A] mb-6">Karier Impianmu.</h1>
-          <p className="text-[19px] text-[#888888] font-medium max-w-lg mx-auto">AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.</p>
+          <h1 className="text-[90px] font-black tracking-[-4px] leading-[0.95] text-black dark:text-white mb-6 uppercase italic">Karier Impianmu.</h1>
+          <p className="text-[19px] text-gray-400 dark:text-zinc-500 font-bold max-w-lg mx-auto uppercase tracking-tight">AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.</p>
         </motion.div>
 
         <motion.div style={{ opacity: h2Opacity, zIndex: 11 }} className="absolute top-[18%] text-center pointer-events-none w-full">
-          <h2 className="text-[90px] font-bold tracking-[-4px] leading-[0.95] text-[#0A0A0A]">Dimulai dari Sini.</h2>
+          <h2 className="text-[90px] font-black tracking-[-4px] leading-[0.95] text-black dark:text-white uppercase italic">Dimulai dari Sini.</h2>
         </motion.div>
 
         <motion.div style={{ opacity: h3Opacity, x: h3X, zIndex: 12 }} className="absolute left-[12%] top-1/2 -translate-y-1/2 max-w-md pointer-events-none">
-          <span className="text-[13px] font-bold tracking-[4px] uppercase text-[#1D9E75] mb-8 block">01 / ANALISIS PRESISI</span>
-          <h3 className="text-6xl font-bold tracking-[-3px] leading-[1.05] text-[#0A0A0A] mb-10">Analisis CV <br /> dalam Detik.</h3>
+          <span className="text-[13px] font-black tracking-[4px] uppercase text-teal mb-8 block">01 / ANALISIS PRESISI</span>
+          <h3 className="text-6xl font-black tracking-[-3px] leading-[1.05] text-black dark:text-white mb-10 uppercase italic">Analisis CV <br /> dalam Detik.</h3>
           <ul className="space-y-6">
             {["Skor standar ATS industri.", "Rekomendasi keyword relevan.", "Optimasi profil profesional."].map((t, i) => (
-              <li key={i} className="flex items-center gap-4 text-[19px] text-[#888888]">
-                <div className="w-2 h-2 rounded-full bg-[#1D9E75] shrink-0" />
+              <li key={i} className="flex items-center gap-4 text-[19px] text-gray-500 dark:text-zinc-500 font-bold uppercase tracking-tighter">
+                <div className="w-2 h-2 rounded-full bg-teal shrink-0" />
                 {t}
               </li>
             ))}
@@ -264,9 +265,9 @@ export const HeroSection = () => {
         </motion.div>
 
         <motion.div style={{ opacity: h4Opacity, zIndex: 13 }} className="absolute top-[18%] text-center pointer-events-none w-full">
-          <h2 className="text-[90px] font-bold tracking-[-4px] leading-[0.95] text-[#0A0A0A]">
+          <h2 className="text-[90px] font-black tracking-[-4px] leading-[0.95] text-black dark:text-white uppercase italic">
             Roadmap 90 Hari.<br />
-            <span className="text-[#1D9E75] italic">Langkah Pasti.</span>
+            <span className="text-teal italic">Langkah Pasti.</span>
           </h2>
         </motion.div>
 
@@ -286,7 +287,7 @@ export const HeroSection = () => {
 
         {/* Floating CTA */}
         <motion.div style={{ opacity: ctaOpacity, zIndex: 15 }} className="absolute bottom-[8%]">
-           <button className="h-20 px-14 bg-[#0A0A0A] text-white rounded-full font-bold text-[14px] tracking-[2px] uppercase hover:bg-[#1D9E75] transition-all shadow-2xl active:scale-95">
+           <button className="h-20 px-14 bg-black dark:bg-white text-white dark:text-black rounded-full font-black text-[12px] tracking-[2px] uppercase hover:bg-teal dark:hover:bg-teal dark:hover:text-white transition-all shadow-2xl active:scale-95">
              Analisis CV Sekarang
            </button>
         </motion.div>
