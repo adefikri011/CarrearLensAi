@@ -1,9 +1,33 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { BrainCircuit, Instagram, Twitter, Linkedin, Github } from "lucide-react";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  const scrollToSection = (id: string) => {
+    if (!id.startsWith("#")) return;
+    
+    if (window.location.pathname !== "/") {
+      window.location.href = `/${id}`;
+      return;
+    }
+
+    const el = document.querySelector(id);
+    if (el) {
+      const offset = 80;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
 
   const sections = [
     {
@@ -11,8 +35,8 @@ export const Footer = () => {
       links: [
         { name: "Analisis CV", href: "/cv-builder" },
         { name: "Roadmap Karir", href: "/roadmap" },
-        { name: "Portfolio", href: "/dashboard" },
-        { name: "Update", href: "#" }
+        { name: "Fitur AI", href: "#fitur" },
+        { name: "Testimoni", href: "#testimoni" }
       ]
     },
     {
@@ -27,10 +51,10 @@ export const Footer = () => {
     {
       title: "Komunitas",
       links: [
-        { name: "Grup Karir", href: "#" },
-        { name: "Event", href: "#" },
-        { name: "Alumni", href: "#" },
-        { name: "Mentor", href: "#" }
+        { name: "FAQ", href: "#faq" },
+        { name: "Cara Kerja", href: "#cara-kerja" },
+        { name: "Blog", href: "#" },
+        { name: "Karir", href: "#" }
       ]
     }
   ];
@@ -42,11 +66,11 @@ export const Footer = () => {
           
           <div className="md:col-span-2 space-y-8 flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center transition-colors">
-                <BrainCircuit className="text-teal w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center transition-transform group-hover:rotate-[10deg]">
+                <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
               </div>
               <span className="text-xl font-black tracking-[-1px] text-black dark:text-white uppercase italic">
-                CareerLens <span className="text-teal">AI</span>
+                CareerLens <span className="text-[#1D9E75]">AI</span>
               </span>
             </Link>
             <p className="text-gray-500 dark:text-zinc-500 text-[15px] font-medium leading-relaxed max-w-sm mx-auto md:mx-0">
@@ -54,7 +78,7 @@ export const Footer = () => {
             </p>
             <div className="flex gap-4 text-gray-400">
                {[Instagram, Twitter, Linkedin, Github].map((Icon, i) => (
-                 <Link key={i} href="#" className="hover:text-teal dark:hover:text-teal transition-all hover:scale-110 active:scale-95 duration-200">
+                 <Link key={i} href="#" className="hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-all hover:scale-110 active:scale-95 duration-200">
                     <Icon size={20} />
                  </Link>
                ))}
@@ -70,12 +94,21 @@ export const Footer = () => {
                 <ul className="space-y-3">
                   {section.links.map((link) => (
                     <li key={link.name}>
-                      <Link 
-                        href={link.href}
-                        className="text-[14px] font-bold text-gray-400 hover:text-teal dark:hover:text-teal transition-colors inline-block"
-                      >
-                        {link.name}
-                      </Link>
+                      {link.href.startsWith("#") ? (
+                        <button 
+                          onClick={() => scrollToSection(link.href)}
+                          className="text-[14px] font-bold text-gray-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-colors inline-block"
+                        >
+                          {link.name}
+                        </button>
+                      ) : (
+                        <Link 
+                          href={link.href}
+                          className="text-[14px] font-bold text-gray-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-colors inline-block"
+                        >
+                          {link.name}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -89,7 +122,7 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[11px] lg:text-[12px] font-black text-gray-400 dark:text-zinc-600 uppercase tracking-widest text-center">
            <div className="flex flex-col md:flex-row items-center gap-4">
              <p>© {currentYear} CAREERLENS AI — JUARAVIBECODING 2026.</p>
-             <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-teal/30" />
+             <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#1D9E75]/30" />
              <p>Dibuat Oleh Fikri Ade</p>
            </div>
            <div className="flex items-center gap-2 px-6 py-2 bg-gray-50 dark:bg-zinc-900/50 rounded-full border border-gray-100 dark:border-zinc-800 transition-colors">
