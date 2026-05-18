@@ -18,7 +18,8 @@ import {
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { Navbar } from "@/components/landing/Navbar";
+import { Footer } from "@/components/landing/Footer";
 
 // --- Custom Hooks ---
 
@@ -93,138 +94,6 @@ const Counter = ({ value, duration = 1500 }: { value: string, duration?: number 
     <span ref={ref}>
       {displayValue.toLocaleString('id-ID')}{suffix}
     </span>
-  );
-};
-
-const Navbar = () => {
-  const { data: session, status } = useSession();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const authenticated = status === "authenticated";
-
-  return (
-    <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
-      isScrolled 
-        ? "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-zinc-800 py-3" 
-        : "bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800 py-5"
-    }`}>
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center">
-            <BrainCircuit className="text-[#1D9E75] w-5 h-5" />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-black dark:text-white">
-            CareerLens <span className="text-[#1D9E75]">AI</span>
-          </span>
-        </Link>
-
-        {/* Desktop Links (Removed Harga) */}
-        <div className="hidden md:flex items-center gap-10">
-          {["Fitur", "Cara Kerja", "Testimoni", "FAQ"].map((item) => (
-            <Link 
-              key={item} 
-              href={`#${item.toLowerCase().replace(" ", "-")}`}
-              className="text-[14px] font-semibold text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
-            >
-              {item}
-            </Link>
-          ))}
-        </div>
-
-        <div className="hidden md:flex items-center gap-4">
-          <ThemeToggle />
-          {authenticated ? (
-            <Link href="/dashboard">
-              <motion.button 
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="bg-black dark:bg-white dark:text-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-lg active:scale-95 flex items-center gap-2"
-              >
-                <LayoutDashboard size={14} />
-                Dashboard
-              </motion.button>
-            </Link>
-          ) : (
-            <>
-              <Link href="/login">
-                <button className="text-[14px] font-bold text-black dark:text-white px-6 py-2 hover:opacity-70 transition-opacity">
-                  Masuk
-                </button>
-              </Link>
-              <Link href="/register">
-                <motion.button 
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="bg-black dark:bg-white dark:text-black text-white text-[13px] font-bold px-7 py-3.5 rounded-full hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-lg active:scale-95"
-                >
-                  Mulai Gratis
-                </motion.button>
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Mobile Toggle */}
-        <div className="md:hidden flex items-center gap-2">
-          <ThemeToggle />
-          <button 
-            className="text-black dark:text-white p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800 px-6 py-8 md:hidden flex flex-col gap-6 shadow-2xl overflow-hidden"
-          >
-            {["Fitur", "Cara Kerja", "Testimoni", "FAQ"].map((item) => (
-              <Link 
-                key={item} 
-                href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className="text-lg font-bold text-black dark:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item}
-              </Link>
-            ))}
-            <div className="flex flex-col gap-3 pt-6 border-t border-gray-100 dark:border-zinc-800">
-               {authenticated ? (
-                 <Link href="/dashboard" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                   <button className="w-full py-4 bg-black dark:bg-white dark:text-black text-white font-bold rounded-2xl shadow-lg">Ke Dashboard</button>
-                 </Link>
-               ) : (
-                 <>
-                   <Link href="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                     <button className="w-full py-4 text-black dark:text-white font-bold border border-gray-200 dark:border-zinc-800 rounded-2xl">Masuk</button>
-                   </Link>
-                   <Link href="/register" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                     <button className="w-full py-4 bg-black dark:bg-white dark:text-black text-white font-bold rounded-2xl shadow-lg">Mulai Gratis</button>
-                   </Link>
-                 </>
-               )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
   );
 };
 
@@ -732,60 +601,6 @@ const CTA = () => {
   );
 };
 
-const Footer = () => {
-  const sections = {
-    Produk: ["Fitur", "Analisis CV", "Roadmap", "Update"],
-    Perusahaan: ["Tentang", "Kontak", "Blog", "Karir"],
-    Legal: ["Privacy Policy", "Terms of Use", "Cookie Policy"]
-  };
-
-  return (
-    <footer className="bg-black dark:bg-zinc-950 text-gray-400 py-24 px-6 border-t border-gray-900 dark:border-zinc-800 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-20 mb-24">
-          <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 flex items-center justify-center shadow-lg shadow-white/5">
-                <BrainCircuit className="text-[#1D9E75] w-6 h-6" />
-              </div>
-              <span className="text-2xl font-black tracking-tight text-white mb-0.5">CareerLens <span className="text-[#1D9E75]">AI</span></span>
-            </Link>
-            <p className="text-gray-500 dark:text-zinc-400 text-lg leading-relaxed max-w-sm font-medium">
-              Membangun jembatan antara pendidikan dan industri modern melalui kekuatan AI yang presisi.
-            </p>
-          </div>
-          
-          {Object.entries(sections).map(([title, items]) => (
-            <div key={title} className="flex flex-col gap-8">
-               <h4 className="text-[11px] font-bold uppercase tracking-[5px] text-white/50">{title}</h4>
-               <ul className="flex flex-col gap-5">
-                  {items.map((item) => (
-                    <li key={item}>
-                      <Link href="#" className="text-[15px] hover:text-[#1D9E75] transition-colors font-bold tracking-tight">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-               </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-900 dark:border-zinc-800 pt-16 gap-10">
-          <p className="text-sm font-bold tracking-wide">© 2024 CAREERLENS AI. DIBUAT DENGAN SEMANGAT UNTUK TALENTA MUDA.</p>
-          <div className="flex gap-10">
-             {["Instagram", "Twitter", "LinkedIn", "YouTube"].map((social) => (
-               <Link key={social} href="#" className="text-sm font-bold hover:text-white transition-colors">{social}</Link>
-             ))}
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-};
-
-// --- Main Page ---
-
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 overflow-x-hidden selection:bg-[#1D9E75] selection:text-white transition-colors duration-300">
@@ -798,13 +613,6 @@ export default function Home() {
       <FAQ />
       <CTA />
       <Footer />
-      
-      {/* Scroll Behavior & Antialiasing */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        html { scroll-behavior: smooth; }
-        body { margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        * { box-sizing: border-box; }
-      `}} />
     </main>
   );
 }
