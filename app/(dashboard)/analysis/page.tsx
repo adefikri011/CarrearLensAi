@@ -4,9 +4,17 @@ import React, { useState, useEffect } from "react";
 import { 
   motion, AnimatePresence 
 } from "framer-motion";
+import { jsPDF } from "jspdf";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   BrainCircuit, Target, ArrowLeft, Bookmark, Sparkles,
-  ChevronRight, RefreshCcw, Loader2, AlertCircle, FileText
+  ChevronRight, RefreshCcw, Loader2, AlertCircle, FileText,
+  Share2, Instagram 
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import PageLoader from "@/components/shared/PageLoader";
@@ -102,40 +110,95 @@ export default function AnalysisPage() {
       toast.error("Tidak ada data analisis untuk diunduh.");
       return;
     }
-    const content = `
-LAPORAN HASIL ANALISIS KARIER - CAREERLENS AI
-=============================================
-Tanggal Analisis: ${new Date(analysis.createdAt).toLocaleDateString('id-ID')}
-Overall Readiness: ${analysis.overallReadiness}%
 
-HASIL ANALISIS:
-- CV Score: ${analysis.cvScore}%
-- Jalur Utama: ${analysis.selectedPath}
+    try {
+      const doc = new jsPDF();
+      const timestamp = new Date(analysis.createdAt).toLocaleDateString('id-ID');
+      
+      // Header
+      doc.setFontSize(22);
+      doc.setTextColor(29, 158, 117); // Teal color
+      doc.text("CAREERLENS AI", 105, 20, { align: "center" });
+      
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Laporan Hasil Analisis Karier", 105, 30, { align: "center" });
+      
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, 35, 190, 35);
+      
+      // Info Section
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Tanggal Analisis: ${timestamp}`, 20, 45);
+      doc.text(`Overall Readiness: ${analysis.overallReadiness}%`, 20, 50);
+      doc.text(`CV Score: ${analysis.cvScore}%`, 20, 55);
+      doc.text(`Jalur Utama: ${analysis.selectedPath || "Belum dipilih"}`, 20, 60);
+      
+      // Competencies
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text("KOMPETENSI UTAMA", 20, 75);
+      
+      doc.setFontSize(10);
+      doc.text(`- Teknis & Digital: ${result.skillRadar?.teknisDigital || 0}%`, 25, 85);
+      doc.text(`- Komunikasi: ${result.skillRadar?.komunikasi || 0}%`, 25, 90);
+      doc.text(`- Kepemimpinan: ${result.skillRadar?.kepemimpinan || 0}%`, 25, 95);
+      doc.text(`- Kreativitas: ${result.skillRadar?.kreativitas || 0}%`, 25, 100);
+      doc.text(`- Analitis: ${result.skillRadar?.analitis || 0}%`, 25, 105);
+      doc.text(`- Adaptabilitas: ${result.skillRadar?.adaptabilitas || 0}%`, 25, 110);
+      
+      // Career Paths
+      doc.setFontSize(14);
+      doc.text("REKOMENDASI JALUR KARIER", 20, 125);
+      
+      let yPos = 135;
+      (result.careerPaths || []).forEach((path: any, index: number) => {
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.setFontSize(11);
+        doc.setTextColor(29, 158, 117);
+        doc.text(`${index + 1}. ${path.nama} (${path.matchScore}% Match)`, 25, yPos);
+        yPos += 7;
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        const splitDesc = doc.splitTextToSize(path.deskripsi, 160);
+        doc.text(splitDesc, 30, yPos);
+        yPos += (splitDesc.length * 5) + 5;
+      });
+      
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text("Laporan ini dihasilkan secara otomatis oleh CareerLens AI.", 105, 285, { align: "center" });
+      
+      doc.save(`careerlens-analisis-${new Date().getTime()}.pdf`);
+      toast.success("Hasil analisis berhasil diunduh sebagai PDF!");
+    } catch (error) {
+      console.error("PDF Error:", error);
+      toast.error("Gagal membuat PDF. Silakan coba lagi.");
+    }
+  };
 
-KOMPETENSI (Radar):
-- Teknis: ${result.skillRadar?.teknisDigital || 0}%
-- Komunikasi: ${result.skillRadar?.komunikasi || 0}%
-- Kepemimpinan: ${result.skillRadar?.kepemimpinan || 0}%
-- Kreativitas: ${result.skillRadar?.kreativitas || 0}%
-- Analitis: ${result.skillRadar?.analitis || 0}%
-- Adaptabilitas: ${result.skillRadar?.adaptabilitas || 0}%
+  const handleShare = (platform: 'whatsapp' | 'copy' | 'instagram') => {
+    const shareUrl = window.location.origin + "/analysis";
+    const shareText = `Halo! Lihat hasil analisis karier saya di CareerLens AI. Saya cocok menjadi ${analysis?.selectedPath || "Profesional"} dengan tingkat kesiapan ${analysis?.overallReadiness}%! Coba juga di: ${shareUrl}`;
 
-JALUR KARIER DIREKOMENDASIKAN:
-${result.careerPaths?.map((p: any) => 
-  `- ${p.nama} (${p.matchScore}% Match): ${p.deskripsi}`
-).join('\n')}
-
-REKOMENDASI UTAMA:
-${result.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\n')}
-    `
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `careerlens-analysis-${Date.now()}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
-    toast.success("Hasil analisis berhasil diunduh!");
+    if (platform === 'whatsapp') {
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+      window.open(waUrl, '_blank');
+      toast.success("Membuka WhatsApp...");
+    } else if (platform === 'copy') {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Link hasil analisis disalin!");
+    } else if (platform === 'instagram') {
+      // Instagram doesn't have a direct share via URL for feed/story easily from web
+      // But we can copy and tell user
+      navigator.clipboard.writeText(shareUrl);
+      toast.info("Link disalin! Kamu bisa tempel di bio atau story Instagram kamu.");
+    }
   };
 
   const selectPath = async (pathName: string) => {
@@ -262,28 +325,58 @@ ${result.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\
                    className="space-y-12"
                 >
                    <div className="flex flex-wrap gap-4 items-center justify-between">
-                      <div className="flex gap-3">
-                         <Button 
-                          onClick={handleDownloadPDF}
-                          variant="outline" 
-                          className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
-                         >
-                            Download PDF
-                         </Button>
-                         <Button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(window.location.href);
-                            toast.success("Link hasil analisis disalin!");
-                          }}
-                          variant="outline" 
-                          className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
-                         >
-                            Bagikan
-                         </Button>
-                      </div>
-                      <div className="hidden sm:block">
-                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Update Terakhir: {new Date(analysis?.createdAt || Date.now()).toLocaleDateString('id-ID')}</p>
-                      </div>
+                       <div className="flex gap-3">
+                          <Button 
+                           onClick={handleDownloadPDF}
+                           variant="outline" 
+                           className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
+                          >
+                             Download PDF
+                          </Button>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                className="h-11 px-6 rounded-xl border-gray-100 font-bold text-xs"
+                              >
+                                 Bagikan
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="rounded-2xl p-2 min-w-[200px] z-[100]">
+                              <DropdownMenuItem 
+                                onClick={() => handleShare('whatsapp')}
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs"
+                              >
+                                <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600">
+                                  <Share2 className="w-4 h-4" />
+                                </div>
+                                Berbagi ke WhatsApp
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleShare('instagram')}
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs"
+                              >
+                                <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600">
+                                  <Instagram className="w-4 h-4" />
+                                </div>
+                                Salin untuk Instagram
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleShare('copy')}
+                                className="rounded-xl py-3 cursor-pointer flex items-center gap-3 font-bold text-xs"
+                              >
+                                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600">
+                                  <FileText className="w-4 h-4" />
+                                </div>
+                                Salin Link
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                       </div>
+                       <div className="hidden sm:block">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Update Terakhir: {new Date(analysis?.createdAt || Date.now()).toLocaleDateString('id-ID')}</p>
+                       </div>
                    </div>
 
                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
