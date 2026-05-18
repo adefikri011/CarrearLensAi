@@ -223,12 +223,7 @@ export default function ProfilePage() {
     formData.avgScore
   ].filter(Boolean).length / 11) * 100)
 
-  if (isLoading) return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 flex flex-col items-center justify-center p-8 space-y-4 transition-colors duration-300">
-      <Loader2 className="w-10 h-10 animate-spin text-[#1D9E75]" />
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-zinc-600">Menyusun Identitas...</p>
-    </div>
-  )
+  if (isLoading) return <PageLoader isLoading={true} text="Menyusun Identitas..." />;
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] dark:bg-zinc-950 transition-colors duration-300">

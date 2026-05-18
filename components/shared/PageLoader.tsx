@@ -23,12 +23,12 @@ export default function PageLoader({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-zinc-950 transition-colors"
         >
           <div className="flex flex-col items-center gap-4">
              {/* Logo Placeholder */}
              <div className="mb-2">
-                <span className="text-xl font-black tracking-tight text-black italic">
+                <span className="text-xl font-black tracking-tight text-black dark:text-white italic">
                    CareerLens <span className="text-teal">AI</span>
                 </span>
              </div>
@@ -36,16 +36,16 @@ export default function PageLoader({
              <LoadingSpinner size="lg" />
              
              <div className="text-center space-y-1">
-               {text && (
-                 <p className="text-black text-lg font-bold">
-                   {text}
-                 </p>
-               )}
-               {subtitle && (
-                 <p className="text-gray-400 text-sm font-medium animate-pulse">
-                   {subtitle}
-                 </p>
-               )}
+                {text && (
+                  <p className="text-black dark:text-white text-lg font-bold">
+                    {text}
+                  </p>
+                )}
+                {subtitle && (
+                  <p className="text-gray-400 dark:text-zinc-500 text-sm font-medium animate-pulse">
+                    {subtitle}
+                  </p>
+                )}
              </div>
           </div>
         </motion.div>

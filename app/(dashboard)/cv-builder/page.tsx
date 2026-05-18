@@ -100,6 +100,7 @@ export default function CVBuilderPage() {
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
+    setIsProcessing(true);
     try {
       const result = await performCareerAnalysis();
       
@@ -116,6 +117,7 @@ export default function CVBuilderPage() {
       } else {
         toast.error(error.message || "Analisis gagal");
       }
+      setIsProcessing(false);
     } finally {
       setIsAnalyzing(false);
     }

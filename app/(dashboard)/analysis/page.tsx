@@ -272,14 +272,17 @@ export default function AnalysisPage() {
            </Link>
         </div>
       ) : isAnalyzing ? (
-        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all">
-           <div className="relative">
-              <LoadingSpinner size="lg" />
-              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-teal-dark animate-pulse" />
-           </div>
-           <div className="space-y-2">
-              <h3 className="text-2xl font-bold text-black dark:text-white italic transition-colors">Gemini AI sedang berpikir...</h3>
-              <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto transition-colors">Kami memadukan profil kamu dengan kecocokan industri saat ini untuk hasil yang paling akurat.</p>
+        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all relative overflow-hidden group">
+           <div className="absolute inset-0 bg-gradient-to-b from-teal/5 to-transparent opacity-0 dark:group-hover:opacity-100 transition-opacity" />
+           <div className="relative z-10 space-y-8 flex flex-col items-center">
+              <div className="relative">
+                 <LoadingSpinner size="lg" />
+                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-teal animate-pulse" />
+              </div>
+              <div className="space-y-2">
+                 <h3 className="text-2xl font-black text-black dark:text-white italic tracking-tight transition-colors">Gemini AI sedang berpikir...</h3>
+                 <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto leading-relaxed font-medium transition-colors">Kami memadukan profil kamu dengan kecocokan industri saat ini untuk hasil yang paling akurat.</p>
+              </div>
            </div>
         </div>
       ) : (

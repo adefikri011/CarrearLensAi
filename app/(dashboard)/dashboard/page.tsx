@@ -107,16 +107,18 @@ export default function DashboardPage() {
            <p className="text-gray-500 dark:text-zinc-500 text-xs md:text-sm font-medium transition-colors">Pantau progres kariermu di sini.</p>
         </div>
         
-        <div className="flex items-center justify-between md:justify-end gap-6 p-1.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm md:min-w-[240px] transition-all">
-           <div className="flex flex-col items-start md:items-end px-4 md:px-6">
-              <span className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-widest uppercase">READINESS SCORE</span>
-              <span className="text-xl md:text-2xl font-black text-black dark:text-white transition-colors">{readinessScore}%</span>
+        <div className="flex items-center justify-between md:justify-end gap-6 p-1.5 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 shadow-sm md:min-w-[260px] transition-all">
+           <div className="flex flex-col items-start md:items-end px-4 md:px-8">
+              <span className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-500 tracking-widest uppercase">READINESS SCORE</span>
+              <span className="text-xl md:text-3xl font-black text-black dark:text-white transition-colors">{readinessScore}%</span>
            </div>
            <div className={cn(
-             "w-10 h-10 md:w-12 md:h-12 mr-1 rounded-xl flex items-center justify-center text-white shadow-lg transition-all",
-             readinessScore > 75 ? "bg-teal shadow-teal/20" : "bg-black dark:bg-zinc-800 shadow-black/20 dark:shadow-white/5"
+             "w-12 h-12 md:w-16 md:h-16 mr-1.5 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl transition-all",
+             readinessScore > 75 
+               ? "bg-teal shadow-teal/20" 
+               : "bg-black dark:bg-white dark:text-black shadow-black/10 dark:shadow-white/5"
            )}>
-              <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />
+              <TrendingUp className="w-6 h-6 md:w-8 md:h-8" />
            </div>
         </div>
       </motion.section>
@@ -124,17 +126,22 @@ export default function DashboardPage() {
       {/* --- Stats Grid --- */}
       <motion.section variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {[
-          { icon: <FileText className="text-black dark:text-white" />, label: "Analisis CV", val: analysisCount.toString(), desc: "Dokumen", bg: "bg-gray-50 dark:bg-zinc-800/50" },
-          { icon: <Target className="text-teal" />, label: "Posisi", val: tasks.careerSelected ? "1" : "0", desc: "Target", bg: "bg-teal/10" },
-          { icon: <CheckCircle2 className="text-black dark:text-white" />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan", bg: "bg-gray-50 dark:bg-zinc-800/50" },
-          { icon: <Zap className="text-teal" />, label: "Skill Match", val: skillMatch > 0 ? `${skillMatch}%` : "-", desc: "Kecocokan", bg: "bg-teal/10" },
+          { icon: <FileText />, label: "Analisis CV", val: analysisCount.toString(), desc: "Dokumen", c: "zinc" },
+          { icon: <Target />, label: "Posisi", val: tasks.careerSelected ? "1" : "0", desc: "Target", c: "teal" },
+          { icon: <CheckCircle2 />, label: "Data Profil", val: `${profileCompleteness}%`, desc: "Kelengkapan", c: "zinc" },
+          { icon: <Zap />, label: "Skill Match", val: skillMatch > 0 ? `${skillMatch}%` : "-", desc: "Kecocokan", c: "teal" },
         ].map((stat, i) => (
-          <div key={i} className="bg-white/80 dark:bg-zinc-900/60 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-gray-100 dark:border-zinc-800/50 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 hover:border-teal/30 dark:hover:border-teal/40 transition-all group shadow-sm">
-            <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-500", stat.bg)}>
+          <div key={i} className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-3xl border border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 hover:border-teal/30 dark:hover:border-teal/40 transition-all group shadow-sm hover:shadow-xl hover:shadow-teal/5">
+            <div className={cn(
+              "w-11 h-11 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500",
+              stat.c === "teal" 
+                ? "bg-teal text-white shadow-lg shadow-teal/20" 
+                : "bg-gray-50 dark:bg-zinc-800 text-black dark:text-white"
+            )}>
               {React.cloneElement(stat.icon as React.ReactElement, { className: "w-5 h-5 md:w-6 md:h-6" })}
             </div>
             <div className="min-w-0">
-              <p className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-wider uppercase mb-0.5">{stat.label}</p>
+              <p className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-500 tracking-wider uppercase mb-0.5">{stat.label}</p>
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-2">
                  <span className="text-lg md:text-xl font-black text-black dark:text-white transition-colors">{stat.val}</span>
                  <span className="text-[8px] md:text-[9px] font-bold text-gray-300 dark:text-zinc-700 uppercase truncate transition-colors">{stat.desc}</span>
