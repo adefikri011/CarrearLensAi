@@ -24,11 +24,15 @@ export const Navbar = () => {
   ];
 
   const scrollToSection = (id: string) => {
+    if (window.location.pathname !== "/") {
+      window.location.href = `/${id}`;
+      return;
+    }
     const el = document.querySelector(id);
     if (el) {
       const offset = 80;
       const elementPosition = el.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      const offsetPosition = elementPosition + window.scrollY - offset;
 
       window.scrollTo({
         top: offsetPosition,

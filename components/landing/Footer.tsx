@@ -21,7 +21,7 @@ export const Footer = () => {
         { name: "Privacy Policy", href: "/privacy" },
         { name: "Terms of Use", href: "/terms" },
         { name: "Cookie Policy", href: "/cookies" },
-        { name: "Kontak", href: "#" }
+        { name: "Hubungi Kami", href: "mailto:support@careerlens.ai" }
       ]
     },
     {
