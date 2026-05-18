@@ -30,6 +30,7 @@ import {
   Check,
   ChevronsUpDown
 } from 'lucide-react'
+import PageLoader from '@/components/shared/PageLoader'
 import { cn } from '@/lib/utils'
 import UserAvatar from "@/components/shared/UserAvatar"
 import { Button } from '@/components/ui/button'

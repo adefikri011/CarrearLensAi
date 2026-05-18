@@ -300,7 +300,7 @@ export default function RoadmapPage() {
               className="space-y-12 md:space-y-20 relative"
             >
               {/* Vertical Connector Line (Desktop) */}
-              <div className="absolute left-[39px] top-10 bottom-10 w-0.5 bg-slate-100 dark:bg-zinc-900 hidden md:block transition-colors" />
+              <div className="absolute left-[39px] top-10 bottom-10 w-0.5 bg-gray-50 dark:bg-zinc-900 hidden md:block transition-colors" />
 
               {roadmapData
                 .filter(w => w.fase === activePhase)
@@ -314,10 +314,10 @@ export default function RoadmapPage() {
                         {/* Week Indicator */}
                         <div className="flex-shrink-0 flex md:block items-center gap-4">
                           <div className={cn(
-                            "w-20 h-20 rounded-[2rem] flex flex-col items-center justify-center border-4 transition-all duration-500",
+                            "w-20 h-20 rounded-[2.5rem] flex flex-col items-center justify-center border-4 transition-all duration-500",
                             isWeekDone 
-                              ? "bg-[#1D9E75] border-[#1D9E75] text-white shadow-xl shadow-[#1D9E75]/20" 
-                              : "bg-white dark:bg-zinc-950 border-slate-50 dark:border-zinc-800 text-black dark:text-white group-hover:border-black dark:group-hover:border-white shadow-sm"
+                              ? "bg-teal border-teal text-white shadow-2xl shadow-teal/20" 
+                              : "bg-white dark:bg-zinc-900 border-gray-50 dark:border-zinc-800 text-black dark:text-white group-hover:border-teal/50 shadow-sm"
                           )}>
                             <p className="text-[8px] font-black uppercase tracking-widest opacity-60">Week</p>
                             <p className="text-3xl font-black italic tracking-tighter transition-colors">{week.minggu}</p>
@@ -326,14 +326,14 @@ export default function RoadmapPage() {
 
                         {/* Week Content */}
                         <div className="flex-1 space-y-8">
-                           <div className="space-y-2">
+                           <div className="space-y-2 px-2">
                              <div className="flex items-center gap-3">
-                               <Badge className="bg-slate-100 dark:bg-zinc-900 text-slate-500 dark:text-zinc-500 border-none px-3 py-0.5 rounded-full font-black text-[8px] tracking-[0.2em] uppercase transition-colors">
+                               <Badge className="bg-gray-100 dark:bg-zinc-900 text-gray-500 dark:text-zinc-500 border-none px-3 py-0.5 rounded-full font-black text-[8px] tracking-[0.2em] uppercase transition-colors">
                                  {week.estimasiJam} Jam Belajar
                                </Badge>
-                               {isWeekDone && <p className="text-[8px] font-black text-[#1D9E75] uppercase tracking-widest flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Selesai</p>}
+                               {isWeekDone && <p className="text-[8px] font-black text-teal uppercase tracking-widest flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Selesai</p>}
                              </div>
-                             <h3 className="text-2xl md:text-3xl font-black text-black dark:text-white tracking-tight uppercase italic group-hover:text-[#1D9E75] dark:group-hover:text-[#1D9E75] transition-colors leading-tight">
+                             <h3 className="text-2xl md:text-3xl font-black text-black dark:text-white tracking-tight uppercase italic group-hover:text-teal dark:group-hover:text-teal transition-colors leading-tight">
                                {week.judul}
                              </h3>
                            </div>
@@ -346,21 +346,24 @@ export default function RoadmapPage() {
                                    key={task.id}
                                    onClick={() => toggleTask(task.id, week.minggu)}
                                    className={cn(
-                                     "flex items-start gap-4 p-5 rounded-3xl border transition-all text-left relative overflow-hidden active:scale-[0.98] group/task transition-all",
+                                     "flex items-start gap-4 p-5 rounded-3xl border transition-all text-left relative overflow-hidden active:scale-[0.98] group/task",
                                      isTaskDone 
-                                       ? "bg-slate-50 dark:bg-zinc-900 border-[#1D9E75]/20 text-[#1D9E75]/80" 
-                                       : "bg-white dark:bg-zinc-900 border-slate-100 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white hover:shadow-xl hover:shadow-black/5"
+                                       ? "bg-gray-50/50 dark:bg-teal/5 border-teal/10 text-teal/80" 
+                                       : "bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white shadow-sm hover:shadow-teal/5"
                                    )}
                                  >
                                    <div className={cn(
                                      "w-6 h-6 rounded-lg border-2 mt-0.5 flex items-center justify-center shrink-0 transition-all",
                                      isTaskDone 
-                                       ? "bg-[#1D9E75] border-[#1D9E75] text-white" 
-                                       : "border-slate-200 dark:border-zinc-800 group-hover/task:border-black dark:group-hover/task:border-white"
+                                       ? "bg-teal border-teal text-white" 
+                                       : "border-gray-200 dark:border-zinc-800 group-hover/task:border-black dark:group-hover/task:border-white"
                                    )}>
                                      {isTaskDone && <Check className="w-4 h-4 stroke-[4px]" />}
                                    </div>
-                                   <span className="text-[11px] font-bold uppercase leading-tight tracking-tight transition-colors">
+                                   <span className={cn(
+                                      "text-[11px] font-black uppercase leading-tight tracking-tight transition-colors",
+                                      isTaskDone && "line-through opacity-70"
+                                   )}>
                                      {task.text}
                                    </span>
                                  </button>

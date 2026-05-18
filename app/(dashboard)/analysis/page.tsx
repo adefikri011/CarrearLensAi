@@ -257,31 +257,32 @@ export default function AnalysisPage() {
       </div>
 
       {!analysis && !isAnalyzing ? (
-        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-20 text-center flex flex-col items-center space-y-6 transition-all">
-           <div className="w-20 h-20 rounded-[32px] bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-gray-300 dark:text-zinc-700">
+        <div className="bg-white dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 rounded-[40px] p-20 text-center flex flex-col items-center space-y-6 transition-all shadow-sm">
+           <div className="w-20 h-20 rounded-[32px] bg-gray-50 dark:bg-zinc-800 flex items-center justify-center text-gray-300 dark:text-zinc-600">
               <AlertCircle className="w-10 h-10" />
            </div>
            <div>
-              <h3 className="text-xl font-bold text-black dark:text-white mb-2 transition-colors">Belum Ada Analisis</h3>
-              <p className="text-gray-500 dark:text-zinc-500 max-w-xs mx-auto transition-colors">Upload CV kamu terlebih dahulu untuk mendapatkan analisis jalur karier yang mendalam.</p>
+              <h3 className="text-xl font-black text-black dark:text-white mb-2 italic transition-colors">Belum Ada Analisis</h3>
+              <p className="text-gray-500 dark:text-zinc-500 max-w-xs mx-auto font-medium transition-colors">Upload CV kamu terlebih dahulu untuk mendapatkan analisis jalur karier yang mendalam.</p>
            </div>
            <Link href="/cv-builder">
-              <Button className="bg-teal hover:bg-teal-dark rounded-full px-8 h-12 font-bold text-white uppercase text-[10px] tracking-widest">
+              <Button className="bg-teal hover:bg-teal-dark rounded-full px-12 h-14 font-black text-white uppercase text-[11px] tracking-widest shadow-xl shadow-teal/20 transition-all hover:scale-105 active:scale-95">
                  UPLOAD CV SEKARANG
               </Button>
            </Link>
         </div>
       ) : isAnalyzing ? (
-        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all relative overflow-hidden group">
-           <div className="absolute inset-0 bg-gradient-to-b from-teal/5 to-transparent opacity-0 dark:group-hover:opacity-100 transition-opacity" />
+        <div className="bg-white dark:bg-zinc-900/40 border border-gray-100 dark:border-zinc-800/40 rounded-[40px] p-20 text-center flex flex-col items-center space-y-8 transition-all relative overflow-hidden group shadow-2xl shadow-teal/5">
+           <div className="absolute inset-0 bg-gradient-to-b from-teal/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
            <div className="relative z-10 space-y-8 flex flex-col items-center">
               <div className="relative">
-                 <LoadingSpinner size="lg" />
-                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-teal animate-pulse" />
+                 <div className="absolute inset-0 bg-teal/20 blur-2xl rounded-full" />
+                 <LoadingSpinner size="lg" className="relative z-10" />
+                 <Sparkles className="absolute -top-3 -right-3 w-8 h-8 text-teal animate-pulse" />
               </div>
-              <div className="space-y-2">
-                 <h3 className="text-2xl font-black text-black dark:text-white italic tracking-tight transition-colors">Gemini AI sedang berpikir...</h3>
-                 <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto leading-relaxed font-medium transition-colors">Kami memadukan profil kamu dengan kecocokan industri saat ini untuk hasil yang paling akurat.</p>
+              <div className="space-y-3">
+                 <h3 className="text-3xl font-black text-black dark:text-white italic tracking-tighter uppercase transition-colors">Gemini AI sedang berpikir...</h3>
+                 <p className="text-gray-400 dark:text-zinc-500 max-w-md mx-auto leading-relaxed font-bold transition-colors">Menghubungkan profil unikmu dengan peluang industri terbaru. Mohon tunggu sejenak.</p>
               </div>
            </div>
         </div>
@@ -447,24 +448,25 @@ export default function AnalysisPage() {
                       </div>
 
                       {/* Skill Radar Chart */}
-                      <div className="bg-white dark:bg-zinc-900 p-10 rounded-[40px] border border-gray-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center overflow-hidden transition-all">
-                         <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-widest uppercase mb-10 text-center">SKILL LANDSCAPE</h4>
-                         <div className="w-full h-64">
+                      <div className="bg-white dark:bg-zinc-900/60 backdrop-blur-sm p-10 rounded-[40px] border border-gray-100 dark:border-zinc-800/50 shadow-sm flex flex-col items-center justify-center overflow-hidden transition-all group hover:border-teal/20">
+                         <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-500 tracking-widest uppercase mb-10 text-center group-hover:text-teal transition-colors">SKILL LANDSCAPE</h4>
+                         <div className="w-full h-72">
                             <ResponsiveContainer width="100%" height="100%">
                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                                  <PolarGrid stroke={process.env.NEXT_PUBLIC_THEME === 'dark' ? "#27272a" : "#F3F4F6"} />
-                                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 800 }} />
+                                  <PolarGrid stroke="currentColor" className="text-gray-100 dark:text-zinc-800" />
+                                  <PolarAngleAxis dataKey="subject" tick={{ fill: 'currentColor', fontSize: 10, fontWeight: 900, className: 'text-gray-400 dark:text-zinc-600' }} />
                                   <Radar
                                      name="Proyeksi Skill"
                                      dataKey="A"
                                      stroke="#1D9E75"
                                      fill="#1D9E75"
-                                     fillOpacity={0.15}
+                                     fillOpacity={0.2}
+                                     strokeWidth={3}
                                   />
                                </RadarChart>
                             </ResponsiveContainer>
                          </div>
-                         <div className="mt-10 pt-6 border-t border-gray-50 dark:border-zinc-800 w-full text-center transition-all">
+                         <div className="mt-10 pt-6 border-t border-gray-50 dark:border-zinc-800/50 w-full text-center transition-all">
                             <p className="text-[11px] text-gray-400 dark:text-zinc-500 leading-relaxed font-bold transition-colors">
                                Proyeksi kekuatan skill berdasarkan analisis AI dari CV dan profil kamu.
                             </p>
