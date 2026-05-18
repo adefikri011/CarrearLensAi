@@ -48,15 +48,6 @@ export const Footer = () => {
         { name: "Hubungi Kami", href: "mailto:support@careerlens.ai" }
       ]
     },
-    {
-      title: "Komunitas",
-      links: [
-        { name: "FAQ", href: "#faq" },
-        { name: "Cara Kerja", href: "#cara-kerja" },
-        { name: "Blog", href: "#" },
-        { name: "Karir", href: "#" }
-      ]
-    }
   ];
 
   return (
