@@ -9,19 +9,19 @@ export const Footer = () => {
     {
       title: "Produk",
       links: [
-        { name: "Fitur", href: "#fitur" },
-        { name: "Analisis CV", href: "#" },
-        { name: "Roadmap Karier", href: "#" },
+        { name: "Analisis CV", href: "/cv-builder" },
+        { name: "Roadmap Karir", href: "/roadmap" },
+        { name: "Portfolio", href: "/dashboard" },
         { name: "Update", href: "#" }
       ]
     },
     {
-      title: "Perusahaan",
+      title: "Legal",
       links: [
-        { name: "Tentang", href: "#" },
-        { name: "Kontak", href: "#" },
-        { name: "Blog", href: "#" },
-        { name: "Privacy Policy", href: "#" }
+        { name: "Privacy Policy", href: "/privacy" },
+        { name: "Terms of Use", href: "/terms" },
+        { name: "Cookie Policy", href: "/cookies" },
+        { name: "Kontak", href: "#" }
       ]
     },
     {
