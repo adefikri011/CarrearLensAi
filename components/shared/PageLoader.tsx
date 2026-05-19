@@ -103,7 +103,7 @@ export default function PageLoader({
           >
              <div className="h-[1px] w-12 bg-gray-100 dark:bg-zinc-800" />
              <div className="text-[10px] font-black text-gray-400 dark:text-zinc-700 tracking-[0.3em] uppercase">
-                VibeCoding 2026 Edition
+                JuaraVibeCoding 2026 Edition
              </div>
           </motion.div>
         </motion.div>

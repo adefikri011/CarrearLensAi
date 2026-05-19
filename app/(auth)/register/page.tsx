@@ -14,9 +14,11 @@ import {
   CheckCircle2, 
   ChevronRight,
   Eye,
-  EyeOff
+  EyeOff,
+  ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   Form,
   FormControl,
@@ -117,6 +119,8 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -144,6 +148,15 @@ export default function RegisterPage() {
   }, [password]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!captchaToken) {
+      toast({
+        title: "Verifikasi Diperlukan",
+        description: "Silakan selesaikan CAPTCHA terlebih dahulu.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch("/api/auth/register", {
@@ -153,6 +166,7 @@ export default function RegisterPage() {
           name: values.name,
           email: values.email,
           password: values.password,
+          captchaToken,
         }),
       });
 
@@ -169,6 +183,9 @@ export default function RegisterPage() {
       
       router.push("/login");
     } catch (error) {
+      // Reset recaptcha on failure
+      recaptchaRef.current?.reset();
+      setCaptchaToken(null);
       toast({
         title: "Gagal Mendaftar",
         description: error instanceof Error ? error.message : "Terjadi kesalahan sistem.",
@@ -178,6 +195,29 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   }
+
+  const handleGoogleSignup = async () => {
+    if (!captchaToken) {
+      toast({
+        title: "Verifikasi Diperlukan",
+        description: "Silakan selesaikan CAPTCHA terlebih dahulu sebelum daftar dengan Google.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (error) {
+      setIsLoading(false);
+      toast({
+        title: "Terjadi Kesalahan",
+        description: "Gagal daftar dengan Google.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="h-screen flex overflow-hidden">
@@ -294,6 +334,16 @@ export default function RegisterPage() {
                   </FormItem>
                 )}
               />
+              <div className="flex justify-center pt-1 pb-1">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                  onChange={(token) => setCaptchaToken(token)}
+                  theme="light"
+                  className="dark:invert dark:brightness-[0.8] scale-[0.85] transition-all origin-center"
+                />
+              </div>
+
               <div className="pt-2">
                 <Button 
                   type="submit" 
@@ -317,7 +367,8 @@ export default function RegisterPage() {
 
           <Button 
             variant="outline" 
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={handleGoogleSignup}
+            disabled={isLoading}
             className="w-full h-11 rounded-xl border-gray-200 dark:border-zinc-800 font-bold flex gap-3 hover:bg-gray-50 dark:hover:bg-zinc-900 dark:text-zinc-300 transition-all text-[13px] mb-8"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">

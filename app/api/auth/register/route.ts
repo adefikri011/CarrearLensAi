@@ -6,14 +6,25 @@ import bcrypt from "bcryptjs";
  * POST /api/auth/register
  * Handles new user registration.
  */
+import { verifyRecaptcha } from "@/lib/recaptcha";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, password } = body;
+    const { name, email, password, captchaToken } = body;
 
     if (!name || !email || !password) {
       return NextResponse.json(
         { success: false, error: "Semua data harus diisi" },
+        { status: 400 }
+      );
+    }
+
+    // Verify CAPTCHA
+    const isCaptchaValid = await verifyRecaptcha(captchaToken);
+    if (!isCaptchaValid) {
+      return NextResponse.json(
+        { success: false, error: "Verifikasi CAPTCHA gagal. Silakan coba lagi." },
         { status: 400 }
       );
     }

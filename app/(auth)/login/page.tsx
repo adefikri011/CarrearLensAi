@@ -14,9 +14,11 @@ import {
   CheckCircle2, 
   ChevronRight,
   Eye,
-  EyeOff
+  EyeOff,
+  ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   Form,
   FormControl,
@@ -111,6 +113,8 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -121,20 +125,35 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!captchaToken) {
+      toast({
+        title: "Verifikasi Diperlukan",
+        description: "Silakan selesaikan CAPTCHA terlebih dahulu.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
+        captchaToken,
         redirect: false,
       });
 
       if (result?.error) {
         toast({
           title: "Gagal Masuk",
-          description: "Email atau password salah. Silakan coba lagi.",
+          description: result.error === "CAPTCHA verification failed" 
+            ? "Verifikasi CAPTCHA gagal. Silakan coba lagi."
+            : "Email atau password salah. Silakan coba lagi.",
           variant: "destructive",
         });
+        // Reset recaptcha on failure
+        recaptchaRef.current?.reset();
+        setCaptchaToken(null);
       } else {
         router.push("/dashboard");
         router.refresh();
@@ -149,6 +168,29 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
+
+  const handleGoogleLogin = async () => {
+    if (!captchaToken) {
+      toast({
+        title: "Verifikasi Diperlukan",
+        description: "Silakan selesaikan CAPTCHA terlebih dahulu sebelum masuk dengan Google.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (error) {
+      setIsLoading(false);
+      toast({
+        title: "Terjadi Kesalahan",
+        description: "Gagal masuk dengan Google.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="h-screen flex overflow-hidden">
@@ -227,6 +269,16 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+              <div className="flex justify-center pt-2">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                  onChange={(token) => setCaptchaToken(token)}
+                  theme="light"
+                  className="dark:invert dark:brightness-[0.8] transition-all"
+                />
+              </div>
+
               <Button 
                 type="submit" 
                 className="w-full h-12 bg-black dark:bg-white hover:bg-gray-900 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-bold text-base shadow-lg shadow-black/10 transition-all active:scale-[0.98] mt-2"
@@ -248,7 +300,8 @@ export default function LoginPage() {
 
           <Button 
             variant="outline" 
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
             className="w-full h-12 rounded-xl border-gray-200 dark:border-zinc-800 font-bold flex gap-3 hover:bg-gray-50 dark:hover:bg-zinc-900 dark:text-white transition-all text-sm mb-8"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
