@@ -279,7 +279,7 @@ export default function InterviewPage() {
                       <MessageSquare size={20} />
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold leading-tight dark:text-white italic">
-                      "{state.currentQuestion}"
+                      &ldquo;{state.currentQuestion}&rdquo;
                     </h2>
                   </div>
                   <Button 

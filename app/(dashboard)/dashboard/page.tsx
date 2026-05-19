@@ -277,11 +277,12 @@ export default function DashboardPage() {
            )}
 
            {/* Quick Actions Grid */}
-           <motion.div variants={fadeUp} className="grid grid-cols-3 gap-3 md:gap-4">
+           <motion.div variants={fadeUp} className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               {[
                 { t: "Analisis", icon: <FileText />, href: "/cv-builder", c: "teal" },
                 { t: "Hasil", icon: <Sparkles />, href: "/analysis", c: "black" },
-                { t: "Profil", icon: <CheckCircle2 />, href: "/profile", c: "teal" },
+                { t: "Interview", icon: <Zap />, href: "/interview", c: "teal" },
+                { t: "Profil", icon: <CheckCircle2 />, href: "/profile", c: "black" },
               ].map((act, i) => (
                 <Link key={i} href={act.href}>
                   <div className="bg-white dark:bg-zinc-900 p-4 sm:p-6 rounded-2xl border border-gray-100 dark:border-zinc-800 text-center hover:border-teal/30 dark:hover:border-teal/50 hover:shadow-xl hover:shadow-teal/5 transition-all group shadow-sm flex flex-col items-center justify-center gap-2 md:gap-3">

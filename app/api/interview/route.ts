@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY || "");
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 /**
  * System prompt for HR Interviewer persona
@@ -34,30 +34,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Role is required" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      generationConfig: {
+    const modelName = "gemini-1.5-flash";
+    const response = await genAI.models.generateContent({
+      model: modelName,
+      contents: [
+        { role: "user", parts: [{ text: SYSTEM_PROMPT + `\nPosisi pekerjaan yang dilamar: ${role}` }] },
+        ...history.map((h: any) => ({
+          role: h.role === "assistant" ? "model" : "user",
+          parts: h.parts
+        })),
+        { role: "user", parts: [{ text: currentAnswer || "Mulai wawancara dengan menyapa dan memberikan pertanyaan pertama yang umum namun berbobot." }] }
+      ],
+      config: {
         responseMimeType: "application/json",
       }
     });
 
-    const chat = model.startChat({
-      history: [
-        { role: "user", parts: [{ text: SYSTEM_PROMPT + `\nPosisi pekerjaan yang dilamar: ${role}` }] },
-        ...history,
-      ],
-    });
-
-    const prompt = currentAnswer 
-      ? `User menjawab: "${currentAnswer}". Analisis jawaban ini, berikan feedback & skor, lalu berikan pertanyaan berikutnya.`
-      : "Mulai wawancara dengan menyapa dan memberikan pertanyaan pertama yang umum namun berbobot.";
-
-    const result = await chat.sendMessage(prompt);
-    const response = JSON.parse(result.response.text());
+    const responseText = response.text;
+    const responseData = JSON.parse(responseText || "{}");
 
     return NextResponse.json({
       success: true,
-      data: response,
+      data: responseData,
     });
   } catch (error) {
     console.error("Interview API Error:", error);

@@ -8,6 +8,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
 import { 
   BrainCircuit, 
+  Mic,
   LayoutDashboard, 
   User, 
   FileText, 
@@ -48,9 +49,9 @@ function BottomNav() {
   const items = [
     { icon: LayoutDashboard, label: "Beranda", href: "/dashboard" },
     { icon: FileText, label: "Analisis", href: "/cv-builder" },
+    { icon: Mic, label: "Interview", href: "/interview" },
     { icon: MapIcon, label: "Roadmap", href: "/roadmap" },
     { icon: User, label: "Profil", href: "/profile" },
-    { icon: SettingsIcon, label: "Setelan", href: "/settings" },
   ];
 
   return (
