@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { 
   BrainCircuit, 
   Loader2, 

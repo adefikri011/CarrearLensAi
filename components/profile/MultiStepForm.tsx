@@ -25,7 +25,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Loader2, ArrowRight, ArrowLeft, CheckCircle2, User, GraduationCap, Briefcase } from "lucide-react";
 
 /**

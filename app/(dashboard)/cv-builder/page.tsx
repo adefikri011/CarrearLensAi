@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   motion, AnimatePresence 
-} from "framer-motion";
+} from "motion/react";
 import { 
   Sparkles, CheckCircle2, History, FileText, 
   ArrowRight, RefreshCcw, Trash2, AlertCircle, BrainCircuit
@@ -28,7 +28,7 @@ import {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }
 };
 
 export default function CVBuilderPage() {

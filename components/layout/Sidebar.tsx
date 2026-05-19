@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { useSession, signOut } from "next-auth/react";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -162,7 +162,7 @@ export default function Sidebar({
       animate={{ 
         width: isSidebarOpen ? 260 : 72
       }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
       className={cn(
         "fixed left-0 top-0 h-screen z-50 bg-white hidden md:flex flex-col"
       )}

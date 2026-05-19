@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 
 export const CTASection = () => {
@@ -13,7 +13,7 @@ export const CTASection = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative z-10 w-full"
         >
           <span className="text-[10px] lg:text-[12px] font-bold tracking-[4px] lg:tracking-[6px] uppercase text-[#1D9E75] mb-6 lg:mb-8 block">MULAI SEKARANG</span>

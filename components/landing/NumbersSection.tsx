@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate } from "motion/react";
 
 const Counter = ({ from, to, duration = 2, suffix = "" }: { from: number, to: number, duration?: number, suffix?: string }) => {
   const [count, setCount] = useState(from);

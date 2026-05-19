@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionValueEvent } from "motion/react";
 import { Check, Target, Layout, BrainCircuit, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -159,8 +159,7 @@ export const HeroSection = () => {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
-    layoutEffect: false
+    offset: ["start start", "end end"]
   });
 
   const smoothProgress = useSpring(scrollYProgress, { 

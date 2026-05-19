@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import UserAvatar from "@/components/shared/UserAvatar";
+import PageLoader from "@/components/shared/PageLoader";
 
 interface BottomNavItemProps {
   href: string;
@@ -127,19 +128,7 @@ function DashboardLayoutContent({
   }, [setSidebarOpen]);
 
   if (status === "loading") {
-    return (
-      <div className="flex h-screen items-center justify-center bg-white dark:bg-zinc-950 transition-colors duration-300">
-        <div className="flex flex-col items-center gap-6">
-          <div className="relative">
-             <div className="w-16 h-16 rounded-2xl bg-[#1D9E75]/10 flex items-center justify-center">
-               <BrainCircuit className="w-8 h-8 text-[#1D9E75] animate-pulse" />
-             </div>
-             <div className="absolute -inset-2 border-2 border-[#1D9E75]/20 border-t-[#1D9E75] rounded-[20px] animate-spin" />
-          </div>
-          <p className="text-[13px] font-black text-[#1D9E75] tracking-[0.2em] uppercase">Memuat CareerLens AI...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader isLoading={true} text="Mempersiapkan Dashboard..." subtitle="CareerLens AI Indonesian Edition" />;
   }
 
   if (!session) return null;

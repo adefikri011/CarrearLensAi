@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { BrainCircuit, Upload, Target, Check, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -105,8 +105,7 @@ export const HowItWorksSection = () => {
 
   const { scrollYProgress } = useScroll({ 
     target: containerRef, 
-    offset: ["start start", "end end"],
-    layoutEffect: false // Fix hydration warning
+    offset: ["start start", "end end"]
   });
   const smoothProgress = useSpring(scrollYProgress, { 
     stiffness: 100, 
