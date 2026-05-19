@@ -13,6 +13,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       name: "Credentials",
@@ -25,8 +26,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
 
         // Verify CAPTCHA
-        const isCaptchaValid = await verifyRecaptcha(credentials.captchaToken as string);
+        const captchaToken = credentials.captchaToken as string;
+        const isCaptchaValid = await verifyRecaptcha(captchaToken);
+        
         if (!isCaptchaValid) {
+          console.error("Auth Error: reCAPTCHA verification failed for", credentials.email);
           throw new Error("CAPTCHA verification failed");
         }
 
@@ -34,14 +38,25 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           where: { email: credentials.email as string },
         });
 
-        if (!user || !user.password) return null;
+        if (!user) {
+          console.error("Auth Error: User not found", credentials.email);
+          return null;
+        }
+
+        if (!user.password) {
+          console.error("Auth Error: User has no password (likely OAuth only)", credentials.email);
+          return null;
+        }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
 
-        if (!isPasswordValid) return null;
+        if (!isPasswordValid) {
+          console.error("Auth Error: Invalid password for", credentials.email);
+          return null;
+        }
 
         return {
           id: user.id,
