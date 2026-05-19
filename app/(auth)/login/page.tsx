@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const formSchema = z.object({
   email: z.string().email("Format email tidak valid"),
@@ -109,12 +111,39 @@ const VisualPanel = ({ headline, subtext }: { headline: string, subtext: string 
 };
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-zinc-950">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 animate-spin text-[#1D9E75]" />
+          <p className="text-sm font-medium text-gray-500 animate-pulse">Menyiapkan halaman masuk...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+
+  React.useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "OAuthAccountNotLinked") {
+      toast({
+        title: "Akun Sudah Terdaftar",
+        description: "Email ini sudah terdaftar dengan metode lain (Email/Password). Silakan masuk menggunakan password atau hubungi dukungan.",
+        variant: "destructive",
+      });
+    }
+  }, [searchParams, toast]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -144,11 +173,21 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
+        let errorMessage = "Email atau password salah. Silakan coba lagi.";
+        
+        if (result.error === "CAPTCHA_FAILED") {
+          errorMessage = "Verifikasi CAPTCHA gagal. Silakan coba lagi.";
+        } else if (result.error === "USER_NOT_FOUND") {
+          errorMessage = "Email tidak terdaftar. Silakan daftar terlebih dahulu.";
+        } else if (result.error === "OAUTH_ONLY_ACCOUNT") {
+          errorMessage = "Akun ini dibuat melalui Google. Silakan masuk menggunakan Google.";
+        } else if (result.error === "INVALID_PASSWORD") {
+          errorMessage = "Password salah. Silakan coba lagi.";
+        }
+
         toast({
           title: "Gagal Masuk",
-          description: result.error === "CAPTCHA verification failed" 
-            ? "Verifikasi CAPTCHA gagal. Silakan coba lagi."
-            : "Email atau password salah. Silakan coba lagi.",
+          description: errorMessage,
           variant: "destructive",
         });
         // Reset recaptcha on failure

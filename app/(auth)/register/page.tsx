@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Suspense } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -114,6 +115,21 @@ const VisualPanel = ({ headline, subtext }: { headline: string, subtext: string 
 };
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-zinc-950">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 animate-spin text-[#1D9E75]" />
+          <p className="text-sm font-medium text-gray-500 animate-pulse">Menyiapkan halaman pendaftaran...</p>
+        </div>
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);

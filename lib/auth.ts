@@ -23,7 +23,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         captchaToken: { label: "Captcha Token", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) {
+          console.error("Auth Error: Missing credentials");
+          return null;
+        }
 
         // Verify CAPTCHA
         const captchaToken = credentials.captchaToken as string;
@@ -31,7 +34,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         
         if (!isCaptchaValid) {
           console.error("Auth Error: reCAPTCHA verification failed for", credentials.email);
-          throw new Error("CAPTCHA verification failed");
+          throw new Error("CAPTCHA_FAILED");
         }
 
         const user = await prisma.user.findUnique({
@@ -39,13 +42,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         });
 
         if (!user) {
-          console.error("Auth Error: User not found", credentials.email);
-          return null;
+          console.error("Auth Error: User not found -", credentials.email);
+          throw new Error("USER_NOT_FOUND");
         }
 
         if (!user.password) {
-          console.error("Auth Error: User has no password (likely OAuth only)", credentials.email);
-          return null;
+          console.error("Auth Error: User has no password (OAuth only) -", credentials.email);
+          throw new Error("OAUTH_ONLY_ACCOUNT");
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -54,8 +57,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         );
 
         if (!isPasswordValid) {
-          console.error("Auth Error: Invalid password for", credentials.email);
-          return null;
+          console.error("Auth Error: Invalid password -", credentials.email);
+          throw new Error("INVALID_PASSWORD");
         }
 
         return {
