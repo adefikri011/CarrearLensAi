@@ -11,13 +11,13 @@ import { GoogleGenAI } from "@google/genai";
 let aiInstance: GoogleGenAI | null = null;
 
 export const getAI = () => {
-  if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
-    
-    if (!apiKey) {
-      console.error("GEMINI_API_KEY is missing in environment variables.");
-    }
-    
+  const apiKey = process.env.GEMINI_API_KEY || "";
+  
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY is missing in environment variables.");
+  }
+
+  if (!aiInstance && apiKey) {
     aiInstance = new GoogleGenAI({ 
       apiKey,
       httpOptions: {
@@ -27,7 +27,10 @@ export const getAI = () => {
       }
     });
   }
-  return aiInstance;
+  
+  // Return instance if we have one, otherwise return a temporary one if key is missing 
+  // (though it will fail later, this avoids returning null if the app expects an object)
+  return aiInstance || new GoogleGenAI({ apiKey: "" });
 };
 
 // Recommended model for production tasks

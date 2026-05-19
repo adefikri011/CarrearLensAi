@@ -89,6 +89,26 @@
     background-size: 24px 24px;
   }
 
+  .glass {
+    @apply bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border border-white/20 dark:border-white/5;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal to-purple;
+  }
+
+  .shadow-soft {
+    shadow-color: rgba(0, 0, 0, 0.03);
+    shadow-offset: 0px 4px;
+    shadow-blur: 24px;
+    shadow-opacity: 1;
+  }
+
+  .transition-modern {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 400ms;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

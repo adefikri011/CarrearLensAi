@@ -97,96 +97,87 @@ export default function DashboardPage() {
       className="space-y-12"
     >
       {/* --- Greeting Section --- */}
-      <motion.section variants={fadeUp} className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
-        <div className="space-y-1">
-           <div className="flex items-center gap-2 text-teal font-black text-[10px] md:text-[12px] uppercase tracking-[0.2em]">
-              <Sparkles className="w-3.5 h-3.5" />
+      <motion.section variants={fadeUp} className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <div className="space-y-4">
+           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass border-teal/10 text-teal font-black text-[10px] md:text-[12px] uppercase tracking-[0.2em]">
+              <div className="size-2 rounded-full bg-teal animate-pulse" />
               Halo, {userName}!
            </div>
-           <h1 className="text-3xl md:text-4xl font-black text-black dark:text-white tracking-tight uppercase italic leading-none transition-colors">Dashboard</h1>
-           <p className="text-gray-500 dark:text-zinc-500 text-xs md:text-sm font-medium transition-colors">Pantau progres kariermu di sini.</p>
+           <h1 className="text-5xl md:text-7xl font-black text-black dark:text-white tracking-tighter leading-none transition-colors">Career <span className="text-teal italic">Hub.</span></h1>
+           <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-lg font-medium transition-colors max-w-lg leading-relaxed">Selamat datang kembali! Mari kita buat progres nyata untuk masa depanmu hari ini.</p>
         </div>
         
-        <div className="flex items-center justify-between md:justify-end gap-6 p-1.5 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 shadow-sm md:min-w-[260px] transition-all">
-           <div className="flex flex-col items-start md:items-end px-4 md:px-8">
-              <span className="text-[8px] md:text-[10px] font-black text-gray-400 dark:text-zinc-500 tracking-widest uppercase">READINESS SCORE</span>
-              <span className="text-xl md:text-3xl font-black text-black dark:text-white transition-colors">{readinessScore}%</span>
+        <div className="flex items-center justify-between gap-10 p-6 glass rounded-[3rem] border border-white/20 dark:border-white/5 shadow-2xl md:min-w-[320px] group hover:scale-[1.02] transition-all">
+           <div className="flex flex-col items-start px-2">
+              <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 tracking-[0.3em] uppercase mb-2">Readiness Score</span>
+              <span className="text-4xl md:text-6xl font-black text-black dark:text-white transition-colors tabular-nums">{readinessScore}%</span>
            </div>
            <div className={cn(
-             "w-12 h-12 md:w-16 md:h-16 mr-1.5 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl transition-all",
+             "size-20 md:size-24 rounded-[2rem] flex items-center justify-center text-white shadow-2xl transition-all group-hover:rotate-6",
              readinessScore > 75 
-               ? "bg-teal shadow-teal/20" 
-               : "bg-black dark:bg-white dark:text-black shadow-black/10 dark:shadow-white/5"
+               ? "bg-teal shadow-teal/30" 
+               : "bg-zinc-900 shadow-zinc-900/30 dark:bg-white dark:text-zinc-900"
            )}>
-              <TrendingUp className="w-6 h-6 md:w-8 md:h-8" />
+              <TrendingUp className="size-10 md:size-12" />
            </div>
         </div>
       </motion.section>
 
       {/* --- Stats Grid --- */}
       <motion.section variants={fadeUp}>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { 
               icon: <FileText />, 
               label: "Analisis CV", 
               val: analysisCount.toString(), 
               desc: "Dokumen", 
-              color: "text-black dark:text-white",
-              bg: "bg-gray-50 dark:bg-zinc-800",
-              border: "border-gray-100 dark:border-zinc-800"
+              color: "text-zinc-900 dark:text-white",
+              bg: "bg-zinc-100 dark:bg-zinc-800/50",
             },
             { 
               icon: <Target />, 
-              label: "Posisi", 
+              label: "Target Posisi", 
               val: tasks.careerSelected ? "1" : "0", 
-              desc: "Target", 
+              desc: "Terpilih", 
               color: "text-teal",
-              bg: "bg-teal/5 dark:bg-teal/10",
-              border: "border-teal/10 dark:border-teal/20"
+              bg: "bg-teal/10",
             },
             { 
               icon: <CheckCircle2 />, 
               label: "Data Profil", 
               val: `${profileCompleteness}%`, 
-              desc: "Kelengkapan", 
-              color: "text-black dark:text-white",
-              bg: "bg-gray-50 dark:bg-zinc-800",
-              border: "border-gray-100 dark:border-zinc-800"
+              desc: "Selesai", 
+              color: "text-zinc-900 dark:text-white",
+              bg: "bg-zinc-100 dark:bg-zinc-800/50",
             },
             { 
               icon: <Zap />, 
               label: "Skill Match", 
               val: skillMatch > 0 ? `${skillMatch}%` : "-", 
-              desc: "Kecocokan", 
+              desc: "Akurasi", 
               color: "text-teal",
-              bg: "bg-teal/5 dark:bg-teal/10",
-              border: "border-teal/10 dark:border-teal/20"
+              bg: "bg-teal/10",
             },
           ].map((stat, i) => (
             <motion.div 
               key={i} 
-              whileHover={{ y: -4 }}
-              className={cn(
-                "p-5 md:p-7 rounded-[32px] border transition-all duration-300 group relative overflow-hidden",
-                "bg-white dark:bg-zinc-950",
-                stat.border,
-                "hover:shadow-2xl hover:shadow-teal/5"
-              )}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="p-8 rounded-[2.5rem] glass border-white/20 dark:border-white/5 transition-all duration-300 group shadow-xl hover:shadow-teal/5"
             >
-              <div className="relative z-10 flex flex-col gap-4">
+              <div className="flex flex-col gap-6">
                 <div className={cn(
-                  "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all duration-500",
+                  "size-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 shadow-inner",
                   stat.bg,
                   stat.color
                 )}>
-                  {React.cloneElement(stat.icon as React.ReactElement, { className: "w-6 h-6 md:w-7 md:h-7" })}
+                  {React.cloneElement(stat.icon as React.ReactElement, { className: "size-8", strokeWidth: 2.5 })}
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-gray-400 dark:text-zinc-600 tracking-[0.2em] uppercase mb-1">{stat.label}</p>
+                  <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 tracking-[0.2em] uppercase mb-2">{stat.label}</p>
                   <div className="flex items-baseline gap-2">
-                     <span className="text-2xl md:text-3xl font-black text-black dark:text-white italic transition-colors leading-none">{stat.val}</span>
-                     <span className="text-[10px] font-black text-gray-300 dark:text-zinc-700 uppercase tracking-wider">{stat.desc}</span>
+                     <span className="text-4xl font-black text-zinc-900 dark:text-white tabular-nums leading-none tracking-tighter">{stat.val}</span>
+                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{stat.desc}</span>
                   </div>
                 </div>
               </div>

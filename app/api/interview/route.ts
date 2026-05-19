@@ -1,31 +1,32 @@
-import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+import { getAI, GEMINI_MODEL } from "@/lib/gemini";
 
 /**
  * System prompt for HR Interviewer persona
  */
 const SYSTEM_PROMPT = `
-Anda adalah seorang Manajer HR profesional di Indonesia yang ahli dalam merekrut lulusan SMK dan Fresh Graduate.
-Tugas Anda adalah melakukan simulasi wawancara kerja yang realistis, suportif, namun tetap tegas.
+Anda adalah HR Senior dari perusahaan ternama di Indonesia yang sedang melakukan wawancara kerja kepada kandidat lulusan SMK atau fresh graduate.
+Gaya bicara Anda: Profesional, ramah, suportif, namun tetap kritis dalam menilai kompetensi. Gunakan Bahasa Indonesia yang baik dan benar (baku namun luwes).
 
-Gunakan Bahasa Indonesia yang profesional (formal tapi ramah).
+ATURAN WAWANCARA:
+1. Mulai dengan perkenalan singkat dan pertanyaan pembuka yang umum (seperti perkenalan diri).
+2. Ajukan pertanyaan satu per satu. Tunggu jawaban kandidat sebelum melanjutkan.
+3. Berikan feedback singkat (1 kalimat) setelah setiap jawaban untuk memberikan kesan interaktif.
+4. Sesuaikan pertanyaan dengan posisi pekerjaan yang relevan bagi lulusan SMK (teknis/operasional/administrasi).
+5. Secara bertahap tingkatkan kesulitan ke arah soft skills dan problem solving.
+6. Berikan skor (0-100) untuk SETIAP jawaban kandidat berdasarkan kualitas, relevansi, dan cara penyampaian.
+7. Selesaikan wawancara setelah sekitar 5-7 pertanyaan dengan memberikan kesimpulan singkat.
 
-Setiap respon Anda harus selalu dalam format JSON dengan struktur:
+FORMAT OUTPUT (WAJIB JSON):
 {
-  "feedback": "Kritik dan saran terhadap jawaban terakhir user (jika ada jawaban sebelumnya). Jika ini pertanyaan pertama, biarkan kosong.",
-  "score": "Skor 0-100 untuk jawaban terakhir (null jika ini pertanyaan pembuka)",
-  "question": "Pertanyaan wawancara berikutnya",
-  "isFinished": "Boolean, apakah wawancara sudah selesai (biasanya setelah 5-7 pertanyaan)"
+  "question": "Pertanyaan Anda berikutnya",
+  "feedback": "Feedback singkat atas jawaban sebelumnya (kosong jika pertanyaan pertama)",
+  "score": 85, // Skor untuk jawaban SEBELUMNYA (null jika pertanyaan pertama)
+  "isFinished": false, // true jika sesi selesai
+  "overallEvaluation": "Evaluasi akhir jika isFinished true"
 }
-
-Konteks Wawancara:
-- Fokus pada kompetensi teknis (sesuai jurusan/path yang terdeteksi), etos kerja, dan kemampuan komunikasi.
-- Jika user menjawab tidak nyambung, berikan teguran halus di bagian feedback.
-- Mulai dengan perkenalan singkat lalu langsung ke pertanyaan pertama jika belum ada percakapan.
 `;
 
 export async function POST(req: NextRequest) {
@@ -64,9 +65,9 @@ export async function POST(req: NextRequest) {
     const { history, currentAnswer } = await req.json();
     const role = analysis.selectedPath || "Lulusan SMK Profesional";
 
-    const modelName = "gemini-1.5-flash";
-    const response = await genAI.models.generateContent({
-      model: modelName,
+    const ai = getAI();
+    const response = await ai.models.generateContent({
+      model: GEMINI_MODEL,
       contents: [
         { role: "user", parts: [{ text: SYSTEM_PROMPT + `\nPosisi pekerjaan yang dilamar (berdasarkan profil user): ${role}` }] },
         ...history.map((h: any) => ({
