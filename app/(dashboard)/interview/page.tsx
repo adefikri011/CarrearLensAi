@@ -235,19 +235,19 @@ export default function InterviewPage() {
 
   return (
     <div className="min-h-screen py-6 md:py-12 px-4 max-w-6xl mx-auto">
-      {/* Header Section - More Minimalist */}
+      {/* Header Section - Balanced */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-12 md:mb-20 text-center"
+        className="mb-10 md:mb-16 text-center"
       >
-        <Badge variant="secondary" className="mb-4 bg-teal/5 text-teal border-teal/10 px-4 py-1.5 rounded-full font-bold tracking-wider text-[10px] uppercase">
+        <Badge variant="outline" className="mb-4 bg-teal/5 text-teal border-teal/10 px-3 py-1 rounded-full font-bold tracking-wider text-[10px] uppercase">
           Career Performance Lab
         </Badge>
-        <h1 className="text-4xl md:text-7xl font-bold text-zinc-900 dark:text-white tracking-tight mb-4">
+        <h1 className="text-3xl md:text-5xl font-bold text-zinc-900 dark:text-white tracking-tight mb-3">
           Mock <span className="text-teal font-extrabold italic">Interview.</span>
         </h1>
-        <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-lg max-w-xl mx-auto font-medium leading-relaxed">
           Asah kemampuan komunikasimu dengan simulasi wawancara berbasis AI yang dirancang khusus untuk profil profesionalmu.
         </p>
       </motion.div>
@@ -382,24 +382,24 @@ export default function InterviewPage() {
               </div>
 
               {/* Main Interaction Card */}
-              <Card className="p-8 md:p-16 border-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-[3rem] md:rounded-[4rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.1)] ring-1 ring-black/[0.03] overflow-hidden">
-                <div className="space-y-12">
+              <Card className="p-6 md:p-12 border-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] ring-1 ring-black/[0.03] overflow-hidden">
+                <div className="space-y-10">
                   {/* Interviewer Speech */}
-                  <div className="flex gap-4 md:gap-8">
-                    <div className="size-12 md:size-16 rounded-2xl bg-teal/10 flex items-center justify-center text-teal shrink-0">
-                      <MessageSquare size={24} />
+                  <div className="flex gap-4 md:gap-6">
+                    <div className="size-10 md:size-12 rounded-xl bg-teal/10 flex items-center justify-center text-teal shrink-0">
+                      <MessageSquare size={20} />
                     </div>
-                    <div className="space-y-6">
-                      <h2 className="text-2xl md:text-4xl font-bold md:font-semibold text-zinc-900 dark:text-white leading-snug tracking-tight">
+                    <div className="space-y-4">
+                      <h2 className="text-xl md:text-3xl font-bold text-zinc-900 dark:text-white leading-snug tracking-tight">
                         &ldquo;{state.currentQuestion}&rdquo;
                       </h2>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => speak(state.currentQuestion || "")}
-                        className="h-10 px-6 rounded-full border border-zinc-100 dark:border-zinc-800 text-zinc-500 hover:text-teal font-bold text-[11px] uppercase tracking-widest"
+                        className="h-9 px-4 rounded-full border border-zinc-100 dark:border-zinc-800 text-zinc-500 hover:text-teal font-bold text-[10px] uppercase tracking-widest"
                       >
-                        <Volume2 size={16} className="mr-2" /> Ulangi Pertanyaan
+                        <Volume2 size={14} className="mr-2" /> Ulangi Pertanyaan
                       </Button>
                     </div>
                   </div>
@@ -409,26 +409,26 @@ export default function InterviewPage() {
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-6 md:p-8 bg-zinc-50 dark:bg-zinc-800/50 rounded-3xl border border-zinc-100 dark:border-zinc-800 flex gap-5"
+                      className="p-5 md:p-6 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex gap-4"
                     >
                       <div className="size-8 rounded-full bg-teal/10 text-teal flex items-center justify-center shrink-0">
                         <Award size={16} />
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] font-bold text-teal uppercase tracking-widest">HR Feedback</p>
-                        <p className="text-sm md:text-lg font-medium text-zinc-600 dark:text-zinc-300 leading-relaxed italic">&ldquo;{state.currentFeedback}&rdquo;</p>
+                        <p className="text-xs md:text-md font-medium text-zinc-600 dark:text-zinc-300 leading-relaxed italic">&ldquo;{state.currentFeedback}&rdquo;</p>
                       </div>
                     </motion.div>
                   )}
 
                   {/* Input Interface */}
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     <div className="relative">
                       <textarea
                         value={transcript}
                         onChange={(e) => setTranscript(e.target.value)}
                         placeholder="Klik mikrofon untuk mulai bicara atau ketik jawabanmu di sini..."
-                        className="w-full h-48 md:h-64 p-8 md:p-12 rounded-[2.5rem] bg-zinc-50/50 dark:bg-zinc-950/30 border-2 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-teal/20 focus:ring-0 text-xl md:text-3xl font-medium dark:text-zinc-200 no-scrollbar resize-none transition-all shadow-inner leading-relaxed"
+                        className="w-full h-40 md:h-52 p-6 md:p-10 rounded-[2rem] bg-zinc-50/50 dark:bg-zinc-950/30 border-2 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-teal/20 focus:ring-0 text-lg md:text-2xl font-medium dark:text-zinc-200 no-scrollbar resize-none transition-all shadow-inner leading-relaxed"
                       />
                       <AnimatePresence>
                         {isRecording && (
@@ -436,32 +436,32 @@ export default function InterviewPage() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
-                            className="absolute top-6 right-8 flex items-center gap-3 bg-red-500 text-white px-5 py-2.5 rounded-full shadow-2xl"
+                            className="absolute top-4 right-6 flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full shadow-xl"
                           >
-                            <span className="size-2 rounded-full bg-white animate-pulse" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Recording</span>
+                            <span className="size-1.5 rounded-full bg-white animate-pulse" />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">Recording</span>
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-5">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <Button
                         onClick={toggleRecording}
                         variant={isRecording ? "destructive" : "outline"}
-                        className="flex-1 h-20 md:h-24 rounded-[2rem] text-lg md:text-2xl font-bold uppercase tracking-tight gap-4 transition-all shadow-lg active:scale-95 border-2 group"
+                        className="flex-1 h-14 md:h-16 rounded-2xl text-md md:text-xl font-bold uppercase tracking-tight gap-3 transition-all shadow-md active:scale-95 border-2 group"
                       >
-                        {isRecording ? <Square size={24} className="fill-current" /> : <Mic size={28} className="group-hover:scale-110 transition-transform" />}
+                        {isRecording ? <Square size={20} className="fill-current" /> : <Mic size={24} className="group-hover:scale-110 transition-transform" />}
                         {isRecording ? "Hentikan" : "Bicara Sekarang"}
                       </Button>
                       <Button
                         onClick={submitAnswer}
                         disabled={isLoading || !transcript.trim()}
-                        className="flex-1 h-20 md:h-24 bg-teal hover:bg-teal-dark text-white rounded-[2rem] text-lg md:text-2xl font-bold uppercase tracking-tight gap-4 shadow-3xl shadow-teal/30 transition-all hover:scale-[1.02] active:scale-95 disabled:scale-100 disabled:opacity-40"
+                        className="flex-1 h-14 md:h-16 bg-teal hover:bg-teal-dark text-white rounded-2xl text-md md:text-xl font-bold uppercase tracking-tight gap-3 shadow-lg shadow-teal/20 transition-all hover:scale-[1.01] active:scale-95 disabled:scale-100 disabled:opacity-40"
                       >
-                        {isLoading ? <Loader2 className="animate-spin size-8" /> : (
-                          <span className="flex items-center gap-3">
-                            Kirim Jawaban <ChevronRight size={32} />
+                        {isLoading ? <Loader2 className="animate-spin size-6" /> : (
+                          <span className="flex items-center gap-2">
+                            Kirim Jawaban <ChevronRight size={28} />
                           </span>
                         )}
                       </Button>

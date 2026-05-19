@@ -34,12 +34,18 @@ function BottomNavItem({ href, icon: Icon, label, isActive }: BottomNavItemProps
     <Link 
       href={href}
       className={cn(
-        "flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all active:scale-95",
+        "flex flex-col items-center justify-center gap-1.5 flex-1 h-full transition-all relative",
         isActive ? "text-teal" : "text-zinc-400 dark:text-zinc-500"
       )}
     >
-      <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
-      <span className="text-[10px] font-bold uppercase tracking-tight scale-90">{label}</span>
+      {isActive && (
+        <motion.div 
+          layoutId="bottomNavActive"
+          className="absolute -top-1 w-8 h-1 bg-teal rounded-full"
+        />
+      )}
+      <Icon className={cn("w-6 h-6 transition-all", isActive ? "scale-110" : "group-hover:scale-110")} />
+      <span className={cn("text-[8px] font-black uppercase tracking-widest transition-opacity", isActive ? "opacity-100" : "opacity-50")}>{label}</span>
     </Link>
   );
 }
@@ -56,7 +62,7 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-zinc-950 border-t border-gray-100 dark:border-zinc-800 px-1 pb-safe z-50 flex items-center justify-around shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] dark:shadow-none transition-colors duration-300">
+    <nav className="md:hidden fixed bottom-6 left-6 right-6 h-20 glass rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] px-4 pb-safe z-50 flex items-center justify-around transition-all duration-300">
       {items.map((item) => (
         <BottomNavItem
           key={item.href}
@@ -76,22 +82,21 @@ function MobileHeader({ session }: { session: any }) {
   };
 
   return (
-    <header className="md:hidden relative h-16 bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800 px-4 flex items-center justify-between z-40 transition-colors duration-300">
-      <Link href="/dashboard" className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center">
-          <BrainCircuit className="w-5 h-5 text-teal" />
+    <header className="md:hidden glass fixed top-0 left-0 right-0 h-20 px-8 flex items-center justify-between z-40 border-b border-white/10">
+      <Link href="/dashboard" className="flex items-center gap-3">
+        <div className="size-10 rounded-xl bg-teal flex items-center justify-center shadow-lg shadow-teal/20">
+          <BrainCircuit className="w-6 h-6 text-white" />
         </div>
-        <span className="font-black text-sm tracking-tighter uppercase italic dark:text-white transition-colors duration-300">CareerLens AI</span>
+        <span className="font-black text-lg tracking-tighter italic text-zinc-900 dark:text-white">CareerLens</span>
       </Link>
 
-      <div className="flex items-center gap-3">
-        <Link href="/profile">
+      <div className="flex items-center gap-4">
+        <Link href="/profile" className="ring-2 ring-teal/10 rounded-full">
           <UserAvatar size="sm" />
         </Link>
         <button 
           onClick={handleLogout}
-          className="p-2 text-gray-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-          title="Keluar"
+          className="size-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-all active:scale-90"
         >
           <LogOut className="w-5 h-5" />
         </button>

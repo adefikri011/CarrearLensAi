@@ -1,25 +1,24 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
  * Gemini AI Client configuration and prompt builder
  * for CareerLens AI.
  * 
  * IMPORTANT: Gemini API is called SERVER-SIDE for security.
- * Using the recommended @google/genai SDK for this environment.
+ * Using the standard @google/generative-ai SDK.
  */
 
-let aiInstance: GoogleGenAI | null = null;
+let aiInstance: GoogleGenerativeAI | null = null;
 
-export const getAI = () => {
-  const apiKey = process.env.GEMINI_API_KEY;
+export const getAI = (): GoogleGenerativeAI => {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   
   if (!apiKey) {
-    console.error("GEMINI_API_KEY is missing in environment variables.");
-    throw new Error("GEMINI_API_KEY is required");
+    throw new Error("GEMINI_API_KEY is required. Please set it in AI Studio settings.");
   }
 
   if (!aiInstance) {
-    aiInstance = new GoogleGenAI({ apiKey });
+    aiInstance = new GoogleGenerativeAI(apiKey);
   }
   
   return aiInstance;

@@ -30,17 +30,17 @@ export async function POST(req: NextRequest) {
     const ai = getAI();
     const prompt = buildAnalysisPrompt(profile, cvUpload.extractedText || "");
     
-    const response = await ai.models.generateContent({
+    const model = ai.getGenerativeModel({ 
       model: GEMINI_MODEL,
-      contents: prompt,
-      config: {
+      generationConfig: {
         temperature: 0.3,
         maxOutputTokens: 8192,
         responseMimeType: "application/json"
       }
     });
 
-    const responseText = response.text;
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
     if (!responseText) {
       return NextResponse.json({ success: false, error: "AI memberikan respon kosong" }, { status: 500 });
     }
