@@ -136,6 +136,8 @@ model Project {
   tools           String[]
   tags            String[]
   metrics         String?
+  liveUrl         String?
+  repoUrl         String?
   isPublic        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

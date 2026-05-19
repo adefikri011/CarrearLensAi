@@ -28,8 +28,9 @@ interface ProjectPageProps {
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
   const project = await prisma.project.findUnique({
-    where: { slug: params.slug },
+    where: { slug: slug },
     include: { user: true }
   });
 
@@ -47,8 +48,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 }
 
 export default async function PublicProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  
   const project = await prisma.project.findUnique({
-    where: { slug: params.slug },
+    where: { slug: slug },
     include: { 
       user: {
         include: { profile: true }
@@ -75,16 +78,23 @@ export default async function PublicProjectPage({ params }: ProjectPageProps) {
             <span className="font-black text-xl tracking-tighter italic text-zinc-900 dark:text-white">CareerLens</span>
           </Link>
 
-          <Link href="/dashboard">
-            <Button variant="outline" className="rounded-full font-bold uppercase tracking-widest text-[10px] h-10 px-6 border-zinc-100 dark:border-zinc-800">
-              Dashboard Saya
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/portfolio">
+              <Button variant="ghost" className="rounded-full font-bold uppercase tracking-widest text-[10px] h-10 px-6">
+                Portfolio Lainnya
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="outline" className="rounded-full font-bold uppercase tracking-widest text-[10px] h-10 px-6 border-zinc-100 dark:border-zinc-800">
+                Dashboard Saya
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-40 pb-20 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
             <div className="space-y-4">
@@ -103,11 +113,11 @@ export default async function PublicProjectPage({ params }: ProjectPageProps) {
               </h1>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border-2 border-teal">
                   {user.image ? (
-                    <Image src={user.image} alt={user.name || ""} width={48} height={48} />
+                    <Image src={user.image} alt={user.name || ""} width={48} height={48} referrerPolicy="no-referrer" />
                   ) : (
                     <User className="text-zinc-400" />
                   )}
@@ -117,7 +127,7 @@ export default async function PublicProjectPage({ params }: ProjectPageProps) {
                   <p className="font-bold text-zinc-900 dark:text-white">{user.name}</p>
                 </div>
               </div>
-              <div className="h-10 w-px bg-zinc-100 dark:bg-zinc-800" />
+              <div className="h-10 w-px bg-zinc-100 dark:bg-zinc-800 hidden md:block" />
               <div>
                 <p className="text-xs font-black uppercase tracking-widest text-zinc-400">Date</p>
                 <p className="font-bold text-zinc-900 dark:text-white">
@@ -125,6 +135,25 @@ export default async function PublicProjectPage({ params }: ProjectPageProps) {
                 </p>
               </div>
             </div>
+
+            {(project.liveUrl || project.repoUrl) && (
+              <div className="flex flex-wrap gap-4 pt-4">
+                {project.liveUrl && (
+                  <Button asChild className="rounded-2xl h-14 px-8 bg-teal hover:bg-teal-dark text-white font-black uppercase tracking-widest text-xs gap-3 shadow-xl shadow-teal/20">
+                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                      <Globe size={18} /> Lihat Demo Live
+                    </a>
+                  </Button>
+                )}
+                {project.repoUrl && (
+                  <Button asChild variant="outline" className="rounded-2xl h-14 px-8 border-zinc-200 dark:border-zinc-800 font-black uppercase tracking-widest text-xs gap-3">
+                    <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                      <Layout size={18} /> Repository Code
+                    </a>
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl shadow-teal/5 ring-1 ring-black/5 animate-in fade-in slide-in-from-right duration-1000">
@@ -198,16 +227,28 @@ export default async function PublicProjectPage({ params }: ProjectPageProps) {
               </div>
               
               <div className="flex flex-col gap-3">
-                <Button className="w-full h-14 rounded-2xl bg-teal hover:bg-teal-dark text-white font-black uppercase tracking-widest text-xs gap-2 border-none">
-                  <Mail size={16} /> Kirim Pesan
-                </Button>
+                {user.email && (
+                  <Button asChild className="w-full h-14 rounded-2xl bg-teal hover:bg-teal-dark text-white font-black uppercase tracking-widest text-xs gap-2 border-none">
+                    <a href={`mailto:${user.email}?subject=Tertarik%20dengan%20proyek%20${project.title}`}>
+                      <Mail size={16} /> Kirim Pesan
+                    </a>
+                  </Button>
+                )}
                 <div className="flex gap-3">
-                  <Button variant="outline" className="flex-1 h-14 rounded-2xl border-white/10 dark:border-zinc-200">
-                    CV Profil
-                  </Button>
-                  <Button variant="outline" className="flex-1 h-14 rounded-2xl border-white/10 dark:border-zinc-200">
-                    LinkedIn
-                  </Button>
+                  {user.linkedin && (
+                    <Button asChild variant="outline" className="flex-1 h-14 rounded-2xl border-white/10 dark:border-zinc-200">
+                      <a href={user.linkedin} target="_blank" rel="noopener noreferrer">
+                        LinkedIn
+                      </a>
+                    </Button>
+                  )}
+                  {user.github && (
+                    <Button asChild variant="outline" className="flex-1 h-14 rounded-2xl border-white/10 dark:border-zinc-200">
+                      <a href={user.github} target="_blank" rel="noopener noreferrer">
+                        GitHub
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

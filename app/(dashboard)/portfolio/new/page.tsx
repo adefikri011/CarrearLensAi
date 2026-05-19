@@ -36,6 +36,8 @@ export default function NewProjectPage() {
     rawDescription: "",
     tools: [] as string[],
     thumbnailUrl: "",
+    liveUrl: "",
+    repoUrl: "",
     newTool: ""
   });
 
@@ -112,7 +114,9 @@ export default function NewProjectPage() {
           thumbnailUrl: formData.thumbnailUrl || "https://picsum.photos/seed/project/1920/1080",
           tools: formData.tools,
           tags: aiResult.tags,
-          metrics: aiResult.metrics
+          metrics: aiResult.metrics,
+          liveUrl: formData.liveUrl,
+          repoUrl: formData.repoUrl
         })
       });
 
@@ -225,14 +229,39 @@ export default function NewProjectPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                      <ImageIcon size={14} className="text-teal" /> Link Foto Proyek (Opsional)
+                    </label>
+                    <Input 
+                      placeholder="Link gambar hasil karyamu..."
+                      value={formData.thumbnailUrl}
+                      onChange={e => setFormData({...formData, thumbnailUrl: e.target.value})}
+                      className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-950"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                      <Globe size={14} className="text-teal" /> Tautan Demo (Live URL)
+                    </label>
+                    <Input 
+                      placeholder="https://proyek-saya.vercel.app"
+                      value={formData.liveUrl}
+                      onChange={e => setFormData({...formData, liveUrl: e.target.value})}
+                      className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-950"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                    <ImageIcon size={14} className="text-teal" /> Link Foto Proyek (Opsional)
+                    <Rocket size={14} className="text-teal" /> Github / Repository (Opsional)
                   </label>
                   <Input 
-                    placeholder="Link gambar hasil karyamu..."
-                    value={formData.thumbnailUrl}
-                    onChange={e => setFormData({...formData, thumbnailUrl: e.target.value})}
+                    placeholder="https://github.com/username/repo"
+                    value={formData.repoUrl}
+                    onChange={e => setFormData({...formData, repoUrl: e.target.value})}
                     className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-950"
                   />
                 </div>

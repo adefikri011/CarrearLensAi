@@ -59,6 +59,27 @@ export default function PortfolioPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Hapus proyek ini dari portfolio?")) return;
+    
+    try {
+      const res = await fetch(`/api/project?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Proyek dihapus");
+        setProjects(projects.filter(p => p.id !== id));
+      }
+    } catch (error) {
+      toast.error("Gagal menghapus proyek");
+    }
+  };
+
+  const handleShare = (slug: string) => {
+    const url = `${window.location.origin}/project/${slug}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link portfolio berhasil disalin!");
+  };
+
   const filteredProjects = projects.filter(p => 
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -184,10 +205,25 @@ export default function PortfolioPage() {
                       <span className="text-[10px] font-bold text-teal uppercase tracking-widest">Verified Work</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="size-8 rounded-lg text-zinc-400 hover:text-teal">
+                      <Link href={`/portfolio/edit/${project.slug}`}>
+                        <Button variant="ghost" size="icon" className="size-8 rounded-lg text-zinc-400 hover:text-teal">
+                          <Wand2 size={16} />
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="size-8 rounded-lg text-zinc-400 hover:text-teal"
+                        onClick={() => handleShare(project.slug)}
+                      >
                         <Share2 size={16} />
                       </Button>
-                      <Button variant="ghost" size="icon" className="size-8 rounded-lg text-zinc-400 hover:text-red-500">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="size-8 rounded-lg text-zinc-400 hover:text-red-500"
+                        onClick={() => handleDelete(project.id)}
+                      >
                         <Trash2 size={16} />
                       </Button>
                     </div>
