@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import Image from "next/image";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import PageLoader from "@/components/shared/PageLoader";
 import { useSession, signOut } from "next-auth/react";
 import { useAppStore } from "@/store/useAppStore";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -38,6 +39,7 @@ export default function SettingsPage() {
   const { data: session, update } = useSession();
   const { clearUserData } = useAppStore();
   const [activeSection, setActiveSection] = useState("profile");
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -75,6 +77,8 @@ export default function SettingsPage() {
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsInitialLoading(false);
       }
     };
 
@@ -156,6 +160,10 @@ export default function SettingsPage() {
     { id: "appearance", label: "Tampilan", icon: Camera, mobileOnly: true },
     { id: "danger", label: "Zona Bahaya", icon: ShieldAlert, color: "text-red-500" },
   ];
+
+  if (isInitialLoading) {
+    return <PageLoader isLoading={true} text="Menyiapkan Pengaturan..." subtitle="Sedang memuat data akun kamu" />;
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 sm:space-y-12">
