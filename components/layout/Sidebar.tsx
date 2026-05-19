@@ -57,7 +57,10 @@ export default function Sidebar({
       inDrawer && "w-full"
     )}>
       {/* Logo Section */}
-      <div className="h-24 flex items-center px-8 border-b border-gray-100/50 dark:border-white/5">
+      <div className={cn(
+        "h-24 flex items-center border-b border-gray-100/50 dark:border-white/5 transition-all duration-300",
+        isSidebarOpen || inDrawer ? "px-8" : "px-0 justify-center"
+      )}>
         <Link href="/dashboard" className="flex items-center gap-4 overflow-hidden group">
           <div className="w-12 h-12 shrink-0 rounded-2xl bg-teal flex items-center justify-center shadow-[0_12px_24px_-8px_rgba(29,158,117,0.4)] transition-all group-hover:scale-110 group-hover:rotate-3">
             <BrainCircuit className="w-7 h-7 text-white" />
@@ -76,18 +79,19 @@ export default function Sidebar({
       </div>
 
       {/* Menu Items */}
-      <nav className="flex-1 overflow-y-auto py-10 px-4 space-y-2 no-scrollbar">
+      <nav className="flex-1 overflow-y-auto py-10 px-3 space-y-1 no-scrollbar">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <div key={item.href} className="relative px-2">
+            <div key={item.href} className="relative">
               <Link 
                 href={item.href}
                 onClick={onClose}
                 onMouseEnter={() => setHoveredItem(item.label)}
                 onMouseLeave={() => setHoveredItem(null)}
                 className={cn(
-                  "flex items-center gap-4 px-4 py-4 rounded-[1.25rem] transition-all duration-300 group relative overflow-hidden",
+                  "flex items-center transition-all duration-300 group relative overflow-hidden",
+                  isSidebarOpen || inDrawer ? "px-4 py-4 gap-4 rounded-[1.25rem]" : "p-4 justify-center rounded-2xl",
                   isActive 
                     ? "bg-teal text-white shadow-[0_16px_32px_-12px_rgba(29,158,117,0.3)]" 
                     : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 hover:text-zinc-900 dark:hover:text-white"
@@ -102,13 +106,27 @@ export default function Sidebar({
                       {item.label}
                   </span>
                 )}
-                {/* Tooltip for collapsed state */}
-                {!isSidebarOpen && !inDrawer && hoveredItem === item.label && (
-                  <div className="absolute left-[calc(100%+1rem)] py-2.5 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest rounded-xl whitespace-nowrap z-50 shadow-2xl border border-white/10 dark:border-zinc-200">
-                    {item.label}
-                  </div>
+                
+                {/* Active Indicator Bar for Collapsed State */}
+                {isActive && !isSidebarOpen && !inDrawer && (
+                  <motion.div 
+                    layoutId="activeSideBar"
+                    className="absolute left-0 w-1 h-6 bg-white rounded-r-full"
+                  />
                 )}
               </Link>
+
+              {/* Enhanced Tooltip for Collapsed State */}
+              {!isSidebarOpen && !inDrawer && hoveredItem === item.label && (
+                <motion.div 
+                  initial={{ opacity: 0, x: 5 }}
+                  animate={{ opacity: 1, x: 10 }}
+                  className="absolute left-full top-1/2 -translate-y-1/2 py-2.5 px-4 bg-zinc-900 dark:bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest rounded-xl whitespace-nowrap z-[100] shadow-2xl border border-white/10"
+                >
+                  <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 dark:bg-zinc-800 rotate-45" />
+                  {item.label}
+                </motion.div>
+              )}
             </div>
           );
         })}
@@ -117,8 +135,8 @@ export default function Sidebar({
       {/* Footer / User Section */}
       <div className="p-6 space-y-4 border-t border-gray-100/50 dark:border-white/5">
         <div className={cn(
-          "flex items-center gap-3 p-4 rounded-[1.5rem] border border-gray-100 dark:border-white/5 glass transition-all",
-          !isSidebarOpen && !inDrawer && "justify-center"
+          "flex items-center rounded-[1.5rem] border border-gray-100 dark:border-white/5 glass transition-all",
+          isSidebarOpen || inDrawer ? "p-4 gap-3" : "p-3 justify-center"
         )}>
           <div className="relative">
             <UserAvatar size="sm" className="ring-2 ring-teal/20" />
@@ -142,11 +160,20 @@ export default function Sidebar({
         </div>
         
         {!inDrawer && (
-          <div className="flex items-center gap-3">
-            <ThemeToggle className="flex-1 h-12 rounded-[1.25rem]" />
+          <div className={cn(
+            "flex items-center gap-3",
+            !isSidebarOpen && "flex-col"
+          )}>
+            <ThemeToggle className={cn(
+              "h-12 rounded-[1.25rem] transition-all",
+              isSidebarOpen ? "flex-1" : "w-full px-0"
+            )} />
             <button 
               onClick={toggleSidebar}
-              className="size-12 rounded-[1.25rem] border border-gray-100 dark:border-white/5 text-zinc-400 hover:text-teal hover:bg-teal/5 transition-all shadow-sm flex items-center justify-center active:scale-90"
+              className={cn(
+                "h-12 rounded-[1.25rem] border border-gray-100 dark:border-white/5 text-zinc-400 hover:text-teal hover:bg-teal/5 transition-all shadow-sm flex items-center justify-center active:scale-90",
+                isSidebarOpen ? "size-12" : "w-full"
+              )}
             >
               {isSidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
             </button>
