@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -198,7 +197,6 @@ export default function RegisterPage() {
                 CareerLens <span className="text-[#1D9E75]">AI</span>
               </span>
             </Link>
-            <ThemeToggle />
           </div>
 
           <div className="mb-4">

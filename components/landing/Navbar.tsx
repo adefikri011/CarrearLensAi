@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, BrainCircuit } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -78,6 +79,7 @@ export const Navbar = () => {
 
           {/* Auth CTA */}
           <div className="hidden md:flex items-center gap-6">
+            <ThemeToggle />
             <Link 
               href="/login" 
               className="text-[13px] font-black uppercase tracking-widest text-black dark:text-white hover:text-[#1D9E75] transition-colors"
@@ -93,12 +95,15 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile Toggle */}
-          <button 
-            className="md:hidden p-2 text-black dark:text-white relative z-[101] min-h-[44px] min-w-[44px] flex items-center justify-center"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="flex md:hidden items-center gap-2 relative z-[101]">
+            <ThemeToggle />
+            <button 
+              className="p-2 text-black dark:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </nav>
 
