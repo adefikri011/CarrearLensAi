@@ -14,7 +14,8 @@ import {
   BrainCircuit,
   Zap,
   LogOut,
-  User
+  User,
+  Mic
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
@@ -26,6 +27,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: User, label: "Profil Karier", href: "/profile" },
+  { icon: Mic, label: "Simulasi Wawancara", href: "/interview" },
   { icon: FileText, label: "Analisis CV", href: "/cv-builder" },
   { icon: RoadmapIcon, label: "Roadmap Karier", href: "/roadmap" },
   { icon: SettingsIcon, label: "Pengaturan", href: "/settings" },

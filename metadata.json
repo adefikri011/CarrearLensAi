@@ -1,6 +1,6 @@
 {
   "name": "CareerLens AI",
   "description": "Platform analisis karier berbasis AI untuk membantu siapa saja membangun masa depan yang terarah.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
