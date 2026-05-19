@@ -11,26 +11,18 @@ import { GoogleGenAI } from "@google/genai";
 let aiInstance: GoogleGenAI | null = null;
 
 export const getAI = () => {
-  const apiKey = process.env.GEMINI_API_KEY || "";
+  const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey) {
     console.error("GEMINI_API_KEY is missing in environment variables.");
+    throw new Error("GEMINI_API_KEY is required");
   }
 
-  if (!aiInstance && apiKey) {
-    aiInstance = new GoogleGenAI({ 
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
-    });
+  if (!aiInstance) {
+    aiInstance = new GoogleGenAI({ apiKey });
   }
   
-  // Return instance if we have one, otherwise return a temporary one if key is missing 
-  // (though it will fail later, this avoids returning null if the app expects an object)
-  return aiInstance || new GoogleGenAI({ apiKey: "" });
+  return aiInstance;
 };
 
 // Recommended model for production tasks

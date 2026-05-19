@@ -234,143 +234,124 @@ export default function InterviewPage() {
   };
 
   return (
-    <div className="min-h-screen py-8 md:py-20 px-6 max-w-7xl mx-auto selection:bg-teal/10">
-      {/* Header Section - Modern Display Typography */}
+    <div className="min-h-screen py-6 md:py-12 px-4 max-w-6xl mx-auto">
+      {/* Header Section - More Minimalist */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-16 md:mb-24 text-center space-y-6"
+        className="mb-12 md:mb-20 text-center"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-teal/10 text-teal font-extrabold text-[10px] uppercase tracking-[0.2em]">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-teal"></span>
-          </span>
-          AI Simulation Lab
-        </div>
-        <h1 className="text-5xl md:text-8xl font-black text-zinc-900 dark:text-white tracking-tighter leading-[0.85]">
-          Master Your <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-br from-teal via-teal to-purple">Interview.</span>
+        <Badge variant="secondary" className="mb-4 bg-teal/5 text-teal border-teal/10 px-4 py-1.5 rounded-full font-bold tracking-wider text-[10px] uppercase">
+          Career Performance Lab
+        </Badge>
+        <h1 className="text-4xl md:text-7xl font-bold text-zinc-900 dark:text-white tracking-tight mb-4">
+          Mock <span className="text-teal font-extrabold italic">Interview.</span>
         </h1>
-        <p className="text-zinc-500 dark:text-zinc-400 text-base md:text-xl max-w-2xl mx-auto font-medium leading-relaxed px-4">
-          Latih kemampuan berkomunikasi dan bangun rasa percaya diri melalui simulasi wawancara adaptif yang dirancang oleh para ahli HR.
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+          Asah kemampuan komunikasimu dengan simulasi wawancara berbasis AI yang dirancang khusus untuk profil profesionalmu.
         </p>
       </motion.div>
 
       <AnimatePresence mode="wait">
-        {/* LOADING STATE */}
+        {/* LOADING STATE - Elegant minimal loader */}
         {state.step === "loading" && (
           <motion.div
             key="loading"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-32"
+            className="flex flex-col items-center justify-center py-20"
           >
-            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 border-8 border-teal/5 rounded-full" />
-              <div className="absolute inset-0 border-8 border-t-teal rounded-full animate-spin shadow-[0_0_20px_rgba(29,158,117,0.3)]" />
+            <div className="relative w-20 h-20">
+              <div className="absolute inset-0 border-4 border-teal/10 rounded-full" />
+              <div className="absolute inset-0 border-4 border-t-teal rounded-full animate-spin" />
             </div>
           </motion.div>
         )}
 
-        {/* LOCKED STATE */}
+        {/* LOCKED STATE - Challenging but clean */}
         {state.step === "locked" && (
           <motion.div
             key="locked"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-xl mx-auto"
           >
-            <Card className="p-10 md:p-16 border-none glass shadow-2xl rounded-[3.5rem] text-center relative overflow-hidden group">
-               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 opacity-20" />
-               <div className="w-24 h-24 bg-zinc-100 dark:bg-zinc-800 rounded-[2rem] flex items-center justify-center text-zinc-400 mx-auto mb-10 group-hover:scale-110 group-hover:rotate-6 transition-transform">
-                  <Lock size={40} strokeWidth={1.5} />
+            <Card className="p-8 md:p-12 border-none bg-white dark:bg-zinc-900 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[3rem] text-center relative overflow-hidden">
+               <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-800 rounded-3xl flex items-center justify-center text-zinc-400 mx-auto mb-8">
+                  <Lock size={32} />
                </div>
-               <h2 className="text-3xl md:text-5xl font-black mb-4 dark:text-white tracking-tighter">Akses Terkunci.</h2>
-               <p className="text-zinc-500 dark:text-zinc-400 font-medium mb-12 text-sm md:text-base leading-relaxed px-8">
-                  Misi belum tuntas! Selesaikan seluruh tahapan <span className="text-zinc-900 dark:text-white font-bold">Roadmap 90 Hari</span> untuk mengaktifkan modul simulasi wawancara ini.
+               <h2 className="text-2xl md:text-3xl font-bold mb-3 dark:text-white tracking-tight">Misi Belum Tercapai</h2>
+               <p className="text-sm text-zinc-500 mb-10 font-medium px-4">
+                  Selesaikan seluruh langkah di Roadmap 90 Hari untuk membuka akses simulasi wawancara ini.
                </p>
 
                {state.stats && (
-                 <div className="mb-12 px-8">
-                    <div className="flex justify-between items-end mb-4">
-                       <div className="text-left">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-1">Misi Selesai</p>
-                          <p className="text-3xl font-black tabular-nums text-teal">{state.stats.completed}/{state.stats.total}</p>
-                       </div>
+                 <div className="mb-10 px-4">
+                    <div className="flex justify-between items-center mb-3">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Progress Belajar</span>
                        <span className="text-lg font-black tabular-nums text-teal">{state.stats.percentage}%</span>
                     </div>
-                    <div className="h-4 w-full bg-zinc-100 dark:bg-zinc-800/50 rounded-full overflow-hidden p-1">
+                    <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${state.stats.percentage}%` }}
-                        className="h-full bg-gradient-to-r from-teal to-teal-dark rounded-full shadow-[0_0_10px_rgba(29,158,117,0.4)]"
+                         initial={{ width: 0 }}
+                         animate={{ width: `${state.stats.percentage}%` }}
+                         className="h-full bg-teal"
                       />
                     </div>
                  </div>
                )}
 
-               <Button asChild className="h-20 px-12 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[2rem] font-black text-lg tracking-tight hover:scale-[1.03] transition-all shadow-2xl group active:scale-95">
-                  <Link href="/roadmap" className="flex items-center gap-3">
-                    Lanjutkan Roadmap <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+               <Button asChild className="h-14 px-10 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-bold text-sm tracking-wide hover:opacity-90 transition-all shadow-xl group">
+                  <Link href="/roadmap" className="flex items-center gap-2">
+                    Buka Roadmap <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </Link>
                </Button>
             </Card>
           </motion.div>
         )}
 
-        {/* READY STATE */}
+        {/* READY STATE - Focused and inviting */}
         {state.step === "ready" && (
           <motion.div
             key="ready"
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-4xl mx-auto"
+            className="max-w-3xl mx-auto"
           >
-            <Card className="p-12 md:p-24 border-none glass shadow-[0_80px_120px_-40px_rgba(0,0,0,0.15)] rounded-[4rem] text-center relative overflow-hidden">
-               <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal/10 rounded-full blur-3xl" />
-               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple/10 rounded-full blur-3xl" />
-               
-               <div className="mb-16">
-                 <div className="w-20 h-20 bg-teal/10 rounded-[2rem] flex items-center justify-center text-teal mx-auto mb-10 shadow-inner">
-                    <Play size={32} className="ml-1 fill-current" />
+            <Card className="p-8 md:p-16 border-none bg-white dark:bg-zinc-900 shadow-[0_48px_96px_-24px_rgba(0,0,0,0.12)] rounded-[3rem] md:rounded-[4rem] text-center relative overflow-hidden">
+               <div className="mb-12">
+                 <div className="w-16 h-16 bg-teal/10 rounded-2xl flex items-center justify-center text-teal mx-auto mb-8">
+                    <Play size={24} className="ml-1" />
                  </div>
-                 <h2 className="text-4xl md:text-7xl font-black mb-6 dark:text-white tracking-tighter leading-tight">Siap Untuk <br />Wawancara?</h2>
-                 <p className="text-zinc-400 dark:text-zinc-500 font-bold max-w-sm mx-auto leading-relaxed text-sm uppercase tracking-widest mb-4">
-                   Posisi Target Anda:
+                 <h2 className="text-3xl md:text-5xl font-bold mb-4 dark:text-white tracking-tight">Sudah Siap?</h2>
+                 <p className="text-zinc-500 dark:text-zinc-400 font-medium max-w-sm mx-auto leading-relaxed italic">
+                   Berdasarkan profilmu, AI akan mewawancaraimu sebagai:
                  </p>
-                 <div className="inline-block px-10 py-5 glass border-teal/10 rounded-[2rem] text-teal font-black text-2xl md:text-4xl shadow-xl">
+                 <div className="mt-6 inline-block px-8 py-3 bg-teal/5 border border-teal/10 rounded-2xl text-teal font-black text-xl md:text-3xl">
                     {state.role}
                  </div>
                </div>
 
-               <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-16 text-left">
-                  <div className="flex items-center gap-4 group">
-                    <div className="size-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-teal group-hover:scale-110 transition-transform shadow-sm"><Mic size={20} strokeWidth={2.5} /></div>
-                    <div className="flex flex-col">
-                       <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Interaction</span>
-                       <span className="text-sm font-bold dark:text-white">Voice & Text</span>
-                    </div>
+               <div className="grid grid-cols-2 gap-4 mb-12 text-left max-w-md mx-auto">
+                  <div className="flex items-center gap-3 text-zinc-500">
+                    <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-teal"><Mic size={14} /></div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest leading-tight">Voice Input</span>
                   </div>
-                  <div className="w-px h-8 bg-zinc-100 dark:bg-zinc-800 hidden md:block" />
-                  <div className="flex items-center gap-4 group">
-                    <div className="size-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-teal group-hover:scale-110 transition-transform shadow-sm"><Volume2 size={20} strokeWidth={2.5} /></div>
-                    <div className="flex flex-col">
-                       <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Audio Response</span>
-                       <span className="text-sm font-bold dark:text-white">Natural Speech AI</span>
-                    </div>
+                  <div className="flex items-center gap-3 text-zinc-500">
+                    <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-teal"><Volume2 size={14} /></div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest leading-tight">AI Voice</span>
                   </div>
                </div>
 
                <Button 
                 onClick={startInterview}
                 disabled={isLoading}
-                className="w-full md:w-auto h-24 px-16 bg-teal hover:bg-teal-dark text-white rounded-[2.5rem] font-black text-2xl shadow-[0_32px_64px_-16px_rgba(29,158,117,0.4)] transition-all hover:scale-[1.05] active:scale-95 group"
+                className="w-full md:w-auto h-16 md:h-20 px-12 md:px-20 bg-teal hover:bg-teal-dark text-white rounded-[2rem] font-bold text-lg md:text-xl shadow-2xl shadow-teal/30 transition-all hover:scale-[1.02] active:scale-95 group mb-4"
                >
-                  {isLoading ? <Loader2 className="animate-spin size-8" /> : (
+                  {isLoading ? <Loader2 className="animate-spin size-6" /> : (
                     <span className="flex items-center gap-4">
-                      Mulai Sekarang <ArrowRight size={32} strokeWidth={3} className="group-hover:translate-x-3 transition-transform" />
+                      Mulai Simulasi <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
                     </span>
                   )}
                </Button>
@@ -378,204 +359,180 @@ export default function InterviewPage() {
           </motion.div>
         )}
 
-        {/* INTERVIEW STATE */}
+        {/* INTERVIEW STATE - Immersive Focus Mode */}
         {state.step === "interview" && (
           <motion.div
             key="interview"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-6xl mx-auto px-4 md:px-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-5xl mx-auto"
           >
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Progress Sidebar - Desktop Only */}
-              <div className="hidden lg:block lg:col-span-3 space-y-6">
-                <Card className="p-8 border-none glass rounded-[2.5rem] space-y-8">
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Pertanyaan Ke</p>
-                    <p className="text-5xl font-black text-teal tabular-nums">{state.questionCount}</p>
-                  </div>
-                  {state.currentScore !== null && (
-                    <div className="space-y-4 pt-6 border-t border-zinc-100 dark:border-white/5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Skor Terakhir</p>
-                      <div className="flex items-center gap-3">
-                         <div className="size-12 rounded-2xl bg-purple/10 text-purple flex items-center justify-center font-black text-xl">
-                            {state.currentScore}
-                         </div>
-                         <Progress value={state.currentScore} className="h-2 flex-1" />
-                      </div>
-                    </div>
-                  )}
-                </Card>
+            <div className="space-y-8">
+              {/* Top Bar Info */}
+              <div className="flex items-center justify-between px-4">
+                <div className="flex items-center gap-3">
+                  <div className="size-2 rounded-full bg-teal animate-pulse" />
+                  <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Sesi Berlanjut • Q{state.questionCount}</span>
+                </div>
+                {state.currentScore !== null && (
+                  <Badge className="bg-purple text-white px-4 py-1.5 rounded-full font-black text-xs shadow-lg shadow-purple/20">
+                    Latest Score: {state.currentScore}
+                  </Badge>
+                )}
               </div>
 
-              {/* Main Interaction Area */}
-              <div className="lg:col-span-9 space-y-8">
-                <Card className="p-10 md:p-20 border-none glass rounded-[3.5rem] md:rounded-[5rem] shadow-2xl relative overflow-hidden">
-                  <div className="space-y-16">
-                    {/* Interviewer Question */}
-                    <div className="space-y-10 group">
-                      <div className="flex items-center gap-4">
-                        <div className="size-10 rounded-full bg-teal flex items-center justify-center text-white font-black text-xs">AI</div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-teal">Senior HR Manager</span>
-                      </div>
-                      <h2 className="text-3xl md:text-6xl font-black text-zinc-900 dark:text-white leading-[1.1] tracking-tighter transition-modern group-hover:translate-x-2">
+              {/* Main Interaction Card */}
+              <Card className="p-8 md:p-16 border-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-[3rem] md:rounded-[4rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.1)] ring-1 ring-black/[0.03] overflow-hidden">
+                <div className="space-y-12">
+                  {/* Interviewer Speech */}
+                  <div className="flex gap-4 md:gap-8">
+                    <div className="size-12 md:size-16 rounded-2xl bg-teal/10 flex items-center justify-center text-teal shrink-0">
+                      <MessageSquare size={24} />
+                    </div>
+                    <div className="space-y-6">
+                      <h2 className="text-2xl md:text-4xl font-bold md:font-semibold text-zinc-900 dark:text-white leading-snug tracking-tight">
                         &ldquo;{state.currentQuestion}&rdquo;
                       </h2>
-                      <div className="flex items-center gap-4">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => speak(state.currentQuestion || "")}
-                          className="h-12 px-8 rounded-2xl glass border-zinc-100 dark:border-white/5 text-zinc-500 hover:text-teal font-black text-[11px] uppercase tracking-widest shadow-sm active:scale-95"
-                        >
-                          <Volume2 size={16} className="mr-2" /> Play Audio
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Feedback Pill if exists */}
-                    {state.currentFeedback && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="p-8 bg-zinc-50 dark:bg-zinc-800/80 rounded-[2.5rem] border border-zinc-100 dark:border-white/5 flex gap-6 items-start"
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => speak(state.currentQuestion || "")}
+                        className="h-10 px-6 rounded-full border border-zinc-100 dark:border-zinc-800 text-zinc-500 hover:text-teal font-bold text-[11px] uppercase tracking-widest"
                       >
-                        <div className="size-12 rounded-2xl bg-teal text-white flex items-center justify-center shrink-0 shadow-lg shadow-teal/20">
-                          <Award size={20} strokeWidth={3} />
-                        </div>
-                        <div className="space-y-2">
-                          <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-1">Expert Insight</p>
-                          <p className="text-lg md:text-xl font-bold text-zinc-700 dark:text-zinc-200 leading-relaxed italic">&ldquo;{state.currentFeedback}&rdquo;</p>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Input Container */}
-                    <div className="space-y-10">
-                      <div className="relative group">
-                        <textarea
-                          value={transcript}
-                          onChange={(e) => setTranscript(e.target.value)}
-                          placeholder="Mulai bicara atau ketik jawabanmu di sini..."
-                          className="w-full h-56 md:h-80 p-10 md:p-16 rounded-[3rem] bg-zinc-50/50 dark:bg-zinc-950/50 border-4 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-teal/20 focus:ring-0 text-xl md:text-4xl font-bold dark:text-zinc-100 no-scrollbar resize-none transition-all shadow-inner leading-relaxed"
-                        />
-                        <AnimatePresence>
-                          {isRecording && (
-                            <motion.div 
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.8 }}
-                              className="absolute top-8 right-10 flex items-center gap-4 bg-red-600 text-white px-6 py-3 rounded-full shadow-[0_0_30px_rgba(220,38,38,0.4)]"
-                            >
-                              <span className="relative flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                              </span>
-                              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Live Recording</span>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-
-                      <div className="flex flex-col xl:flex-row gap-6">
-                        <Button
-                          onClick={toggleRecording}
-                          variant={isRecording ? "destructive" : "outline"}
-                          className="flex-1 h-24 md:h-28 rounded-[2.5rem] text-xl md:text-3xl font-black uppercase tracking-tighter gap-6 transition-all shadow-xl active:scale-95 border-4 group"
-                        >
-                          {isRecording ? <Square size={32} className="fill-current" /> : <Mic size={36} strokeWidth={3} className="group-hover:scale-110 transition-transform" />}
-                          {isRecording ? "Stop Recording" : "Voice Input"}
-                        </Button>
-                        <Button
-                          onClick={submitAnswer}
-                          disabled={isLoading || !transcript.trim()}
-                          className="flex-1 h-24 md:h-28 bg-teal hover:bg-teal-dark text-white rounded-[2.5rem] text-xl md:text-3xl font-black uppercase tracking-tighter gap-6 shadow-[0_32px_64px_-16px_rgba(29,158,117,0.4)] transition-all hover:scale-[1.02] active:scale-95 disabled:scale-100 disabled:opacity-30 group"
-                        >
-                          {isLoading ? <Loader2 className="animate-spin size-12" /> : (
-                            <span className="flex items-center gap-4">
-                              Send Answer <ChevronRight size={44} strokeWidth={3} className="group-hover:translate-x-3 transition-transform" />
-                            </span>
-                          )}
-                        </Button>
-                      </div>
+                        <Volume2 size={16} className="mr-2" /> Ulangi Pertanyaan
+                      </Button>
                     </div>
                   </div>
-                </Card>
-              </div>
+
+                  {/* Feedback Overlay if exists */}
+                  {state.currentFeedback && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-6 md:p-8 bg-zinc-50 dark:bg-zinc-800/50 rounded-3xl border border-zinc-100 dark:border-zinc-800 flex gap-5"
+                    >
+                      <div className="size-8 rounded-full bg-teal/10 text-teal flex items-center justify-center shrink-0">
+                        <Award size={16} />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-teal uppercase tracking-widest">HR Feedback</p>
+                        <p className="text-sm md:text-lg font-medium text-zinc-600 dark:text-zinc-300 leading-relaxed italic">&ldquo;{state.currentFeedback}&rdquo;</p>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Input Interface */}
+                  <div className="space-y-8">
+                    <div className="relative">
+                      <textarea
+                        value={transcript}
+                        onChange={(e) => setTranscript(e.target.value)}
+                        placeholder="Klik mikrofon untuk mulai bicara atau ketik jawabanmu di sini..."
+                        className="w-full h-48 md:h-64 p-8 md:p-12 rounded-[2.5rem] bg-zinc-50/50 dark:bg-zinc-950/30 border-2 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-teal/20 focus:ring-0 text-xl md:text-3xl font-medium dark:text-zinc-200 no-scrollbar resize-none transition-all shadow-inner leading-relaxed"
+                      />
+                      <AnimatePresence>
+                        {isRecording && (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="absolute top-6 right-8 flex items-center gap-3 bg-red-500 text-white px-5 py-2.5 rounded-full shadow-2xl"
+                          >
+                            <span className="size-2 rounded-full bg-white animate-pulse" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Recording</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-5">
+                      <Button
+                        onClick={toggleRecording}
+                        variant={isRecording ? "destructive" : "outline"}
+                        className="flex-1 h-20 md:h-24 rounded-[2rem] text-lg md:text-2xl font-bold uppercase tracking-tight gap-4 transition-all shadow-lg active:scale-95 border-2 group"
+                      >
+                        {isRecording ? <Square size={24} className="fill-current" /> : <Mic size={28} className="group-hover:scale-110 transition-transform" />}
+                        {isRecording ? "Hentikan" : "Bicara Sekarang"}
+                      </Button>
+                      <Button
+                        onClick={submitAnswer}
+                        disabled={isLoading || !transcript.trim()}
+                        className="flex-1 h-20 md:h-24 bg-teal hover:bg-teal-dark text-white rounded-[2rem] text-lg md:text-2xl font-bold uppercase tracking-tight gap-4 shadow-3xl shadow-teal/30 transition-all hover:scale-[1.02] active:scale-95 disabled:scale-100 disabled:opacity-40"
+                      >
+                        {isLoading ? <Loader2 className="animate-spin size-8" /> : (
+                          <span className="flex items-center gap-3">
+                            Kirim Jawaban <ChevronRight size={32} />
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
             </div>
           </motion.div>
         )}
 
-        {/* RESULT STATE */}
+        {/* RESULT STATE - Data-rich and sophisticated */}
         {state.step === "result" && (
           <motion.div
             key="result"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-5xl mx-auto"
+            className="max-w-4xl mx-auto px-4"
           >
-            <Card className="p-12 md:p-24 border-none glass shadow-[0_100px_150px_-50px_rgba(0,0,0,0.2)] rounded-[4rem] md:rounded-[6rem] relative overflow-hidden text-center">
-               <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-teal via-purple to-teal" />
+            <Card className="p-8 md:p-20 border-none bg-white dark:bg-zinc-900 rounded-[3rem] md:rounded-[5rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.15)] relative overflow-hidden text-center">
+               <div className="absolute top-0 left-0 w-full h-3 bg-teal" />
                
-               <motion.div 
-                 initial={{ rotate: 0 }}
-                 animate={{ rotate: 360 }}
-                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                 className="absolute -top-20 -right-20 w-80 h-80 bg-teal/5 rounded-full border border-teal/10 pointer-events-none" 
-               />
-
-               <div className="w-32 h-32 bg-teal rounded-[2.5rem] flex items-center justify-center text-white mx-auto mb-12 shadow-2xl shadow-teal/40 -rotate-12 hover:rotate-0 transition-transform duration-500">
-                  <Award size={64} strokeWidth={2.5} />
+               <div className="w-24 h-24 bg-teal/10 rounded-[2rem] flex items-center justify-center text-teal mx-auto mb-10 rotate-12">
+                  <Award size={48} />
                </div>
 
-               <p className="text-[10px] font-black uppercase tracking-[0.5em] text-teal mb-8">Performance Scorecard</p>
-               <h2 className="text-5xl md:text-9xl font-black dark:text-white tracking-[ -0.05em] mb-12 leading-[0.9]">Session <br />Report.</h2>
+               <p className="text-xs font-bold uppercase tracking-[0.4em] text-teal/60 mb-6">Simulation Complete</p>
+               <h2 className="text-4xl md:text-7xl font-bold dark:text-white tracking-tighter mb-8">Performance Report.</h2>
                
-               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20 text-left">
-                  <div className="p-12 bg-white dark:bg-zinc-950/80 rounded-[4rem] border border-zinc-100 dark:border-white/5 shadow-2xl relative overflow-hidden">
-                    <div className="flex flex-col gap-2 mb-10 relative z-10">
-                       <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Final Readiness Index</span>
-                       <span className="text-8xl md:text-[10rem] font-black text-teal tracking-tighter tabular-nums leading-none">
-                        {state.totalScore}<span className="text-3xl md:text-5xl text-zinc-300 ml-2 font-black">/100</span>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 text-left">
+                  <div className="p-10 bg-zinc-50 dark:bg-zinc-800/40 rounded-[3rem] border border-zinc-100 dark:border-zinc-800 shadow-inner">
+                    <div className="flex flex-col gap-2 mb-6">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Readiness Score</span>
+                       <span className="text-7xl md:text-9xl font-black text-teal tracking-tighter tabular-nums">
+                        {state.totalScore}<span className="text-2xl md:text-4xl text-zinc-300 ml-2">/100</span>
                       </span>
                     </div>
-                    <div className="h-6 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden p-1.5 shadow-inner">
+                    <div className="h-4 w-full bg-zinc-200 dark:bg-zinc-900 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${state.totalScore}%` }}
-                        className="h-full bg-gradient-to-r from-teal to-teal-dark rounded-full shadow-[0_0_20px_rgba(29,158,117,0.4)]"
+                        className="h-full bg-teal"
                       />
                     </div>
                   </div>
 
-                  <div className="p-12 bg-zinc-900 dark:bg-zinc-800/80 rounded-[4rem] text-white flex flex-col justify-center relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform">
-                       <MessageSquare size={120} />
+                  <div className="p-10 bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] text-white flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-6 text-teal">
+                      <AlertCircle size={20} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">HR Final Verdict</span>
                     </div>
-                    <div className="flex items-center gap-4 mb-8 text-teal">
-                      <div className="size-3 rounded-full bg-teal animate-pulse" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">HR Executive Summary</span>
-                    </div>
-                    <p className="text-2xl md:text-4xl font-bold leading-[1.2] italic text-zinc-200 tracking-tight relative z-10">
+                    <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-300 tracking-tight">
                       &ldquo;{state.currentFeedback}&rdquo;
                     </p>
                   </div>
                </div>
 
-               <div className="flex flex-col md:flex-row gap-6 max-w-2xl mx-auto">
+               <div className="flex flex-col sm:flex-row gap-6 max-w-2xl mx-auto">
                   <Button 
                     onClick={() => window.location.reload()}
                     variant="outline"
-                    className="flex-1 h-20 md:h-24 rounded-[2rem] font-black gap-4 text-xl uppercase tracking-tighter transition-all hover:bg-zinc-50 active:scale-95 border-4"
+                    className="flex-1 h-16 md:h-20 rounded-3xl font-bold gap-3 text-lg uppercase tracking-widest transition-all hover:bg-zinc-50 active:scale-95 border-2"
                   >
-                    <RefreshCcw size={24} strokeWidth={3} /> Retake Test
+                    <RefreshCcw size={20} /> Retake Test
                   </Button>
                   <Button 
                     asChild
-                    className="flex-1 h-20 md:h-24 bg-teal hover:bg-teal-dark text-white rounded-[2.5rem] font-black text-xl uppercase tracking-tighter shadow-3xl shadow-teal/30 active:scale-95"
+                    className="flex-1 h-16 md:h-20 bg-teal hover:bg-teal-dark text-white rounded-3xl font-bold text-lg uppercase tracking-widest shadow-3xl shadow-teal/20 active:scale-95"
                   >
-                    <Link href="/dashboard" className="flex items-center gap-4">
-                      Dashboard <ChevronRight size={32} strokeWidth={3} />
+                    <Link href="/dashboard" className="flex items-center gap-3">
+                      Dashboard <ChevronRight size={24} />
                     </Link>
                   </Button>
                </div>
