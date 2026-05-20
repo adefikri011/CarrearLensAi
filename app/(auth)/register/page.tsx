@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   BrainCircuit, 
   Loader2, 
@@ -138,6 +138,7 @@ function RegisterForm() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
   const [isGooglePending, setIsGooglePending] = useState(false);
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -236,36 +237,14 @@ function RegisterForm() {
     setIsLoading(true);
     setPendingValues(values);
     setIsGooglePending(false);
-
-    if (recaptchaRef.current) {
-      recaptchaRef.current.reset();
-      recaptchaRef.current.execute();
-    } else {
-      setIsLoading(false);
-      toast({
-        title: "Terjadi Kesalahan",
-        description: "Gagal memuat reCAPTCHA. Silakan muat ulang halaman.",
-        variant: "destructive",
-      });
-    }
+    setShowCaptcha(true);
   }
 
   const handleGoogleSignup = async () => {
     setIsLoading(true);
     setIsGooglePending(true);
     setPendingValues(null);
-
-    if (recaptchaRef.current) {
-      recaptchaRef.current.reset();
-      recaptchaRef.current.execute();
-    } else {
-      setIsLoading(false);
-      toast({
-        title: "Terjadi Kesalahan",
-        description: "Gagal memuat reCAPTCHA. Silakan muat ulang halaman.",
-        variant: "destructive",
-      });
-    }
+    setShowCaptcha(true);
   };
 
   return (
@@ -383,18 +362,6 @@ function RegisterForm() {
                   </FormItem>
                 )}
               />
-              <div className="hidden">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                  onChange={handleCaptchaChange}
-                  onExpired={() => setIsLoading(false)}
-                  onErrored={() => setIsLoading(false)}
-                  size="invisible"
-                  theme="light"
-                />
-              </div>
-
               <div className="pt-2">
                 <Button 
                   type="submit" 
@@ -457,6 +424,80 @@ function RegisterForm() {
         headline={"Mulai Perjalanan\nKariermu Hari Ini."} 
         subtext="Bergabunglah dengan ribuan pelajar SMK lainnya yang telah menemukan jalur karier terbaik mereka."
       />
+
+      <AnimatePresence>
+        {showCaptcha && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 h-full"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center space-y-6 relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#1D9E75]" />
+              
+              <div className="mx-auto size-14 rounded-2xl bg-teal/10 dark:bg-teal/20 flex items-center justify-center text-[#1D9E75]">
+                <ShieldCheck size={28} />
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">Verifikasi Keamanan</h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
+                  {isGooglePending ? "Selesaikan CAPTCHA untuk daftar dengan Google" : "Selesaikan CAPTCHA untuk membuat akun baru"}
+                </p>
+              </div>
+
+              <div className="flex justify-center py-2 relative">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                  onChange={(token) => {
+                    if (token) {
+                      setShowCaptcha(false);
+                      handleCaptchaChange(token);
+                    }
+                  }}
+                  onExpired={() => {
+                    setShowCaptcha(false);
+                    setIsLoading(false);
+                  }}
+                  onErrored={() => {
+                    setShowCaptcha(false);
+                    setIsLoading(false);
+                    toast({
+                      title: "Gagal memuat reCAPTCHA",
+                      description: "Terjadi kesalahan koneksi reCAPTCHA.",
+                      variant: "destructive",
+                    });
+                  }}
+                  size="normal"
+                  theme="light"
+                  className="dark:invert dark:brightness-[0.8] transition-all duration-300"
+                />
+              </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setShowCaptcha(false);
+                  setIsLoading(false);
+                  setPendingValues(null);
+                  setIsGooglePending(false);
+                }}
+                className="w-full text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-red-500 h-11 rounded-xl"
+              >
+                Batal
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
