@@ -431,29 +431,29 @@ function RegisterForm() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 h-full"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[4px] p-4 h-full"
           >
             <motion.div
-              initial={{ scale: 0.96, y: 8 }}
+              initial={{ scale: 0.98, y: 4 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 8 }}
-              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center space-y-5 relative"
+              exit={{ scale: 0.98, y: 4 }}
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-805/40 rounded-2xl p-6 max-w-sm w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-center space-y-4 relative"
             >
-              <div className="flex flex-col items-center space-y-2 mt-2">
-                <div className="size-11 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
-                  <ShieldCheck size={22} className="stroke-[2]" />
+              <div className="flex flex-col items-center space-y-2">
+                <div className="size-10 rounded-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-100 dark:border-zinc-700 flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                  <ShieldCheck size={20} className="stroke-[1.75]" />
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight pt-1">
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
                   Verifikasi Keamanan
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[260px] mx-auto leading-relaxed">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[240px] mx-auto leading-relaxed">
                   {isGooglePending 
-                    ? "Selesaikan CAPTCHA di bawah untuk mendaftar menggunakan Google." 
-                    : "Silakan verifikasi bahwa Anda bukan robot untuk membuat akun baru."}
+                    ? "Selesaikan CAPTCHA untuk melanjutkan ke Google." 
+                    : "Silakan centang CAPTCHA di bawah untuk menyelesaikan pendaftaran."}
                 </p>
               </div>
 
-              <div className="flex justify-center py-2 h-[82px] items-center">
+              <div className="flex justify-center py-1.5 h-[80px] items-center">
                 <ReCAPTCHA
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
@@ -478,11 +478,11 @@ function RegisterForm() {
                   }}
                   size="normal"
                   theme="light"
-                  className="dark:invert dark:brightness-[0.9] transition-all"
+                  className="transition-all"
                 />
               </div>
 
-              <div className="pt-2">
+              <div className="pt-1.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -491,9 +491,9 @@ function RegisterForm() {
                     setPendingValues(null);
                     setIsGooglePending(false);
                   }}
-                  className="w-full text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 h-10 border border-zinc-200 dark:border-zinc-800 rounded-xl transition-all cursor-pointer"
+                  className="text-xs font-semibold text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-400 hover:underline cursor-pointer"
                 >
-                  Batal & Kembali
+                  Batalkan Verifikasi
                 </button>
               </div>
             </motion.div>

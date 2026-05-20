@@ -140,7 +140,7 @@ function DashboardLayoutContent({
       <Sidebar />
 
       <div className={cn(
-        "flex-1 flex flex-col min-w-0 transition-all duration-300 ease-[0.22,1,0.36,1]",
+        "flex-1 flex flex-col min-w-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
         isSidebarOpen ? "md:pl-[260px]" : "md:pl-[72px]"
       )}>
         {/* Mobile Topbar */}
