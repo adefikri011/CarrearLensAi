@@ -135,6 +135,12 @@ function LoginForm() {
   const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(false);
+  const [isResetPending, setIsResetPending] = useState(false);
+  const [resetValues, setResetValues] = useState<{ email: string; password: string } | null>(null);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetPassword, setResetPassword] = useState("");
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   React.useEffect(() => {
@@ -163,6 +169,49 @@ function LoginForm() {
     }
 
     setCaptchaToken(token);
+
+    if (isResetPending && resetValues) {
+      const values = resetValues;
+      setResetValues(null);
+      setIsResetPending(false);
+      setShowCaptcha(false);
+
+      try {
+        const response = await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: values.email,
+            newPassword: values.password,
+            captchaToken: token,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Gagal memperbarui password");
+        }
+
+        toast({
+          title: "Password Diperbarui",
+          description: "Password Anda berhasil diperbarui. Silakan masuk menggunakan password baru Anda.",
+        });
+
+        setShowResetDialog(false);
+        setResetEmail("");
+        setResetPassword("");
+      } catch (error) {
+        toast({
+          title: "Gagal Mengubah Password",
+          description: error instanceof Error ? error.message : "Terjadi kesalahan sistem.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
 
     if (isGooglePending) {
       setIsGooglePending(false);
@@ -297,7 +346,13 @@ function LoginForm() {
                   <FormItem className="space-y-1">
                     <div className="flex items-center justify-between ml-1">
                       <FormLabel className="text-xs font-bold text-gray-700 dark:text-zinc-300">Password</FormLabel>
-                      <Link href="#" className="text-[10px] font-bold text-[#1D9E75] hover:underline">Lupa Password?</Link>
+                      <button 
+                        type="button"
+                        onClick={() => setShowResetDialog(true)}
+                        className="text-[10px] font-bold text-[#1D9E75] hover:underline cursor-pointer"
+                      >
+                        Lupa Password?
+                      </button>
                     </div>
                     <FormControl>
                       <div className="relative">
@@ -405,6 +460,8 @@ function LoginForm() {
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[240px] mx-auto leading-relaxed">
                   {isGooglePending 
                     ? "Selesaikan CAPTCHA untuk melanjutkan ke Google." 
+                    : isResetPending
+                    ? "Selesaikan CAPTCHA untuk menyetel ulang password."
                     : "Silakan centang CAPTCHA di bawah untuk memproses masuk."}
                 </p>
               </div>
@@ -446,10 +503,116 @@ function LoginForm() {
                     setIsLoading(false);
                     setPendingValues(null);
                     setIsGooglePending(false);
+                    setIsResetPending(false);
+                    setResetValues(null);
                   }}
                   className="text-xs font-semibold text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-400 hover:underline cursor-pointer"
                 >
                   Batalkan Verifikasi
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {showResetDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[4px] p-4 h-full"
+          >
+            <motion.div
+              initial={{ scale: 0.98, y: 4 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.98, y: 4 }}
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-6 max-w-sm w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] space-y-4 relative text-left"
+            >
+              <div>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                  Atur Ulang Password
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
+                  Masukkan email akun Anda dan password baru yang ingin Anda gunakan.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 ml-1">Email Anda</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="nama@email.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full h-11 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 text-xs font-medium dark:text-white focus:outline-none focus:ring-1 focus:ring-[#1D9E75]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 ml-1">Password Baru</label>
+                  <div className="relative">
+                    <input
+                      type={showResetPassword ? "text" : "password"}
+                      required
+                      placeholder="Minimal 8 karakter"
+                      value={resetPassword}
+                      onChange={(e) => setResetPassword(e.target.value)}
+                      className="w-full h-11 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 pr-10 text-xs font-medium dark:text-white focus:outline-none focus:ring-1 focus:ring-[#1D9E75]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowResetPassword(!showResetPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    >
+                      {showResetPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!resetEmail || !resetPassword) {
+                      toast({
+                        title: "Formulir Kosong",
+                        description: "Mohon isi semua data.",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    if (resetPassword.length < 8) {
+                      toast({
+                        title: "Password Terlalu Pendek",
+                        description: "Password harus minimal 8 karakter.",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    setIsLoading(true);
+                    setResetValues({ email: resetEmail, password: resetPassword });
+                    setIsResetPending(true);
+                    setIsGooglePending(false);
+                    setPendingValues(null);
+                    setShowCaptcha(true);
+                  }}
+                  className="w-full text-xs font-bold text-white bg-[#1D9E75] hover:bg-[#168562] h-10 rounded-xl transition-all cursor-pointer flex items-center justify-center font-semibold"
+                >
+                  Perbarui Password Saya
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetDialog(false);
+                    setResetEmail("");
+                    setResetPassword("");
+                  }}
+                  className="w-full text-xs font-semibold text-zinc-500 hover:text-zinc-650 dark:text-zinc-400 dark:hover:text-zinc-300 h-10 border border-zinc-200 dark:border-zinc-850 rounded-xl transition-all cursor-pointer"
+                >
+                  Batal
                 </button>
               </div>
             </motion.div>
