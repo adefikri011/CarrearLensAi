@@ -379,19 +379,22 @@ const HeroAndPlayground = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-[0_4px_18px_rgba(0,0,0,0.02)] cursor-pointer hover:border-[#1D9E75] transition-all group"
+            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#1D9E75]/5 dark:bg-[#1D9E75]/10 border border-[#1D9E75]/25 dark:border-[#1D9E75]/30 hover:border-[#1D9E75]/50 hover:bg-[#1D9E75]/10 dark:hover:bg-[#1D9E75]/15 transition-all duration-300 cursor-pointer group select-none mb-1"
           >
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="text-[#1D9E75]"
+              className="text-[#1D9E75] flex items-center justify-center shrink-0"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5" />
             </motion.div>
-            <span className="text-[10px] md:text-xs font-black tracking-widest text-[#1D9E75] uppercase font-mono">
+            <span className="text-[10px] sm:text-xs font-semibold tracking-wider text-[#1D9E75] uppercase font-mono">
               ELEVATE YOUR CAREER PATHWAY • CO-PILOT AI
             </span>
-            <div className="w-1.5 h-1.5 rounded-full bg-[#1D9E75] animate-ping" />
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1D9E75] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#1D9E75] m-auto"></span>
+            </span>
           </motion.div>
 
           <div className="space-y-4">
