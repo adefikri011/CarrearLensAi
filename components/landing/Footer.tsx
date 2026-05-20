@@ -114,7 +114,7 @@ export const Footer = () => {
            <div className="flex flex-col md:flex-row items-center gap-4">
              <p>© {currentYear} CAREERLENS AI — JUARAVIBECODING 2026.</p>
              <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#1D9E75]/30" />
-             <p>Dibuat Oleh Fikri Ade</p>
+             <p>Dibuat Oleh Ade Fikri</p>
            </div>
            <div className="flex items-center gap-2 px-6 py-2 bg-gray-50 dark:bg-zinc-900/50 rounded-full border border-gray-100 dark:border-zinc-800 transition-colors">
               <span className="text-[9px] font-black text-gray-400 dark:text-zinc-700">POWERED BY</span>
