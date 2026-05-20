@@ -387,36 +387,29 @@ function LoginForm() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-md p-4 h-full"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 h-full"
           >
             <motion.div
-              initial={{ scale: 0.95, y: 15 }}
+              initial={{ scale: 0.96, y: 8 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              className="bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800/60 rounded-[2.5rem] p-8 max-w-sm w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] text-center space-y-6 relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
+              exit={{ scale: 0.96, y: 8 }}
+              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center space-y-5 relative"
             >
-              <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-teal/10 via-teal/5 to-transparent dark:from-teal/20 dark:via-teal/5 dark:to-transparent pointer-events-none opacity-65" />
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-dark via-teal to-purple-600" />
-              
-              <div className="relative mx-auto size-16 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-2xl bg-teal/10 dark:bg-teal/20 animate-pulse" />
-                <div className="relative size-12 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-zinc-100 dark:border-zinc-800 flex items-center justify-center text-teal">
-                  <ShieldCheck size={24} className="stroke-[2.25]" />
+              <div className="flex flex-col items-center space-y-2 mt-2">
+                <div className="size-11 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
+                  <ShieldCheck size={22} className="stroke-[2]" />
                 </div>
-              </div>
-              
-              <div className="space-y-2 relative">
-                <h3 className="text-xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-none">
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight pt-1">
                   Verifikasi Keamanan
                 </h3>
-                <p className="text-[13px] text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed max-w-[240px] mx-auto">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[260px] mx-auto leading-relaxed">
                   {isGooglePending 
-                    ? "Selesaikan CAPTCHA di bawah untuk melanjutkan masuk menggunakan Google." 
+                    ? "Selesaikan CAPTCHA di bawah untuk masuk menggunakan Google." 
                     : "Silakan verifikasi bahwa Anda bukan robot untuk memproses login."}
                 </p>
               </div>
 
-              <div className="flex justify-center p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 shadow-inner min-h-[102px] items-center relative overflow-hidden">
+              <div className="flex justify-center py-2 h-[82px] items-center">
                 <ReCAPTCHA
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
@@ -441,23 +434,24 @@ function LoginForm() {
                   }}
                   size="normal"
                   theme="light"
-                  className="dark:invert dark:brightness-[0.8] transition-all duration-350"
+                  className="dark:invert dark:brightness-[0.9] transition-all"
                 />
               </div>
 
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setShowCaptcha(false);
-                  setIsLoading(false);
-                  setPendingValues(null);
-                  setIsGooglePending(false);
-                }}
-                className="w-full text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-red-500 dark:hover:text-rose-400 h-12 bg-zinc-50 dark:bg-zinc-900 hover:bg-red-50/50 dark:hover:bg-red-950/10 border border-zinc-100 dark:border-zinc-800/80 rounded-2xl transition-all duration-300"
-              >
-                Batal & Kembali
-              </Button>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCaptcha(false);
+                    setIsLoading(false);
+                    setPendingValues(null);
+                    setIsGooglePending(false);
+                  }}
+                  className="w-full text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 h-10 border border-zinc-200 dark:border-zinc-800 rounded-xl transition-all cursor-pointer"
+                >
+                  Batal & Kembali
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
