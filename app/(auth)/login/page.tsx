@@ -132,6 +132,8 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
+  const [isGooglePending, setIsGooglePending] = useState(false);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   React.useEffect(() => {
@@ -153,79 +155,110 @@ function LoginForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!captchaToken) {
-      toast({
-        title: "Verifikasi Diperlukan",
-        description: "Silakan selesaikan CAPTCHA terlebih dahulu.",
-        variant: "destructive",
-      });
+  const handleCaptchaChange = async (token: string | null) => {
+    if (!token) {
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const result = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-        captchaToken,
-        redirect: false,
-      });
+    setCaptchaToken(token);
 
-      if (result?.error) {
-        let errorMessage = "Email atau password salah. Silakan coba lagi.";
-        
-        if (result.error === "CAPTCHA_FAILED") {
-          errorMessage = "Verifikasi CAPTCHA gagal. Silakan coba lagi.";
-        } else if (result.error === "USER_NOT_FOUND") {
-          errorMessage = "Email tidak terdaftar. Silakan daftar terlebih dahulu.";
-        } else if (result.error === "OAUTH_ONLY_ACCOUNT") {
-          errorMessage = "Akun ini dibuat melalui Google. Silakan masuk menggunakan Google.";
-        } else if (result.error === "INVALID_PASSWORD") {
-          errorMessage = "Password salah. Silakan coba lagi.";
-        }
-
+    if (isGooglePending) {
+      setIsGooglePending(false);
+      try {
+        await signIn("google", { callbackUrl: "/dashboard" });
+      } catch (error) {
+        setIsLoading(false);
         toast({
-          title: "Gagal Masuk",
-          description: errorMessage,
+          title: "Terjadi Kesalahan",
+          description: "Gagal masuk dengan Google.",
           variant: "destructive",
         });
-        // Reset recaptcha on failure
-        recaptchaRef.current?.reset();
-        setCaptchaToken(null);
-      } else {
-        router.push("/dashboard");
-        router.refresh();
       }
-    } catch (error) {
+      return;
+    }
+
+    if (pendingValues) {
+      const values = pendingValues;
+      setPendingValues(null);
+
+      try {
+        const result = await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          captchaToken: token,
+          redirect: false,
+        });
+
+        if (result?.error) {
+          let errorMessage = "Email atau password salah. Silakan coba lagi.";
+          
+          if (result.error === "CAPTCHA_FAILED") {
+            errorMessage = "Verifikasi CAPTCHA gagal. Silakan coba lagi.";
+          } else if (result.error === "USER_NOT_FOUND") {
+            errorMessage = "Email tidak terdaftar. Silakan daftar terlebih dahulu.";
+          } else if (result.error === "OAUTH_ONLY_ACCOUNT") {
+            errorMessage = "Akun ini dibuat melalui Google. Silakan masuk menggunakan Google.";
+          } else if (result.error === "INVALID_PASSWORD") {
+            errorMessage = "Password salah. Silakan coba lagi.";
+          }
+
+          toast({
+            title: "Gagal Masuk",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          recaptchaRef.current?.reset();
+          setCaptchaToken(null);
+        } else {
+          router.push("/dashboard");
+          router.refresh();
+        }
+      } catch (error) {
+        toast({
+          title: "Terjadi Kesalahan",
+          description: "Gagal menghubungkan ke server.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setPendingValues(values);
+    setIsGooglePending(false);
+
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      recaptchaRef.current.execute();
+    } else {
+      setIsLoading(false);
       toast({
         title: "Terjadi Kesalahan",
-        description: "Gagal menghubungkan ke server.",
+        description: "Gagal memuat reCAPTCHA. Silakan muat ulang halaman.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
   const handleGoogleLogin = async () => {
-    if (!captchaToken) {
-      toast({
-        title: "Verifikasi Diperlukan",
-        description: "Silakan selesaikan CAPTCHA terlebih dahulu sebelum masuk dengan Google.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setIsLoading(true);
-    try {
-      await signIn("google", { callbackUrl: "/dashboard" });
-    } catch (error) {
+    setIsGooglePending(true);
+    setPendingValues(null);
+
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      recaptchaRef.current.execute();
+    } else {
       setIsLoading(false);
       toast({
         title: "Terjadi Kesalahan",
-        description: "Gagal masuk dengan Google.",
+        description: "Gagal memuat reCAPTCHA. Silakan muat ulang halaman.",
         variant: "destructive",
       });
     }
@@ -308,19 +341,21 @@ function LoginForm() {
                   </FormItem>
                 )}
               />
-              <div className="flex justify-center pt-2">
+              <div className="hidden">
                 <ReCAPTCHA
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                  onChange={(token) => setCaptchaToken(token)}
+                  onChange={handleCaptchaChange}
+                  onExpired={() => setIsLoading(false)}
+                  onErrored={() => setIsLoading(false)}
+                  size="invisible"
                   theme="light"
-                  className="dark:invert dark:brightness-[0.8] transition-all"
                 />
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full h-12 bg-black dark:bg-white hover:bg-gray-900 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-bold text-base shadow-lg shadow-black/10 transition-all active:scale-[0.98] mt-2"
+                className="w-full h-12 bg-black dark:bg-white hover:bg-gray-900 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-bold text-base shadow-lg shadow-black/10 transition-all active:scale-[0.98] mt-4"
                 disabled={isLoading}
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Masuk"}

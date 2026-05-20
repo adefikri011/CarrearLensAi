@@ -136,6 +136,8 @@ function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
+  const [isGooglePending, setIsGooglePending] = useState(false);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -163,73 +165,104 @@ function RegisterForm() {
     setPasswordStrength(score);
   }, [password]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!captchaToken) {
-      toast({
-        title: "Verifikasi Diperlukan",
-        description: "Silakan selesaikan CAPTCHA terlebih dahulu.",
-        variant: "destructive",
-      });
+  const handleCaptchaChange = async (token: string | null) => {
+    if (!token) {
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          password: values.password,
-          captchaToken,
-        }),
-      });
+    setCaptchaToken(token);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Gagal melakukan registrasi");
+    if (isGooglePending) {
+      setIsGooglePending(false);
+      try {
+        await signIn("google", { callbackUrl: "/dashboard" });
+      } catch (error) {
+        setIsLoading(false);
+        toast({
+          title: "Terjadi Kesalahan",
+          description: "Gagal daftar dengan Google.",
+          variant: "destructive",
+        });
       }
+      return;
+    }
 
+    if (pendingValues) {
+      const values = pendingValues;
+      setPendingValues(null);
+
+      try {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            password: values.password,
+            captchaToken: token,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Gagal melakukan registrasi");
+        }
+
+        toast({
+          title: "Pendaftaran Berhasil!",
+          description: "Silakan masuk menggunakan akun barumu.",
+        });
+        
+        router.push("/login");
+      } catch (error) {
+        recaptchaRef.current?.reset();
+        setCaptchaToken(null);
+        toast({
+          title: "Gagal Mendaftar",
+          description: error instanceof Error ? error.message : "Terjadi kesalahan sistem.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setPendingValues(values);
+    setIsGooglePending(false);
+
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      recaptchaRef.current.execute();
+    } else {
+      setIsLoading(false);
       toast({
-        title: "Pendaftaran Berhasil!",
-        description: "Silakan masuk menggunakan akun barumu.",
-      });
-      
-      router.push("/login");
-    } catch (error) {
-      // Reset recaptcha on failure
-      recaptchaRef.current?.reset();
-      setCaptchaToken(null);
-      toast({
-        title: "Gagal Mendaftar",
-        description: error instanceof Error ? error.message : "Terjadi kesalahan sistem.",
+        title: "Terjadi Kesalahan",
+        description: "Gagal memuat reCAPTCHA. Silakan muat ulang halaman.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
   const handleGoogleSignup = async () => {
-    if (!captchaToken) {
-      toast({
-        title: "Verifikasi Diperlukan",
-        description: "Silakan selesaikan CAPTCHA terlebih dahulu sebelum daftar dengan Google.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setIsLoading(true);
-    try {
-      await signIn("google", { callbackUrl: "/dashboard" });
-    } catch (error) {
+    setIsGooglePending(true);
+    setPendingValues(null);
+
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      recaptchaRef.current.execute();
+    } else {
       setIsLoading(false);
       toast({
         title: "Terjadi Kesalahan",
-        description: "Gagal daftar dengan Google.",
+        description: "Gagal memuat reCAPTCHA. Silakan muat ulang halaman.",
         variant: "destructive",
       });
     }
@@ -350,13 +383,15 @@ function RegisterForm() {
                   </FormItem>
                 )}
               />
-              <div className="flex justify-center pt-1 pb-1">
+              <div className="hidden">
                 <ReCAPTCHA
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                  onChange={(token) => setCaptchaToken(token)}
+                  onChange={handleCaptchaChange}
+                  onExpired={() => setIsLoading(false)}
+                  onErrored={() => setIsLoading(false)}
+                  size="invisible"
                   theme="light"
-                  className="dark:invert dark:brightness-[0.8] scale-[0.85] transition-all origin-center"
                 />
               </div>
 
