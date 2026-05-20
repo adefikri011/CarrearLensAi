@@ -280,19 +280,8 @@ const ROADMAP_DATA: RoadmapWeek[] = [
 // --- Premium Tech Background SVG Component ---
 const TechGridBackground = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-    {/* Grid Overlay Line Pattern */}
-    <svg className="absolute inset-0 w-full h-full opacity-[0.03] dark:opacity-[0.07]" width="100%" height="100%">
-      <defs>
-        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" />
-    </svg>
-    
-    {/* Concentric Circle Accents */}
-    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-dashed border-zinc-500/10 dark:border-zinc-500/5 rounded-full pointer-events-none" />
-    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] border border-dashed border-zinc-500/5 dark:border-zinc-500/2 rounded-full pointer-events-none" />
+    {/* Clean, grid-free spotlight effect */}
+    <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-[#1D9E75]/10 to-transparent rounded-full blur-[120px] pointer-events-none animate-pulse" />
   </div>
 );
 
@@ -365,42 +354,42 @@ const HeroAndPlayground = () => {
   const currProfile = AUDIENCE_DATA[selectedAudience];
 
   return (
-    <section className="relative w-full bg-slate-50 dark:bg-zinc-950 pt-28 pb-20 md:pt-40 md:pb-36 overflow-hidden px-4 md:px-6 transition-colors duration-500">
+    <section className="relative w-full bg-zinc-50 dark:bg-zinc-950 pt-24 pb-16 md:pt-36 md:pb-28 overflow-hidden px-4 md:px-6 transition-colors duration-500">
       <TechGridBackground />
       
-      {/* Dynamic Glow Orbs for elegant visuals */}
+      {/* Subtle floating ambient highlight spots for modern elegance */}
       <motion.div 
         animate={{ 
-          x: [0, 40, -30, 0],
-          y: [0, -40, 20, 0],
-          scale: [1, 1.15, 0.9, 1],
-          opacity: [0.6, 0.75, 0.55, 0.6]
+          x: [0, 20, -15, 0],
+          y: [0, -20, 15, 0],
+          scale: [1, 1.05, 0.95, 1],
+          opacity: [0.35, 0.45, 0.3, 0.35]
         }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-40 left-1/4 w-[550px] h-[550px] bg-[#1D9E75]/10 dark:bg-[#1D9E75]/12 rounded-full blur-[120px] pointer-events-none" 
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-40 left-1/4 w-[500px] h-[500px] bg-[#1D9E75]/8 dark:bg-[#1D9E75]/10 rounded-full blur-[100px] pointer-events-none" 
       />
       
       <motion.div 
         animate={{ 
-          x: [0, -40, 30, 0],
-          y: [0, 50, -20, 0],
-          scale: [1, 0.95, 1.1, 1],
-          opacity: [0.5, 0.7, 0.45, 0.5]
+          x: [0, -20, 15, 0],
+          y: [0, 25, -15, 0],
+          scale: [1, 0.95, 1.05, 1],
+          opacity: [0.3, 0.4, 0.25, 0.3]
         }}
-        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-[#534AB7]/12 dark:bg-[#534AB7]/10 rounded-full blur-[140px] pointer-events-none" 
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#534AB7]/8 dark:bg-[#534AB7]/6 rounded-full blur-[120px] pointer-events-none" 
       />
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-14 relative z-10">
         
         {/* Left Column: Visual copy & details */}
         <div className="w-full lg:w-1/2 text-center lg:text-left space-y-8">
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_18px_rgba(0,0,0,0.02)] cursor-pointer hover:border-[#1D9E75] transition-all group"
+            className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-[0_4px_18px_rgba(0,0,0,0.02)] cursor-pointer hover:border-[#1D9E75] transition-all group"
           >
             <motion.div
               animate={{ rotate: 360 }}
@@ -416,24 +405,51 @@ const HeroAndPlayground = () => {
           </motion.div>
 
           <div className="space-y-4">
-            <h1 className="text-[34px] sm:text-6xl lg:text-[72px] font-black tracking-tight text-zinc-900 dark:text-white leading-[0.95] uppercase italic font-sans">
-              Potensi Karirmu, <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1D9E75] via-[#2ba87e] to-[#534AB7] relative">
+            <h1 className="text-[34px] sm:text-6xl lg:text-[70px] font-black tracking-tight text-zinc-900 dark:text-white leading-[0.95] uppercase italic font-sans overflow-hidden">
+              <motion.span 
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="block"
+              >
+                Potensi Karirmu,
+              </motion.span>
+              <motion.span 
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-clip-text text-transparent bg-gradient-to-r from-[#1D9E75] via-[#2ba87e] to-[#534AB7] relative block"
+              >
                 Nyata di Depan Mata.
-                <span className="absolute left-0 bottom-1 w-full h-[3px] bg-gradient-to-r from-[#1D9E75] to-[#534AB7] origin-left scale-x-75 block" />
-              </span>
+                <motion.span 
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 0.8 }}
+                  transition={{ duration: 1.1, delay: 0.75, ease: "easeOut" }}
+                  className="absolute left-0 bottom-1 w-full h-[3px] bg-gradient-to-r from-[#1D9E75] to-[#534AB7] origin-left block" 
+                />
+              </motion.span>
             </h1>
             
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed font-semibold">
+            <motion.p 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed font-semibold"
+            >
               Kompilasi engine kualifikasi berbasis AI yang siap mengaudit standar CV ATS Anda, mendeteksi korelasi kurikulum industri, membimbing roadmap pembelajaran taktis, dan membuka akses eksklusif bursa kerja nyata.
-            </p>
+            </motion.p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.52, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+          >
             <Link href={authenticated ? "/dashboard/cv" : "/register"} className="w-full sm:w-auto">
               <button 
                 id="hero-cta-main-premium"
-                className="w-full sm:w-auto h-16 px-10 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white hover:shadow-[0_12px_36px_rgba(29,158,117,0.25)] hover:scale-[1.03] active:scale-[0.97] transition-all duration-350 flex items-center justify-center gap-3 cursor-pointer group"
+                className="w-full sm:w-auto h-16 px-10 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white hover:shadow-[0_12px_36px_rgba(29,158,117,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer group"
               >
                 Mulai Evaluasi CV Gratis
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
@@ -443,17 +459,22 @@ const HeroAndPlayground = () => {
             <button 
               id="hero-cta-demo-premium"
               onClick={() => setIsVideoOpen(true)}
-              className="w-full sm:w-auto h-16 px-10 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-[1.03] active:scale-[0.97] transition-all duration-350 flex items-center justify-center gap-3 cursor-pointer shadow-sm group"
+              className="w-full sm:w-auto h-16 px-10 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-855 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer shadow-sm group"
             >
-              <div className="w-7 h-7 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-115 transition-transform shrink-0">
+              <div className="w-7 h-7 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
                 <Play size={10} fill="currentColor" className="ml-0.5" />
               </div>
               Simulasi & Demo Video
             </button>
-          </div>
+          </motion.div>
 
           {/* Social Proof Stats Accord */}
-          <div className="pt-8 border-t border-zinc-200/80 dark:border-zinc-800/40 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="pt-8 border-t border-zinc-200/80 dark:border-zinc-800/40 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4"
+          >
             <div className="flex -space-x-3">
               {[
                 { label: "SMK", bg: "from-[#1D9E75] to-[#2ba87e]" },
@@ -472,22 +493,22 @@ const HeroAndPlayground = () => {
                 {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="currentColor" stroke="none" />)}
               </div>
               <p className="text-[11px] font-extrabold text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wider font-mono">
-                RATED 4.9/5 BY HRD REKRUTMENT BUMN & GLOBAL ENTERPRISE
+                RATED 4.9/5 BY HRD REKRUTMENT BUMN & KORPORAT NASIONAL
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Right Column: Premium Interactive Sandbox Playground */}
         <div className="w-full lg:w-1/2">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/90 rounded-[32px] shadow-[0_24px_50px_-15px_rgba(0,0,0,0.06)] dark:shadow-[0_40px_90px_rgba(0,0,0,0.3)] overflow-hidden relative"
+            transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.15 }}
+            className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 rounded-[28px] shadow-[0_20px_45px_-12px_rgba(0,0,0,0.04)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.25)] overflow-hidden relative"
           >
             {/* Embedded Ambient Indicator */}
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#1D9E75]/50 to-transparent" />
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#1D9E75]/40 to-transparent" />
 
             {/* Window glass controls */}
             <div className="bg-zinc-50/60 dark:bg-zinc-900/40 p-5 border-b border-zinc-150 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
