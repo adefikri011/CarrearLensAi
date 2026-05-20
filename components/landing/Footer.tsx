@@ -65,7 +65,7 @@ export const Footer = () => {
               </span>
             </Link>
             <p className="text-gray-500 dark:text-zinc-500 text-[15px] font-medium leading-relaxed max-w-sm mx-auto md:mx-0">
-              Membangun jembatan antara pendidikan dan industri modern melalui kekuatan AI yang presisi. Khusus dikembangkan untuk talenta muda SMK Indonesia.
+              Membangun jembatan antara pendidikan dan industri modern melalui kekuatan AI yang presisi. Dikembangkan untuk membimbing talenta muda Indonesia menuju karir impian.
             </p>
             <div className="flex gap-4 text-gray-400">
                {[Instagram, Twitter, Linkedin, Github].map((Icon, i) => (
