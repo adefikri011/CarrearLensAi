@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { BrainCircuit, Instagram, Twitter, Linkedin, Github } from "lucide-react";
+import { BrainCircuit, Instagram, MessageCircle, Linkedin, Github } from "lucide-react";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -68,8 +68,19 @@ export const Footer = () => {
               Membangun jembatan antara pendidikan dan industri modern melalui kekuatan AI yang presisi. Dikembangkan untuk membimbing talenta muda Indonesia menuju karir impian.
             </p>
             <div className="flex gap-4 text-gray-400">
-               {[Instagram, Twitter, Linkedin, Github].map((Icon, i) => (
-                 <Link key={i} href="#" className="hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-all hover:scale-110 active:scale-95 duration-200">
+               {[
+                 { Icon: Instagram, href: "https://www.instagram.com/ficckryy" },
+                 { Icon: MessageCircle, href: "https://wa.me/62895329890324" },
+                 { Icon: Linkedin, href: "https://www.linkedin.com/in/adeifikriamsyarr" },
+                 { Icon: Github, href: "https://github.com/adefikri011" }
+               ].map(({ Icon, href }, i) => (
+                 <Link 
+                   key={i} 
+                   href={href} 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   className="hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-all hover:scale-110 active:scale-95 duration-200"
+                 >
                     <Icon size={20} />
                  </Link>
                ))}
