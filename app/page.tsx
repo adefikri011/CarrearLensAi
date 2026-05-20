@@ -61,22 +61,12 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   id
 }) => {
   const directions = {
-    up: { y: 25, x: 0 },
-    down: { y: -25, x: 0 },
-    left: { x: 25, y: 0 },
-    right: { x: -25, y: 0 },
+    up: { y: 35, x: 0 },
+    down: { y: -35, x: 0 },
+    left: { x: 35, y: 0 },
+    right: { x: -35, y: 0 },
     none: { x: 0, y: 0 }
   };
-
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // Robust iframe fallback: Force transition into visible state if window intersection fails
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 150 + delay * 400);
-    return () => clearTimeout(timer);
-  }, [delay]);
 
   return (
     <motion.div
@@ -85,13 +75,16 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
         opacity: 0, 
         ...directions[direction]
       }}
-      animate={isVisible ? { opacity: 1, y: 0, x: 0 } : { opacity: 0, ...directions[direction] }}
-      onViewportEnter={() => setIsVisible(true)}
-      viewport={{ once: true, margin: "-10px" }}
+      whileInView={{ 
+        opacity: 1, 
+        y: 0, 
+        x: 0 
+      }}
+      viewport={{ once: true, amount: 0.05, margin: "0px 0px -20px 0px" }}
       transition={{ 
-        duration: 0.7, 
-        delay: delay * 0.35, 
-        ease: [0.25, 1, 0.5, 1] 
+        duration: 0.85, 
+        delay: delay * 0.12, 
+        ease: [0.16, 1, 0.3, 1] 
       }}
       className={className}
     >
@@ -305,9 +298,6 @@ const HeroAndPlayground = () => {
   const [interviewAnswered, setInterviewAnswered] = useState<number | null>(null);
   const [waveformBars, setWaveformBars] = useState<number[]>([]);
   
-  // Video Modal State
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
-
   // Waveform animation effect: highly continuous and organic
   useEffect(() => {
     const interval = setInterval(() => {
@@ -457,14 +447,17 @@ const HeroAndPlayground = () => {
             </Link>
             
             <button 
-              id="hero-cta-demo-premium"
-              onClick={() => setIsVideoOpen(true)}
-              className="w-full sm:w-auto h-16 px-10 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-855 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer shadow-sm group"
+              id="hero-cta-features-premium"
+              onClick={() => {
+                const element = document.getElementById("fitur");
+                if (element) {
+                  element.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="w-full sm:w-auto h-16 px-10 bg-white dark:bg-zinc-900 text-zinc-805 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 hover:border-[#1D9E75]/40 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer shadow-sm group"
             >
-              <div className="w-7 h-7 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-                <Play size={10} fill="currentColor" className="ml-0.5" />
-              </div>
-              Simulasi & Demo Video
+              <Compass size={16} className="text-[#1D9E75] group-hover:rotate-45 transition-transform duration-300 shrink-0" />
+              Eksplorasi Fitur
             </button>
           </motion.div>
 
@@ -947,71 +940,6 @@ const HeroAndPlayground = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* --- PRESTIGIOUS VIDEO DEMO POPUP --- */}
-      <AnimatePresence>
-        {isVideoOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, y: 30 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 30 }}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative"
-            >
-              <div className="flex items-center justify-between p-5 border-b border-zinc-150 dark:border-zinc-800">
-                <div className="flex items-center gap-2">
-                  <Play size={14} className="text-[#1D9E75]" fill="currentColor" />
-                  <span className="font-black text-xs uppercase tracking-widest text-zinc-800 dark:text-zinc-100 font-mono">
-                    DEMO SIMULASI CO-PILOT CAREERLENS AI
-                  </span>
-                </div>
-                <button 
-                  onClick={() => setIsVideoOpen(false)}
-                  className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              {/* Simulated Tech Demo Screen inside popup */}
-              <div className="aspect-video bg-zinc-950 flex flex-col items-center justify-center p-6 sm:p-12 text-center text-white relative">
-                <div className="absolute inset-x-0 top-0 h-48 w-48 bg-[#1D9E75]/10 rounded-full blur-3xl pointer-events-none" />
-                
-                <div className="space-y-6 max-w-xl z-10">
-                  <div className="w-14 h-14 rounded-full bg-[#1D9E75]/20 text-[#1D9E75] flex items-center justify-center mx-auto shadow-lg border border-[#1D9E75]/30">
-                    <Cpu size={26} className="animate-spin-slow" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg sm:text-2xl font-black uppercase italic tracking-tight">Kompilasi Struktur Karir Masa Depan</h3>
-                    <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-semibold">
-                      Sistem AI melacak file presentasimu, memindai parameter rekruter nasional, melengkapi portofolio, membekalimu dengan video evaluasi interview, dan otomatis merekomendasikanmu ke mitra lowongan kerja.
-                    </p>
-                  </div>
-                  
-                  <div className="flex justify-center gap-4 pt-2">
-                    <button 
-                      onClick={() => setIsVideoOpen(false)}
-                      className="px-6 py-3 bg-[#1D9E75] hover:bg-[#15835e] text-white rounded-xl font-black text-[10px] uppercase tracking-wider transition-all cursor-pointer shadow-md"
-                    >
-                      Selesai Menonton
-                    </button>
-                    <Link href="/register">
-                      <button className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-zinc-700">
-                        Buat Akun Sekarang
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };
