@@ -14,8 +14,7 @@ import {
   FileText, 
   Map as MapIcon,
   Settings as SettingsIcon,
-  LogOut,
-  Rocket
+  LogOut
 } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
@@ -50,7 +49,6 @@ function BottomNav() {
 
   const items = [
     { icon: LayoutDashboard, label: "Beranda", href: "/dashboard" },
-    { icon: Rocket, label: "Karya", href: "/portfolio" },
     { icon: Mic, label: "Interview", href: "/interview" },
     { icon: MapIcon, label: "Roadmap", href: "/roadmap" },
     { icon: User, label: "Profil", href: "/profile" },

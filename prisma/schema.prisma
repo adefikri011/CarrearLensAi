@@ -29,7 +29,6 @@ model User {
   analyses      Analysis[]
   cvUploads     CVUpload[]
   roadmapProgress RoadmapProgress[]
-  projects      Project[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -123,23 +122,4 @@ model RoadmapProgress {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, taskId])
-}
-
-model Project {
-  id              String   @id @default(cuid())
-  userId          String
-  title           String
-  slug            String   @unique
-  thumbnailUrl    String?
-  rawDescription  String   @db.Text
-  refinedDescription String @db.Text
-  tools           String[]
-  tags            String[]
-  metrics         String?
-  liveUrl         String?
-  repoUrl         String?
-  isPublic        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
