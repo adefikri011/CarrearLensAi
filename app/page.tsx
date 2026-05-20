@@ -61,12 +61,22 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   id
 }) => {
   const directions = {
-    up: { y: 40, x: 0 },
-    down: { y: -40, x: 0 },
-    left: { x: 40, y: 0 },
-    right: { x: -40, y: 0 },
+    up: { y: 25, x: 0 },
+    down: { y: -25, x: 0 },
+    left: { x: 25, y: 0 },
+    right: { x: -25, y: 0 },
     none: { x: 0, y: 0 }
   };
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Robust iframe fallback: Force transition into visible state if window intersection fails
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 150 + delay * 400);
+    return () => clearTimeout(timer);
+  }, [delay]);
 
   return (
     <motion.div
@@ -75,16 +85,13 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
         opacity: 0, 
         ...directions[direction]
       }}
-      whileInView={{ 
-        opacity: 1, 
-        y: 0, 
-        x: 0 
-      }}
-      viewport={{ once: true, margin: "-80px" }}
+      animate={isVisible ? { opacity: 1, y: 0, x: 0 } : { opacity: 0, ...directions[direction] }}
+      onViewportEnter={() => setIsVisible(true)}
+      viewport={{ once: true, margin: "-10px" }}
       transition={{ 
-        duration: 0.85, 
-        delay, 
-        ease: [0.16, 1, 0.3, 1] 
+        duration: 0.7, 
+        delay: delay * 0.35, 
+        ease: [0.25, 1, 0.5, 1] 
       }}
       className={className}
     >
@@ -184,9 +191,9 @@ const AUDIENCE_DATA: Record<UserAudience, ProfileData> = {
       "Fokus pada kata kunci industri modern seperti: 'Responsive UI Design', 'Client-Server API'"
     ],
     matches: [
-      { role: "Junior Frontend Developer", score: 94, color: "from-[#1D9E75] to-teal-400", company: "PT GoTo Gojek Tokopedia" },
-      { role: "Backend Developer Intern", score: 85, color: "from-[#534AB7] to-indigo-500", company: "PT Telkom Indonesia (Persero)" },
-      { role: "Junior Tech Specialist", score: 72, color: "from-zinc-500 to-zinc-700", company: "Astra International" }
+      { role: "Junior Frontend Developer", score: 94, color: "from-[#1D9E75] to-teal-400", company: "Perusahaan SaaS & Teknologi Terkemuka" },
+      { role: "Backend Developer Intern", score: 85, color: "from-[#534AB7] to-indigo-500", company: "BUMN Telekomunikasi & Digital" },
+      { role: "Junior Tech Specialist", score: 72, color: "from-zinc-500 to-zinc-700", company: "Konglomerat Otomotif & Industri Terpadu" }
     ],
     rawText: "REKAYASA PERANGKAT LUNAK\nBisa coding HTML, mengedit video di Canva, Microsoft Word & Excel, rajin bekerja keras, mampu mengendarai motor roda dua, pernah membuat kalkulator matematika sederhana di halaman web sekolah..."
   },
@@ -203,9 +210,9 @@ const AUDIENCE_DATA: Record<UserAudience, ProfileData> = {
       "Tambahkan lisensi kredensial sertifikasi profesional global (AWS, GCP Cloud Developer, Oracle Java)"
     ],
     matches: [
-      { role: "Fullstack Developer Trainee", score: 97, color: "from-[#1D9E75] to-teal-400", company: "PT Bank Mandiri (Persero) Tbk" },
-      { role: "Cloud Solution Intern", score: 89, color: "from-[#534AB7] to-indigo-500", company: "Shopee Southeast Asia" },
-      { role: "Junior Data Product Scientist", score: 81, color: "from-zinc-500 to-zinc-700", company: "KPMG Advisory Indonesia" }
+      { role: "Fullstack Developer Trainee", score: 97, color: "from-[#1D9E75] to-teal-400", company: "BUMN Perbankan & Layanan Keuangan" },
+      { role: "Cloud Solution Intern", score: 89, color: "from-[#534AB7] to-indigo-500", company: "E-Commerce Regional Terbesar" },
+      { role: "Junior Data Product Scientist", score: 81, color: "from-zinc-500 to-zinc-700", company: "Konsultan Pajak & Manajemen Big 4" }
     ],
     rawText: "S1 SISTEM INFORMASI\nIPK 3.82. Aktif dalam divisi BEM. Pernah membuat proyek kelompok akhir semester bertema e-commerce kelompok menggunakan template dasar PHP dan MySQL. Mengerti sedikit bahasa Python dan dasar SQL query..."
   },
@@ -222,9 +229,9 @@ const AUDIENCE_DATA: Record<UserAudience, ProfileData> = {
       "Hapus layout grafik berwarna-warni & bintang rating skill yang membingungkan bot parser sistem ATS"
     ],
     matches: [
-      { role: "Finance Operations Executive", score: 92, color: "from-[#1D9E75] to-teal-400", company: "Grab Holdings Indonesia" },
-      { role: "Management Trainee Officer", score: 87, color: "from-[#534AB7] to-indigo-500", company: "PT Unilever Indonesia Tbk" },
-      { role: "Internal Audit Associate", score: 80, color: "from-zinc-500 to-zinc-700", company: "PwC Advisory Indonesia" }
+      { role: "Finance Operations Executive", score: 92, color: "from-[#1D9E75] to-teal-400", company: "Penyedia Ride-Hailing & Logistik" },
+      { role: "Management Trainee Officer", score: 87, color: "from-[#534AB7] to-indigo-500", company: "Produsen Barang Konsumsi Multinasional" },
+      { role: "Internal Audit Associate", score: 80, color: "from-zinc-500 to-zinc-700", company: "Lembaga Audit & Konsultan Finansial" }
     ],
     rawText: "FRESH GRADUATE EKONOMI\nLulusan baru dengan indeks reputasi memuaskan. Ingin melamar di posisi keuangan, kasir, atau staf administrasi apa saja yang kosong di perusahaan ibu/bapak. Jujur, rajin, siap lembur kerja kapan saja..."
   }
@@ -266,7 +273,7 @@ const ROADMAP_DATA: RoadmapWeek[] = [
       { name: "Pendaftaran Profil di Sistem Penyaluran Rekruter CareerLens", done: false },
       { name: "One-on-One Assessment Review Bersama AI Evaluator", done: false },
     ],
-    resource: { title: "Bank Soal & Formula Jawaban Interview HRD BUMN-Astra", type: "Interactive" }
+    resource: { title: "Bank Soal & Formula Jawaban Interview HRD BUMN & Korporat", type: "Interactive" }
   }
 ];
 
@@ -822,7 +829,7 @@ const HeroAndPlayground = () => {
                     </div>
                     <div className="space-y-0.5 min-w-0">
                       <h4 className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">Ibu Siska Amelia, S.Psi</h4>
-                      <p className="text-[8px] sm:text-[9px] text-[#1D9E75] font-black tracking-widest uppercase font-mono truncate">Lead Recruiter Astra & Group BUMN</p>
+                      <p className="text-[8px] sm:text-[9px] text-[#1D9E75] font-black tracking-widest uppercase font-mono truncate">Lead Recruiter Korporat & Group BUMN</p>
                     </div>
                   </div>
 
@@ -991,8 +998,8 @@ const HeroAndPlayground = () => {
 // --- Continuous Sliding Partner Marquee ---
 const PremiumPartners = () => {
   const partners = [
-    "Astra International", "PT Telkom Indonesia", "PT GoTo Tokopedia", "Grab Holdings", "PwC Indonesia", "Unilever Indonesia",
-    "Astra International", "PT Telkom Indonesia", "PT GoTo Tokopedia", "Grab Holdings", "PwC Indonesia", "Unilever Indonesia"
+    "Asri Motorindo Group", "Telekomunikasi Seluler BUMN", "TeknoRaya Nusantara", "MobiRaya Trans", "PACO Global Advisory", "Unilivera Pratama",
+    "Perbankan Finansial BUMN", "Retail Digicorpora", "Mega Distribusi Logistik", "Sinergi Energi Nasional"
   ];
 
   return (
@@ -1006,30 +1013,25 @@ const PremiumPartners = () => {
         </p>
       </div>
 
-      <div className="flex w-[200%] gap-12 items-center animate-marquee text-zinc-400 dark:text-zinc-655 uppercase tracking-widest font-black text-xs sm:text-sm font-mono whitespace-nowrap select-none">
-        {partners.map((partner, index) => (
-          <div key={index} className="flex items-center gap-3 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#1D9E75]" />
-            <span className="hover:text-zinc-900 dark:hover:text-white transition-colors">{partner}</span>
-          </div>
-        ))}
-        {partners.map((partner, index) => (
-          <div key={`dup-${index}`} className="flex items-center gap-3 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#1D9E75]" />
-            <span className="hover:text-zinc-900 dark:hover:text-white transition-colors">{partner}</span>
-          </div>
-        ))}
+      <div className="relative flex overflow-x-hidden">
+        <motion.div 
+          className="flex gap-12 text-zinc-400 dark:text-zinc-500 uppercase tracking-widest font-black text-xs sm:text-sm font-mono whitespace-nowrap select-none pr-12"
+          animate={{ x: [0, "-50%"] }}
+          transition={{
+            ease: "linear",
+            duration: 25,
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
+        >
+          {partners.concat(partners).map((partner, index) => (
+            <div key={index} className="flex items-center gap-3 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1D9E75]" />
+              <span className="hover:text-zinc-900 dark:hover:text-white transition-colors">{partner}</span>
+            </div>
+          ))}
+        </motion.div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 35s linear infinite;
-        }
-      `}</style>
     </div>
   );
 };
@@ -1303,21 +1305,21 @@ const Testimonials = () => {
     {
       name: "Rizky Fauzi Firmansyah",
       school: "Alumni SMK Negeri 4 Bandung",
-      role: "Junior Frontend Engineer @ Telkom",
+      role: "Junior Frontend Engineer @ Korporat Telekomunikasi BUMN",
       avatar: "RF",
       text: "Sangat membantu merombak total dokumen saya yang tadinya dipenuhi dekorasi Canva warna-warni yang mengacaukan parsing bot. Setelah dioptimasi CareerLens AI, CV saya dibaca dengan akurasi tinggi dan berujung panggilan magang resmi!"
     },
     {
       name: "Sabrina Aliyah Hakim",
       school: "Mahasiswi ITB - S1 Informatika",
-      role: "Backend Intern @ Shopee SG",
+      role: "Backend Intern @ Perusahaan Tekno Regional",
       avatar: "SA",
       text: "Simulasi rekam wawancara AI di sini mengoreksi kebiasaan berbicara tidak profesional saya sewaktu presentasi atau diskusi kelompok. Skor ATS dari CareerLens sangat presisi mengacu pada standar riil rekruter nasional."
     },
     {
       name: "Ananda Budi Susilo",
       school: "Fresh Graduate S1 Manajemen UI",
-      role: "Management Trainee @ Unilever Tbk",
+      role: "Management Trainee @ Consumer Goods Multinasional Tbk",
       avatar: "AB",
       text: "Peta aksi roadmap 90 hari membimbing agenda harian portofolio saya dengan sistematis, tanpa membingungkan lagi mana subyek material yang harus dikuasai terlebih dahulu. Sangat teratur dan langsung terintegrasi dengan daftar lamaran."
     }
