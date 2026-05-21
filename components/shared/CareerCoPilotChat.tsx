@@ -325,60 +325,63 @@ export default function CareerCoPilotChat() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: "100%", scale: 1 }}
               transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[9999] w-full sm:max-w-[450px] h-[80vh] sm:h-[580px] max-h-[calc(100vh-90px)] sm:max-h-[calc(100vh-100px)] bg-white/95 dark:bg-zinc-950/98 backdrop-blur-xl border-t sm:border border-zinc-200/60 dark:border-zinc-800/60 rounded-t-[2rem] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors duration-300"
+              className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[9999] w-full sm:max-w-[450px] h-[75vh] sm:h-[520px] max-h-[75vh] sm:max-h-[80vh] bg-white/95 dark:bg-zinc-950/98 backdrop-blur-xl border-t sm:border border-zinc-200/60 dark:border-zinc-800/60 rounded-t-[2rem] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors duration-300"
               style={{ zIndex: 9999 }}
             >
               {/* Soft Glowing Gradient Circle Background */}
               <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#1D9E75]/10 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-[#534AB7]/10 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Mobile Touch Pull/Dismiss bar */}
-              <div 
-                className="flex sm:hidden justify-center items-center pt-3 pb-1 shrink-0 cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
-              </div>
-
-              {/* Header */}
-              <div className="relative p-4 flex items-center justify-between border-b border-zinc-150 dark:border-zinc-805/50 bg-[#1D9E75]/5 dark:bg-zinc-900/50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#1D9E75] to-[#534AB7] flex items-center justify-center text-white shadow-md relative overflow-hidden">
-                    <Cpu size={18} className="animate-spin-slow text-white" />
-                    <div className="absolute inset-0 bg-white/5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="font-extrabold text-[#1D9E75] dark:text-teal font-mono tracking-tight text-xs uppercase">CareerLens Co-Pilot</h3>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#1D9E75]/10 text-[#1D9E75] uppercase tracking-wide">AI</span>
-                    </div>
-                    <p className="text-[10px] text-zinc-500 font-semibold font-mono tracking-tight">Konsultan Karir Pintar Mandiri</p>
-                  </div>
+              {/* Sticky Top Header Container for mobile pull bar and main chat header */}
+              <div className="sticky top-0 z-30 shrink-0 bg-white/95 dark:bg-zinc-950/98 border-b border-zinc-150 dark:border-zinc-850/60 backdrop-blur-md">
+                {/* Mobile Touch Pull/Dismiss bar */}
+                <div 
+                  className="flex sm:hidden justify-center items-center pt-3 pb-1 cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
                 </div>
 
-                <div className="flex items-center gap-1">
-                  {messages.length > 0 && (
+                {/* Header Row */}
+                <div className="p-4 flex items-center justify-between bg-[#1D9E75]/5 dark:bg-zinc-900/40">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#1D9E75] to-[#534AB7] flex items-center justify-center text-white shadow-md relative overflow-hidden">
+                      <Cpu size={18} className="animate-spin-slow text-white" />
+                      <div className="absolute inset-0 bg-white/5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5 align-middle">
+                        <h3 className="font-extrabold text-[#1D9E75] dark:text-teal font-mono tracking-tight text-xs uppercase pt-0.5">CareerLens Co-Pilot</h3>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#1D9E75]/10 text-[#1D9E75] uppercase tracking-wide">AI</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-500 font-semibold font-mono tracking-tight">Konsultan Karir Pintar Mandiri</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    {messages.length > 0 && (
+                      <button
+                        onClick={handleClearChat}
+                        disabled={isClearing}
+                        className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 text-zinc-400 hover:text-red-500 hover:bg-red-50/50 dark:hover:bg-red-500/10 hover:border-red-100 dark:hover:border-red-500/20 border border-zinc-150 dark:border-zinc-800 flex items-center justify-center transition-all cursor-pointer"
+                        title="Hapus riwayat chat"
+                      >
+                        {isClearing ? (
+                          <Loader2 size={13} className="animate-spin text-zinc-500" />
+                        ) : (
+                          <Trash2 size={13} />
+                        )}
+                      </button>
+                    )}
+                    
                     <button
-                      onClick={handleClearChat}
-                      disabled={isClearing}
-                      className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 text-zinc-400 hover:text-red-500 hover:bg-red-50/50 dark:hover:bg-red-500/10 hover:border-red-100 dark:hover:border-red-500/20 border border-zinc-150 dark:border-zinc-800 flex items-center justify-center transition-all cursor-pointer"
-                      title="Hapus riwayat chat"
+                      onClick={() => setIsOpen(false)}
+                      className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-200 dark:hover:border-red-900 border border-zinc-150 dark:border-zinc-800 flex items-center justify-center transition-all cursor-pointer relative"
+                      title="Tutup Chat"
                     >
-                      {isClearing ? (
-                        <Loader2 size={13} className="animate-spin text-zinc-500" />
-                      ) : (
-                        <Trash2 size={13} />
-                      )}
+                      <X size={15} />
                     </button>
-                  )}
-                  
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-200 dark:hover:border-red-900 border border-zinc-150 dark:border-zinc-800 flex items-center justify-center transition-all cursor-pointer relative"
-                    title="Tutup Chat"
-                  >
-                    <X size={15} />
-                  </button>
+                  </div>
                 </div>
               </div>
 
@@ -512,13 +515,13 @@ export default function CareerCoPilotChat() {
                 )}
               </div>
 
-              {/* Chat Input Footer */}
+              {/* Sticky Chat Input Footer - Always anchored at the bottom */}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSendMessage(inputVal);
                 }}
-                className="p-3 border-t border-zinc-150 dark:border-zinc-850/60 bg-white/50 dark:bg-zinc-950/50 flex gap-2 items-center"
+                className="sticky bottom-0 z-30 shrink-0 p-3 border-t border-zinc-150 dark:border-zinc-850/60 bg-white/95 dark:bg-zinc-950/98 backdrop-blur-md flex gap-2 items-center"
               >
                 <input
                   type="text"
