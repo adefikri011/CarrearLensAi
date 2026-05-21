@@ -317,15 +317,15 @@ export default function CareerCoPilotChat() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-[2px] z-[9998] cursor-pointer"
+              className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-[2px] z-[9998] cursor-pointer hidden sm:block"
             />
 
             <motion.div
-              initial={{ opacity: 0, y: "100%", scale: 1 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: "100%", scale: 1 }}
-              transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[9999] w-full sm:max-w-[450px] h-[75vh] sm:h-[520px] max-h-[75vh] sm:max-h-[80vh] bg-white/95 dark:bg-zinc-950/98 backdrop-blur-xl border-t sm:border border-zinc-200/60 dark:border-zinc-800/60 rounded-t-[2rem] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors duration-300"
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-6 sm:right-6 z-[9999] w-full sm:w-[440px] h-[100dvh] sm:h-[600px] max-h-[100dvh] sm:max-h-[85vh] bg-white dark:bg-zinc-950 border-none sm:border border-zinc-200/50 dark:border-zinc-800/60 rounded-none sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors duration-300"
               style={{ zIndex: 9999 }}
             >
               {/* Soft Glowing Gradient Circle Background */}
@@ -334,31 +334,23 @@ export default function CareerCoPilotChat() {
 
               {/* Solid Top Header Container (Fixed via flex vertical flow, zero overlap) */}
               <div className="relative z-20 shrink-0 bg-white dark:bg-zinc-950 border-b border-zinc-150 dark:border-zinc-850/60">
-                {/* Mobile Touch Pull/Dismiss bar */}
-                <div 
-                  className="flex sm:hidden justify-center items-center pt-3 pb-1 cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
-                </div>
-
                 {/* Header Row */}
-                <div className="p-4 flex items-center justify-between bg-[#1D9E75]/5 dark:bg-zinc-900/40">
+                <div className="p-4 flex items-center justify-between bg-gradient-to-r from-[#1D9E75]/5 to-[#534AB7]/5 dark:from-zinc-900/30 dark:to-zinc-950/30">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#1D9E75] to-[#534AB7] flex items-center justify-center text-white shadow-md relative overflow-hidden">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#1D9E75] to-[#534AB7] flex items-center justify-center text-white shadow-md relative overflow-hidden shrink-0">
                       <Cpu size={18} className="animate-spin-slow text-white" />
                       <div className="absolute inset-0 bg-white/5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5 align-middle">
-                        <h3 className="font-extrabold text-[#1D9E75] dark:text-teal font-mono tracking-tight text-xs uppercase pt-0.5">CareerLens Co-Pilot</h3>
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#1D9E75]/10 text-[#1D9E75] uppercase tracking-wide">AI</span>
+                        <h3 className="font-extrabold text-[#1D9E75] dark:text-emerald-400 font-mono tracking-tight text-xs uppercase pt-0.5">CareerLens Co-Pilot</h3>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#1D9E75]/10 text-[#1D9E75] dark:text-emerald-400 uppercase tracking-wide">AI</span>
                       </div>
                       <p className="text-[10px] text-zinc-500 font-semibold font-mono tracking-tight">Konsultan Karir Pintar Mandiri</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     {messages.length > 0 && (
                       <button
                         onClick={handleClearChat}
@@ -388,7 +380,7 @@ export default function CareerCoPilotChat() {
               {/* Chat Body Container */}
               <div 
                 ref={chatContainerRef}
-                className="flex-1 overflow-y-auto p-4 space-y-4 font-sans select-text scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800"
+                className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 font-sans select-text scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800"
               >
                 {/* If no messages, display custom welcome layout */}
                 {messages.length === 0 && !isLoading && !isStreaming ? (
