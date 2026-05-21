@@ -3,15 +3,21 @@ import prisma from "@/lib/prisma";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      "User-Agent": "aistudio-build",
+// Lazy function to get Gemini Client with safe API key checking
+function getGeminiClient() {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is required. Silakan hubungi admin atau periksa pengaturan Secrets.");
+  }
+  return new GoogleGenAI({
+    apiKey: apiKey,
+    httpOptions: {
+      headers: {
+        "User-Agent": "aistudio-build",
+      },
     },
-  },
-});
+  });
+}
 
 /**
  * GET handler to fetch last 50 chat messages for the logged-in user.
@@ -105,7 +111,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Generate content from Gemini API
-    const response = await ai.models.generateContent({
+    const response = await getGeminiClient().models.generateContent({
       model: "gemini-3.5-flash",
       contents,
       config: {
