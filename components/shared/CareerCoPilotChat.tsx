@@ -18,6 +18,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
   id: string;
@@ -175,24 +176,81 @@ export default function CareerCoPilotChat() {
     }
   };
 
-  // Custom text formatter to parse simple markdown bolding **text** and list bullet-points safely
+  // Beautiful interactive ReactMarkdown formatter with custom components
   const formatMessageText = (text: string) => {
-    if (!text) return "";
-    
-    // Replace **bold** with <strong>tags
-    const boldRegex = /\*\*(.*?)\*\*/g;
-    let formattedHtml = text.replace(boldRegex, "<strong class='font-bold text-teal dark:text-emerald-400'>$1</strong>");
-
-    // Map newlines to <br/>
-    formattedHtml = formattedHtml.split("\n").map((line) => {
-      // Check if line starts with a bullet point e.g. "- " or "* "
-      if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
-        return `<li class="ml-4 list-disc">${line.trim().substring(2)}</li>`;
-      }
-      return line;
-    }).join("<br/>");
-
-    return <div className="space-y-1 text-sm sm:text-[14px] leading-relaxed select-text" dangerouslySetInnerHTML={{ __html: formattedHtml }} />;
+    if (!text) return null;
+    return (
+      <div className="space-y-1.5 text-sm sm:text-[14px] leading-relaxed select-text dark:text-zinc-200">
+        <ReactMarkdown
+          components={{
+            p: ({ children }) => (
+              <p className="mb-2 last:mb-0 leading-relaxed text-[13px] sm:text-[14px] text-zinc-800 dark:text-zinc-200 font-medium whitespace-pre-line">
+                {children}
+              </p>
+            ),
+            strong: ({ children }) => (
+              <strong className="font-extrabold text-[#1D9E75] dark:text-emerald-400">
+                {children}
+              </strong>
+            ),
+            em: ({ children }) => (
+              <em className="italic text-zinc-700 dark:text-zinc-300 font-semibold bg-zinc-100/50 dark:bg-zinc-800/50 px-1 py-0.5 rounded leading-none">
+                {children}
+              </em>
+            ),
+            ul: ({ children }) => (
+              <ul className="my-2 space-y-1 list-none pl-0">
+                {children}
+              </ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="my-2 space-y-1 list-decimal pl-5 text-zinc-800 dark:text-zinc-200">
+                {children}
+              </ol>
+            ),
+            li: ({ children }) => (
+              <li className="relative pl-5 py-0.5 text-zinc-700 dark:text-zinc-300 font-semibold text-[13px] sm:text-[14px] leading-relaxed flex items-start">
+                <span className="absolute left-1.5 top-2.5 w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-[#1D9E75] to-[#534AB7] shrink-0" />
+                <span className="flex-1">{children}</span>
+              </li>
+            ),
+            h1: ({ children }) => (
+              <h1 className="font-black text-sm uppercase tracking-wide text-zinc-800 dark:text-zinc-100 mt-4 mb-2 font-mono flex items-center gap-1.5 border-b border-zinc-150 dark:border-zinc-800 pb-1">
+                <span className="w-1.5 h-3 bg-gradient-to-b from-[#1D9E75] to-[#534AB7] rounded-full inline-block" />
+                {children}
+              </h1>
+            ),
+            h2: ({ children }) => (
+              <h2 className="font-bold text-[13px] uppercase tracking-wide text-zinc-800 dark:text-zinc-100 mt-3 mb-1.5 font-mono flex items-center gap-1.5">
+                <span className="w-1 h-2.5 bg-[#1D9E75] rounded-full inline-block" />
+                {children}
+              </h2>
+            ),
+            h3: ({ children }) => (
+              <h3 className="font-bold text-[12px] uppercase text-zinc-700 dark:text-zinc-300 mt-3 mb-1 font-mono flex items-center gap-1">
+                <span className="text-[#534AB7] font-mono select-none">#</span>
+                {children}
+              </h3>
+            ),
+            hr: () => (
+              <hr className="my-4 border-t border-dashed border-zinc-200 dark:border-zinc-800" />
+            ),
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-4 border-gradient bg-gradient-to-r from-[#1D9E75]/5 to-[#534AB7]/5 border-l-[#1D9E75] pl-4 italic my-3 py-2 rounded-r-2xl text-zinc-700 dark:text-zinc-300 font-semibold text-[12px] sm:text-[13px]">
+                {children}
+              </blockquote>
+            ),
+            code: ({ children }) => (
+              <code className="font-mono text-[11px] bg-zinc-100 dark:bg-zinc-950 text-[#534AB7] dark:text-purple-300 px-1.5 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-805/50 font-bold">
+                {children}
+              </code>
+            ),
+          }}
+        >
+          {text}
+        </ReactMarkdown>
+      </div>
+    );
   };
 
   return (
