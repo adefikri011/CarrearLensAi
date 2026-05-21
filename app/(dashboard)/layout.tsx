@@ -35,12 +35,12 @@ function BottomNavItem({ href, icon: Icon, label, isActive }: BottomNavItemProps
     <Link 
       href={href}
       className={cn(
-        "flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all active:scale-95",
+        "flex flex-col items-center justify-center gap-1 flex-1 min-w-0 h-full transition-all active:scale-95",
         isActive ? "text-[#1D9E75] dark:text-emerald-400 font-extrabold" : "text-zinc-400 dark:text-zinc-500 font-medium"
       )}
     >
-      <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
-      <span className="text-[9px] font-black uppercase tracking-tight scale-90">{label}</span>
+      <Icon className={cn("w-[18px] h-[18px] transition-transform", isActive && "scale-115")} />
+      <span className="text-[7.5px] min-[360px]:text-[8.5px] font-black uppercase tracking-tighter truncate max-w-full text-center px-0.5">{label}</span>
     </Link>
   );
 }
@@ -50,9 +50,10 @@ function BottomNav() {
 
   const items = [
     { icon: LayoutDashboard, label: "Beranda", href: "/dashboard" },
-    { icon: Mic, label: "Interview", href: "/interview" },
-    { icon: MapIcon, label: "Roadmap", href: "/roadmap" },
     { icon: User, label: "Profil", href: "/profile" },
+    { icon: Mic, label: "Interview", href: "/interview" },
+    { icon: FileText, label: "Analisis CV", href: "/cv-builder" },
+    { icon: MapIcon, label: "Roadmap", href: "/roadmap" },
     { icon: SettingsIcon, label: "Pengaturan", href: "/settings" },
   ];
 
