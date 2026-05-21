@@ -234,30 +234,51 @@ export default function DashboardPage() {
                 </Link>
              </motion.div>
            ) : (
-             <motion.div variants={fadeUp} className="bg-black dark:bg-zinc-900 rounded-[32px] md:rounded-[40px] p-8 md:p-10 text-white relative overflow-hidden group shadow-2xl shadow-black/10 transition-all border border-transparent dark:border-zinc-800">
+             <motion.div variants={fadeUp} className="bg-gradient-to-br from-zinc-900 via-neutral-950 to-black dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 rounded-[32px] md:rounded-[40px] p-8 md:p-10 text-white relative overflow-hidden group shadow-2xl transition-all border border-zinc-800/40">
                 <div className="relative z-10">
                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-12 gap-6">
-                      <div className="space-y-2">
-                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[8px] md:text-[9px] font-black tracking-widest uppercase text-teal">
+                      <div className="space-y-2.5">
+                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[8px] md:text-[9px] font-black tracking-widest uppercase text-emerald-400">
                             ANALISIS TERFAVORIT
                          </div>
-                         <h2 className="text-2xl md:text-4xl font-black italic tracking-tighter transition-colors">Kesiapan: {readinessScore}%</h2>
-                         <p className="text-gray-400 dark:text-zinc-400 text-[10px] md:text-sm font-medium transition-colors">Berdasarkan data terbaru dari CV kamu.</p>
+                         <h2 className="text-2xl md:text-4xl font-extrabold italic tracking-tight text-white leading-tight">
+                            Kesiapan Kerja: <span className="text-emerald-400 font-black">{readinessScore}%</span>
+                         </h2>
+                         <p className="text-zinc-400 dark:text-zinc-500 text-[10px] md:text-sm font-medium">Berdasarkan hasil audit AI terbaru untuk CV kamu.</p>
                       </div>
-                      <div className="hidden sm:flex -space-x-4">
-                         {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
-                           <div key={i} className="w-10 h-10 md:w-12 md:h-12 rounded-full border-4 border-black dark:border-zinc-800 bg-teal flex items-center justify-center text-[9px] md:text-[10px] font-black shadow-xl" title={path.nama}>
-                              {path.matchScore}%
-                           </div>
-                         ))}
+                      <div className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm shadow-inner">
+                         <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400 mr-1">Match:</span>
+                         <div className="flex -space-x-3">
+                            {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
+                              <div 
+                                key={i} 
+                                className="w-8 h-8 rounded-full border-2 border-zinc-900 bg-gradient-to-br from-[#1D9E75] to-[#19a87a] flex items-center justify-center text-[9px] font-extrabold text-white shadow-md select-none transition-transform hover:scale-110 hover:z-20 cursor-help" 
+                                title={`${path.nama}: ${path.matchScore}%`}
+                              >
+                                 {path.matchScore}%
+                              </div>
+                            ))}
+                         </div>
                       </div>
                    </div>
 
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-8 md:mb-10">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 md:mb-10">
                       {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
-                         <div key={i} className="bg-white/5 border border-white/10 p-4 rounded-xl md:rounded-2xl flex md:flex-col justify-between items-center md:items-start gap-4">
-                            <p className="text-[8px] font-black text-gray-500 dark:text-zinc-600 uppercase tracking-widest md:mb-1 transition-colors">JALUR {i+1}</p>
-                            <p className="text-[11px] md:text-sm font-bold truncate flex-1 transition-colors">{path.nama}</p>
+                         <div 
+                           key={i} 
+                           className="bg-zinc-950/40 hover:bg-zinc-900/60 border border-zinc-800/80 hover:border-emerald-500/30 p-5 rounded-2xl flex flex-col justify-between items-start gap-4 transition-all duration-300 group/card cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-500/5"
+                         >
+                            <div className="flex items-center justify-between w-full">
+                               <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">
+                                  JALUR 0{i + 1}
+                               </span>
+                               <span className="text-[9px] font-black py-0.5 px-1.5 rounded bg-[#1D9E75]/10 text-emerald-400 uppercase tracking-wider font-mono">
+                                  {path.matchScore}% Match
+                               </span>
+                            </div>
+                            <p className="text-xs md:text-[13px] font-bold leading-snug text-zinc-100 group-hover/card:text-white transition-colors line-clamp-2">
+                               {path.nama}
+                            </p>
                          </div>
                       ))}
                    </div>
@@ -265,9 +286,9 @@ export default function DashboardPage() {
                    <div className="flex">
                       <Link 
                         href="/analysis"
-                        className="w-full sm:w-auto bg-white dark:bg-white text-black px-8 md:px-10 py-4 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-teal hover:text-white dark:hover:text-white transition-all flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto bg-white hover:bg-emerald-500 hover:text-white text-zinc-950 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-500/20 active:scale-95 group/btn"
                       >
-                        Lihat Hasil Lengkap <ArrowUpRight className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                        Lihat Hasil Lengkap <ArrowUpRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
                       </Link>
                    </div>
                 </div>
