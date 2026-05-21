@@ -1,23 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { GoogleGenAI } from "@google/genai";
+import { getAI, GEMINI_MODEL } from "@/lib/gemini";
 import { NextRequest, NextResponse } from "next/server";
-
-// Lazy function to get Gemini Client with safe API key checking
-function getGeminiClient() {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is required. Silakan hubungi admin atau periksa pengaturan Secrets.");
-  }
-  return new GoogleGenAI({
-    apiKey: apiKey,
-    httpOptions: {
-      headers: {
-        "User-Agent": "aistudio-build",
-      },
-    },
-  });
-}
 
 /**
  * GET handler to fetch last 50 chat messages for the logged-in user.
@@ -110,17 +94,21 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 3. Generate content from Gemini API
-    const response = await getGeminiClient().models.generateContent({
-      model: "gemini-3.5-flash",
-      contents,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
+    // 3. Generate content from Gemini API using the stable library client
+    const ai = getAI();
+    const model = ai.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction: systemInstruction,
     });
 
-    const replyText = response.text || "Maaf, saya sedang mengalami kendala teknis. Bisakah kamu ulangi pertanyaanmu?";
+    const result = await model.generateContent({
+      contents: contents,
+      generationConfig: {
+        temperature: 0.7,
+      }
+    });
+
+    const replyText = result.response.text() || "Maaf, saya sedang mengalami kendala teknis. Bisakah kamu ulangi pertanyaanmu?";
 
     // 4. Save model response to database
     const botMessage = await prisma.chatMessage.create({
