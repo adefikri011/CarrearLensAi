@@ -325,7 +325,7 @@ export default function CareerCoPilotChat() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: "100%", scale: 1 }}
               transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[9999] w-full sm:max-w-[450px] h-[85vh] sm:h-[640px] bg-white/95 dark:bg-zinc-950/98 backdrop-blur-xl border-t sm:border border-zinc-200/60 dark:border-zinc-800/60 rounded-t-[2rem] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors duration-300"
+              className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[9999] w-full sm:max-w-[450px] h-[80vh] sm:h-[580px] max-h-[calc(100vh-90px)] sm:max-h-[calc(100vh-100px)] bg-white/95 dark:bg-zinc-950/98 backdrop-blur-xl border-t sm:border border-zinc-200/60 dark:border-zinc-800/60 rounded-t-[2rem] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors duration-300"
               style={{ zIndex: 9999 }}
             >
               {/* Soft Glowing Gradient Circle Background */}
