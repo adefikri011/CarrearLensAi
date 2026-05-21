@@ -21,6 +21,7 @@ import { signOut } from "next-auth/react";
 import UserAvatar from "@/components/shared/UserAvatar";
 import PageLoader from "@/components/shared/PageLoader";
 import { motion, AnimatePresence } from "motion/react";
+import CareerCoPilotChat from "@/components/shared/CareerCoPilotChat";
 
 interface BottomNavItemProps {
   href: string;
@@ -156,6 +157,9 @@ function DashboardLayoutContent({
 
       {/* Bottom Navigation - Mobile Only */}
       <BottomNav />
+
+      {/* Floating AI Career Co-Pilot Chat widget */}
+      <CareerCoPilotChat />
     </div>
   );
 }
