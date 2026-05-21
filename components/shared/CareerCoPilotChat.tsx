@@ -11,9 +11,12 @@ import {
   Loader2,
   Cpu,
   ArrowRight,
+  Copy,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import UserAvatar from "./UserAvatar";
 
 interface ChatMessage {
   id: string;
@@ -39,6 +42,36 @@ const QUICK_STARTERS = [
     label: "Simulasi Interview",
   },
 ];
+
+// ─── Copy Button Sub-Component ───────────────────────────────────────────────────
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Gagal menyalin teks:", err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      type="button"
+      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded-lg bg-white/90 dark:bg-zinc-850/95 hover:bg-white dark:hover:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800/80 text-zinc-400 hover:text-[#1D9E75] dark:hover:text-emerald-400 cursor-pointer shadow-sm z-10"
+      title="Salin jawaban lengkap"
+    >
+      {copied ? (
+        <Check size={11.5} className="text-[#1D9E75] dark:text-emerald-400" />
+      ) : (
+        <Copy size={11.5} />
+      )}
+    </button>
+  );
+}
 
 export default function CareerCoPilotChat() {
   const [isOpen, setIsOpen] = useState(false);
@@ -448,10 +481,10 @@ export default function CareerCoPilotChat() {
 
                         <div
                           className={cn(
-                            "max-w-[82%] rounded-2xl px-3.5 py-2.5",
+                            "max-w-[82%] rounded-2xl px-3.5 py-2.5 relative group",
                             msg.role === "user"
                               ? "text-white rounded-br-[5px]"
-                              : "bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-bl-[5px]"
+                              : "bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-bl-[5px] pr-9"
                           )}
                           style={msg.role === "user" ? {
                             background: "linear-gradient(135deg, #1D9E75, #19a87a)",
@@ -463,6 +496,9 @@ export default function CareerCoPilotChat() {
                           ) : (
                             formatMessageText(msg.text)
                           )}
+                          {msg.role === "assistant" && (
+                            <CopyButton text={msg.text} />
+                          )}
                           <span className={cn(
                             "block text-[9px] mt-1.5 text-right font-mono",
                             msg.role === "user" ? "text-white/50" : "text-zinc-400"
@@ -473,9 +509,10 @@ export default function CareerCoPilotChat() {
 
                         {/* User avatar */}
                         {msg.role === "user" && (
-                          <div className="w-7 h-7 rounded-[9px] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0 mb-0.5">
-                            <span className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500">U</span>
-                          </div>
+                          <UserAvatar 
+                            className="w-7 h-7 rounded-[9px] shrink-0 mb-0.5 !bg-zinc-100 dark:!bg-zinc-800 border border-zinc-200 dark:border-zinc-700" 
+                            fallbackClassName="bg-zinc-100 dark:bg-zinc-800"
+                          />
                         )}
                       </motion.div>
                     ))}
