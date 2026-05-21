@@ -58,19 +58,25 @@ export async function POST(req: NextRequest) {
     // (User likely wants to test immediately)
     console.log(`Roadmap progress: ${completedTasksCount}/${totalTasks}. Proceeding anyway for testing.`);
 
-    const { history, currentAnswer } = await req.json();
+    const { history, currentAnswer, shift } = await req.json();
     const role = analysis.selectedPath || "Lulusan SMK Profesional";
+
+    // Tentukan ucapan selamat berdasarkan shift dari client (pagi, siang, sore, malam)
+    const timeOfDay = shift || "siang";
+    const greeting = `Selamat ${timeOfDay}`;
+
+    const initialPrompt = `Mulai wawancara sekarang. Sapa kandidat dengan ucapan "${greeting}" secara ramah dan profesional, perkenalkan diri Anda secara singkat sebagai HR Senior, lalu berikan pertanyaan pertama yang umum namun berbobot (seperti perkenalan diri).`;
 
     const ai = getAI();
     const model = ai.getGenerativeModel({ model: GEMINI_MODEL });
     const result = await model.generateContent({
       contents: [
-        { role: "user", parts: [{ text: SYSTEM_PROMPT + `\nPosisi pekerjaan yang dilamar (berdasarkan profil user): ${role}` }] },
+        { role: "user", parts: [{ text: SYSTEM_PROMPT + `\nPosisi pekerjaan yang dilamar (berdasarkan profil user): ${role}\nWaktu wawancara saat ini: ${greeting}` }] },
         ...history.map((h: any) => ({
           role: h.role === "assistant" ? "model" : "user",
           parts: h.parts
         })),
-        { role: "user", parts: [{ text: currentAnswer || "Mulai wawancara dengan menyapa dan memberikan pertanyaan pertama yang umum namun berbobot." }] }
+        { role: "user", parts: [{ text: currentAnswer || initialPrompt }] }
       ],
       generationConfig: {
         responseMimeType: "application/json",

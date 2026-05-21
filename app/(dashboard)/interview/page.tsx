@@ -131,13 +131,22 @@ export default function InterviewPage() {
     synthRef.current.speak(utterance);
   };
 
+  const getIndonesianTimeShift = (): string => {
+    const hour = new Date().getHours();
+    if (hour >= 3 && hour < 11) return "pagi";
+    if (hour >= 11 && hour < 15) return "siang";
+    if (hour >= 15 && hour < 18) return "sore";
+    return "malam";
+  };
+
   const startInterview = async () => {
     setIsLoading(true);
     try {
+      const shift = getIndonesianTimeShift();
       const res = await fetch("/api/interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ history: [] }),
+        body: JSON.stringify({ history: [], shift }),
       });
       const result = await res.json();
       
@@ -189,12 +198,14 @@ export default function InterviewPage() {
         { role: "user", parts: [{ text: transcript }] }
       ];
 
+      const shift = getIndonesianTimeShift();
       const res = await fetch("/api/interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           history: state.history, 
-          currentAnswer: transcript 
+          currentAnswer: transcript,
+          shift
         }),
       });
       const result = await res.json();
