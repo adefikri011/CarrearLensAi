@@ -332,8 +332,8 @@ export default function CareerCoPilotChat() {
               <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#1D9E75]/10 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-[#534AB7]/10 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Sticky Top Header Container for mobile pull bar and main chat header */}
-              <div className="sticky top-0 z-30 shrink-0 bg-white/95 dark:bg-zinc-950/98 border-b border-zinc-150 dark:border-zinc-850/60 backdrop-blur-md">
+              {/* Solid Top Header Container (Fixed via flex vertical flow, zero overlap) */}
+              <div className="relative z-20 shrink-0 bg-white dark:bg-zinc-950 border-b border-zinc-150 dark:border-zinc-850/60">
                 {/* Mobile Touch Pull/Dismiss bar */}
                 <div 
                   className="flex sm:hidden justify-center items-center pt-3 pb-1 cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity"
@@ -515,13 +515,13 @@ export default function CareerCoPilotChat() {
                 )}
               </div>
 
-              {/* Sticky Chat Input Footer - Always anchored at the bottom */}
+              {/* Solid Chat Input Footer (Fixed via flex vertical flow, zero overlap) */}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSendMessage(inputVal);
                 }}
-                className="sticky bottom-0 z-30 shrink-0 p-3 border-t border-zinc-150 dark:border-zinc-850/60 bg-white/95 dark:bg-zinc-950/98 backdrop-blur-md flex gap-2 items-center"
+                className="relative z-20 shrink-0 p-3 border-t border-zinc-150 dark:border-zinc-850/60 bg-white dark:bg-zinc-950 flex gap-2 items-center"
               >
                 <input
                   type="text"
