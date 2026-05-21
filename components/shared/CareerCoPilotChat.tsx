@@ -258,7 +258,7 @@ export default function CareerCoPilotChat() {
             whileHover={{ scale: 1.07 }}
             whileTap={{ scale: 0.93 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-20 md:bottom-8 right-6 z-[9999] w-14 h-14 rounded-2xl flex items-center justify-center cursor-pointer shadow-xl"
+            className="fixed bottom-24 md:bottom-8 right-6 z-[9999] w-14 h-14 rounded-2xl flex items-center justify-center cursor-pointer shadow-xl"
             style={{
               background: "linear-gradient(135deg, #1D9E75 0%, #534AB7 100%)",
               boxShadow: "0 8px 28px rgba(29,158,117,0.35)",

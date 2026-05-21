@@ -36,11 +36,11 @@ function BottomNavItem({ href, icon: Icon, label, isActive }: BottomNavItemProps
       href={href}
       className={cn(
         "flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all active:scale-95",
-        isActive ? "text-teal" : "text-zinc-400 dark:text-zinc-500"
+        isActive ? "text-[#1D9E75] dark:text-emerald-400 font-extrabold" : "text-zinc-400 dark:text-zinc-500 font-medium"
       )}
     >
       <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
-      <span className="text-[10px] font-bold uppercase tracking-tight scale-90">{label}</span>
+      <span className="text-[9px] font-black uppercase tracking-tight scale-90">{label}</span>
     </Link>
   );
 }
@@ -53,6 +53,7 @@ function BottomNav() {
     { icon: Mic, label: "Interview", href: "/interview" },
     { icon: MapIcon, label: "Roadmap", href: "/roadmap" },
     { icon: User, label: "Profil", href: "/profile" },
+    { icon: SettingsIcon, label: "Pengaturan", href: "/settings" },
   ];
 
   return (
