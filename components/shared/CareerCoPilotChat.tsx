@@ -43,13 +43,54 @@ const QUICK_STARTERS = [
   },
 ];
 
+// ─── Strip Markdown Helper ───────────────────────────────────────────────────────
+/**
+ * Cleanly strips markdown characters for plain text copy.
+ */
+function stripMarkdown(markdown: string): string {
+  if (!markdown) return "";
+  
+  let text = markdown;
+  
+  // 1. Remove HTML tags
+  text = text.replace(/<[^>]*>/g, "");
+  
+  // 2. Headings: Replace #, ##, ### with the heading text on a clean line
+  text = text.replace(/^#+\s+(.*)$/gm, "$1");
+  
+  // 3. Bold/Strong: Replace **word** or __word__ with word
+  text = text.replace(/(\*\*|__)(.*?)\1/g, "$2");
+  
+  // 4. Italic/Em: Replace *word* or _word_ with word
+  text = text.replace(/(\*|_)(.*?)\1/g, "$2");
+  
+  // 5. Code blocks: Replace `code` with code
+  text = text.replace(/`([^`]+)`/g, "$1");
+  
+  // 6. Blockquotes: Replace starting > with empty space
+  text = text.replace(/^\s*>\s+/gm, "");
+  
+  // 7. Bullet lists: Replace * or - with • for standard lists
+  text = text.replace(/^\s*[-*+]\s+\[\s*[x ]\s*\]\s+/gm, "☐ "); 
+  text = text.replace(/^\s*[-*+]\s+/gm, "• "); 
+  
+  // 8. Horizontal rules: Remove lines filled with hyphens, underscores, or asterisks
+  text = text.replace(/^\s*[-*_]{3,}\s*$/gm, "");
+  
+  // 9. Remove double extra empty lines
+  text = text.replace(/\n{3,}/g, "\n\n");
+  
+  return text.trim();
+}
+
 // ─── Copy Button Sub-Component ───────────────────────────────────────────────────
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
+      const cleanText = stripMarkdown(text);
+      await navigator.clipboard.writeText(cleanText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -510,6 +551,8 @@ export default function CareerCoPilotChat() {
                         {/* User avatar */}
                         {msg.role === "user" && (
                           <UserAvatar 
+                            size="sm"
+                            fallbackType="icon"
                             className="w-7 h-7 rounded-[9px] shrink-0 mb-0.5 !bg-zinc-100 dark:!bg-zinc-800 border border-zinc-200 dark:border-zinc-700" 
                             fallbackClassName="bg-zinc-100 dark:bg-zinc-800"
                           />
