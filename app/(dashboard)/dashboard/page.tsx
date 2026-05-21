@@ -139,7 +139,7 @@ export default function DashboardPage() {
               val: analysisCount.toString(), 
               desc: "Dokumen", 
               color: "text-zinc-800 dark:text-white",
-              bg: "bg-zinc-100 dark:bg-zinc-805/60",
+              bg: "bg-zinc-100 dark:bg-zinc-800/60",
               border: "border-zinc-200 dark:border-zinc-800/80"
             },
             { 
@@ -148,16 +148,16 @@ export default function DashboardPage() {
               val: tasks.careerSelected ? "1" : "0", 
               desc: "Target", 
               color: "text-[#1D9E75]",
-              bg: "bg-emerald-50 dark:bg-emerald-950/20",
-              border: "border-emerald-100 dark:border-emerald-950/40"
+              bg: "bg-[#1D9E75]/10 dark:bg-[#1D9E75]/20",
+              border: "border-[#1D9E75]/20 dark:border-[#1D9E75]/30"
             },
             { 
               icon: <CheckCircle2 />, 
               label: "Data Profil", 
               val: `${profileCompleteness}%`, 
               desc: "Kelengkapan", 
-              color: "text-zinc-805 dark:text-white",
-              bg: "bg-zinc-100 dark:bg-zinc-805/60",
+              color: "text-zinc-800 dark:text-white",
+              bg: "bg-zinc-100 dark:bg-zinc-800/60",
               border: "border-zinc-200 dark:border-zinc-800/80"
             },
             { 
@@ -166,8 +166,8 @@ export default function DashboardPage() {
               val: skillMatch > 0 ? `${skillMatch}%` : "-", 
               desc: "Kecocokan", 
               color: "text-[#1D9E75]",
-              bg: "bg-emerald-50 dark:bg-emerald-950/20",
-              border: "border-emerald-100 dark:border-emerald-950/40"
+              bg: "bg-[#1D9E75]/10 dark:bg-[#1D9E75]/20",
+              border: "border-[#1D9E75]/20 dark:border-[#1D9E75]/30"
             },
           ].map((stat, i) => (
             <motion.div 
@@ -189,9 +189,9 @@ export default function DashboardPage() {
                   {React.cloneElement(stat.icon as React.ReactElement, { className: "w-5.5 h-5.5" })}
                 </div>
                 <div>
-                  <p className="text-[9px] font-mono font-black text-zinc-400 dark:text-zinc-505 tracking-widest uppercase block mb-1">{stat.label}</p>
+                  <p className="text-[9px] font-mono font-black text-zinc-400 dark:text-zinc-500 tracking-widest uppercase block mb-1">{stat.label}</p>
                   <div className="flex items-baseline gap-1.5 leading-none">
-                     <span className="text-2xl md:text-3xl font-black font-mono text-zinc-900 dark:text-white italic transition-colors direct">{stat.val}</span>
+                     <span className="text-2xl md:text-3xl font-black font-mono text-zinc-900 dark:text-white italic transition-colors">{stat.val}</span>
                      <span className="text-[9px] font-mono font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{stat.desc}</span>
                   </div>
                 </div>
@@ -279,17 +279,17 @@ export default function DashboardPage() {
                       {(latestAnalysis?.result?.careerPaths || []).slice(0, 3).map((path: any, i: number) => (
                          <div 
                            key={i} 
-                           className="bg-zinc-950/50 hover:bg-zinc-900/40 border border-zinc-850 hover:border-emerald-500/30 p-4.5 rounded-2xl flex flex-col justify-between items-start gap-4 transition-all duration-300 group/card cursor-pointer hover:-translate-y-0.5"
+                           className="bg-zinc-950/80 hover:bg-zinc-900/40 border border-zinc-800 hover:border-[#1D9E75]/45 p-5 md:p-6 rounded-2xl flex flex-col justify-between items-start gap-4 transition-all duration-300 group/card cursor-pointer hover:-translate-y-0.5"
                          >
                             <div className="flex items-center justify-between w-full">
-                               <span className="text-[8px] font-mono font-black text-zinc-500 uppercase tracking-widest">
+                               <span className="text-[9px] font-mono font-black text-zinc-400 uppercase tracking-wider">
                                   LINTASAN 0{i + 1}
                                </span>
-                               <span className="text-[8px] font-mono font-black py-0.5 px-1.5 rounded bg-[#1D9E75]/10 text-emerald-400 uppercase tracking-wider">
+                               <span className="text-[9px] font-mono font-black py-0.5 px-2 rounded-md bg-[#1D9E75]/10 text-[#1D9E75] uppercase tracking-wider">
                                   {path.matchScore}% Match
                                </span>
                             </div>
-                            <p className="text-xs font-extrabold leading-snug text-zinc-205 group-hover/card:text-white transition-colors line-clamp-2">
+                            <p className="text-[13px] font-bold leading-snug text-zinc-200 group-hover/card:text-white transition-colors line-clamp-2">
                                {path.nama}
                             </p>
                          </div>
@@ -335,13 +335,13 @@ export default function DashboardPage() {
         <div className="space-y-6 sm:space-y-8 text-left">
            
            {/* Agenda/Task List Block */}
-           <motion.div variants={fadeUp} className="bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-805/80 shadow-sm">
+           <motion.div variants={fadeUp} className="bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800/80 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                  <h3 className="text-[10px] font-mono font-black text-zinc-400 dark:text-zinc-500 tracking-widest uppercase flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#1D9E75]" />
                     Misi Aktif Kamu
                  </h3>
-                 <span className="text-[8px] font-mono font-black text-[#1D9E75] bg-emerald-50 dark:bg-emerald-950/20 px-2.5 py-0.5 rounded uppercase">SMK TARGET</span>
+                 <span className="text-[8px] font-mono font-black text-[#1D9E75] bg-[#1D9E75]/10 dark:bg-[#1D9E75]/20 px-2.5 py-0.5 rounded uppercase font-sans">SMK TARGET</span>
               </div>
 
               <div className="space-y-3.5">
@@ -360,7 +360,7 @@ export default function DashboardPage() {
                        </div>
                        <span className={cn(
                           "text-xs font-bold truncate tracking-tight transition-colors",
-                          task.d ? "text-zinc-350 dark:text-zinc-600 line-through" : "text-zinc-800 dark:text-zinc-200"
+                          task.d ? "text-zinc-400 dark:text-zinc-650 line-through" : "text-zinc-800 dark:text-zinc-200"
                        )}>{task.t}</span>
                     </div>
                  ))}
