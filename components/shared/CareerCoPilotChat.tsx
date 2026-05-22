@@ -44,42 +44,19 @@ const QUICK_STARTERS = [
 ];
 
 // ─── Strip Markdown Helper ───────────────────────────────────────────────────────
-/**
- * Cleanly strips markdown characters for plain text copy.
- */
 function stripMarkdown(markdown: string): string {
   if (!markdown) return "";
-  
   let text = markdown;
-  
-  // 1. Remove HTML tags
   text = text.replace(/<[^>]*>/g, "");
-  
-  // 2. Headings: Replace #, ##, ### with the heading text on a clean line
   text = text.replace(/^#+\s+(.*)$/gm, "$1");
-  
-  // 3. Bold/Strong: Replace **word** or __word__ with word
   text = text.replace(/(\*\*|__)(.*?)\1/g, "$2");
-  
-  // 4. Italic/Em: Replace *word* or _word_ with word
   text = text.replace(/(\*|_)(.*?)\1/g, "$2");
-  
-  // 5. Code blocks: Replace `code` with code
   text = text.replace(/`([^`]+)`/g, "$1");
-  
-  // 6. Blockquotes: Replace starting > with empty space
   text = text.replace(/^\s*>\s+/gm, "");
-  
-  // 7. Bullet lists: Replace * or - with • for standard lists
-  text = text.replace(/^\s*[-*+]\s+\[\s*[x ]\s*\]\s+/gm, "☐ "); 
-  text = text.replace(/^\s*[-*+]\s+/gm, "• "); 
-  
-  // 8. Horizontal rules: Remove lines filled with hyphens, underscores, or asterisks
+  text = text.replace(/^\s*[-*+]\s+\[\s*[x ]\s*\]\s+/gm, "☐ ");
+  text = text.replace(/^\s*[-*+]\s+/gm, "• ");
   text = text.replace(/^\s*[-*_]{3,}\s*$/gm, "");
-  
-  // 9. Remove double extra empty lines
   text = text.replace(/\n{3,}/g, "\n\n");
-  
   return text.trim();
 }
 
@@ -137,7 +114,9 @@ export default function CareerCoPilotChat() {
     } else {
       document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -272,7 +251,9 @@ export default function CareerCoPilotChat() {
               <ul className="my-2 space-y-1 list-none pl-0">{children}</ul>
             ),
             ol: ({ children }) => (
-              <ol className="my-2 space-y-1.5 list-decimal pl-5 text-zinc-700 dark:text-zinc-300">{children}</ol>
+              <ol className="my-2 space-y-1.5 list-decimal pl-5 text-zinc-700 dark:text-zinc-300">
+                {children}
+              </ol>
             ),
             li: ({ children }) => (
               <li className="flex items-start gap-2 text-zinc-700 dark:text-zinc-300">
@@ -305,9 +286,7 @@ export default function CareerCoPilotChat() {
                 {children}
               </code>
             ),
-            hr: () => (
-              <hr className="my-3 border-zinc-100 dark:border-zinc-800" />
-            ),
+            hr: () => <hr className="my-3 border-zinc-100 dark:border-zinc-800" />,
           }}
         >
           {text}
@@ -332,7 +311,8 @@ export default function CareerCoPilotChat() {
             whileHover={{ scale: 1.07 }}
             whileTap={{ scale: 0.93 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-24 md:bottom-8 right-6 z-[9999] w-14 h-14 rounded-2xl flex items-center justify-center cursor-pointer shadow-xl"
+            // Responsive FAB positioning: sits above bottom nav on mobile, standard on larger screens
+            className="fixed bottom-20 right-4 xs:bottom-24 xs:right-5 md:bottom-8 md:right-6 z-[9999] w-12 h-12 xs:w-14 xs:h-14 rounded-2xl flex items-center justify-center cursor-pointer shadow-xl"
             style={{
               background: "linear-gradient(135deg, #1D9E75 0%, #534AB7 100%)",
               boxShadow: "0 8px 28px rgba(29,158,117,0.35)",
@@ -342,7 +322,7 @@ export default function CareerCoPilotChat() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white/80" />
             </span>
-            <BrainCircuit className="w-6 h-6 text-white" />
+            <BrainCircuit className="w-5 h-5 xs:w-6 xs:h-6 text-white" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -351,7 +331,7 @@ export default function CareerCoPilotChat() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop — shown on sm+ only */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -361,54 +341,71 @@ export default function CareerCoPilotChat() {
               className="fixed inset-0 z-[9997] hidden sm:block bg-black/30 backdrop-blur-sm"
             />
 
-            {/* Chat Window */}
+            {/* Chat Window
+                - Mobile  (<sm)  : full screen, anchored to bottom with safe-area padding
+                - Tablet  (sm)   : right-anchored sheet, 90vw, up to 600px, height 75dvh
+                - Desktop (lg+)  : classic 410×660 fixed panel bottom-right
+            */}
             <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              initial={{ opacity: 0, y: 20, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
               transition={{ type: "spring", stiffness: 380, damping: 32 }}
               className={cn(
-                "fixed z-[9998] flex flex-col",
-                "inset-x-0 bottom-0 h-[100dvh] bg-white dark:bg-zinc-950",
-                "sm:inset-auto sm:bottom-8 sm:right-6 sm:w-[410px] sm:h-[660px]",
+                "fixed z-[9998] flex flex-col overflow-hidden",
+                // Mobile: full-screen bottom sheet
+                "inset-x-0 bottom-0 h-[100dvh]",
+                "bg-white dark:bg-zinc-950",
+                // Tablet: right-side floating panel
+                "sm:inset-auto sm:bottom-6 sm:right-4 sm:left-auto sm:top-auto",
+                "sm:w-[min(92vw,420px)] sm:h-[min(75dvh,640px)]",
                 "sm:rounded-[20px] sm:border sm:border-zinc-200 sm:dark:border-zinc-800",
+                // Desktop: standard large panel
+                "lg:bottom-8 lg:right-6",
+                "lg:w-[410px] lg:h-[660px]",
               )}
               style={{
                 boxShadow: "0 24px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
               }}
             >
               {/* ── HEADER ── */}
-              <div className="shrink-0 flex items-center justify-between px-4 py-3.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 sm:rounded-t-[20px]">
-                <div className="flex items-center gap-3">
+              <div className="shrink-0 flex items-center justify-between px-4 py-3 sm:py-3.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 sm:rounded-t-[20px]">
+                {/* Safe area top padding on mobile notched devices */}
+                <div
+                  className="sm:hidden absolute top-0 left-0 right-0 bg-white dark:bg-zinc-950"
+                  style={{ height: "env(safe-area-inset-top, 0px)" }}
+                />
+
+                <div className="flex items-center gap-2.5 sm:gap-3">
                   {/* Avatar */}
                   <div className="relative shrink-0">
                     <div
-                      className="w-9 h-9 rounded-[12px] flex items-center justify-center text-white"
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] sm:rounded-[12px] flex items-center justify-center text-white"
                       style={{ background: "linear-gradient(135deg, #1D9E75, #534AB7)" }}
                     >
-                      <Cpu size={16} />
+                      <Cpu size={15} />
                     </div>
                     <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-zinc-950" />
                   </div>
 
                   {/* Title */}
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[12px] font-black tracking-tight text-zinc-800 dark:text-zinc-100">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-[11.5px] sm:text-[12px] font-black tracking-tight text-zinc-800 dark:text-zinc-100">
                         CareerLens Co-Pilot
                       </span>
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#1D9E75]/10 text-[#1D9E75] dark:text-emerald-400 uppercase tracking-wide">
                         AI
                       </span>
                     </div>
-                    <p className="text-[10.5px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">
+                    <p className="text-[10px] sm:text-[10.5px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">
                       Konsultan Karir · Siap membantu
                     </p>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   {messages.length > 0 && (
                     <button
                       onClick={handleClearChat}
@@ -416,9 +413,11 @@ export default function CareerCoPilotChat() {
                       title="Hapus riwayat"
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
                     >
-                      {isClearing
-                        ? <Loader2 size={13} className="animate-spin" />
-                        : <Trash2 size={13} />}
+                      {isClearing ? (
+                        <Loader2 size={13} className="animate-spin" />
+                      ) : (
+                        <Trash2 size={13} />
+                      )}
                     </button>
                   )}
                   <button
@@ -433,21 +432,21 @@ export default function CareerCoPilotChat() {
 
               {/* ── BODY ── */}
               <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-
                 {/* Empty / Welcome State */}
                 {!hasMessages ? (
-                  <div className="h-full flex flex-col justify-center items-center px-6 py-8 gap-6">
+                  <div className="h-full flex flex-col justify-center items-center px-5 sm:px-6 py-6 sm:py-8 gap-5 sm:gap-6">
                     <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", delay: 0.05 }}
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center"
                       style={{
-                        background: "linear-gradient(135deg, rgba(29,158,117,0.1), rgba(83,74,183,0.1))",
+                        background:
+                          "linear-gradient(135deg, rgba(29,158,117,0.1), rgba(83,74,183,0.1))",
                         border: "1px solid rgba(29,158,117,0.15)",
                       }}
                     >
-                      <Sparkles className="w-7 h-7 text-[#1D9E75]" />
+                      <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-[#1D9E75]" />
                     </motion.div>
 
                     <motion.div
@@ -456,10 +455,10 @@ export default function CareerCoPilotChat() {
                       transition={{ delay: 0.1 }}
                       className="text-center space-y-1.5"
                     >
-                      <h4 className="text-[15px] font-bold text-zinc-800 dark:text-zinc-100">
+                      <h4 className="text-[14px] sm:text-[15px] font-bold text-zinc-800 dark:text-zinc-100">
                         Halo! Saya Co-Pilot Karirmu 🚀
                       </h4>
-                      <p className="text-[12.5px] text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-[260px] mx-auto">
+                      <p className="text-[12px] sm:text-[12.5px] text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-[260px] mx-auto">
                         Tanyakan soal CV, interview, sertifikasi, atau karir masa depanmu.
                       </p>
                     </motion.div>
@@ -480,25 +479,28 @@ export default function CareerCoPilotChat() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.22 + i * 0.07 }}
                           onClick={() => handleSendMessage(s.text)}
-                          className="w-full px-3.5 py-3 rounded-[14px] text-left flex items-center gap-3 cursor-pointer transition-all duration-150 border border-zinc-100 dark:border-zinc-800 hover:border-[#1D9E75]/40 dark:hover:border-[#1D9E75]/30 hover:bg-zinc-50 dark:hover:bg-zinc-900 group"
+                          className="w-full px-3 sm:px-3.5 py-2.5 sm:py-3 rounded-[14px] text-left flex items-center gap-2.5 sm:gap-3 cursor-pointer transition-all duration-150 border border-zinc-100 dark:border-zinc-800 hover:border-[#1D9E75]/40 dark:hover:border-[#1D9E75]/30 hover:bg-zinc-50 dark:hover:bg-zinc-900 group"
                         >
                           <span className="text-base shrink-0">{s.icon}</span>
                           <div className="flex-1 min-w-0">
                             <span className="block text-[11px] font-bold text-[#1D9E75] dark:text-emerald-400 mb-0.5">
                               {s.label}
                             </span>
-                            <span className="block text-[12px] text-zinc-500 dark:text-zinc-400 leading-snug">
+                            <span className="block text-[12px] text-zinc-500 dark:text-zinc-400 leading-snug truncate">
                               {s.text}
                             </span>
                           </div>
-                          <ArrowRight size={12} className="text-zinc-300 dark:text-zinc-600 group-hover:text-[#1D9E75] transition-colors shrink-0" />
+                          <ArrowRight
+                            size={12}
+                            className="text-zinc-300 dark:text-zinc-600 group-hover:text-[#1D9E75] transition-colors shrink-0"
+                          />
                         </motion.button>
                       ))}
                     </motion.div>
                   </div>
                 ) : (
                   /* Messages */
-                  <div className="p-4 space-y-3">
+                  <div className="p-3 sm:p-4 space-y-3">
                     {messages.map((msg) => (
                       <motion.div
                         key={msg.id}
@@ -522,38 +524,48 @@ export default function CareerCoPilotChat() {
 
                         <div
                           className={cn(
-                            "max-w-[82%] rounded-2xl px-3.5 py-2.5 relative group",
+                            // On mobile allow wider bubbles
+                            "max-w-[88%] sm:max-w-[82%] rounded-2xl px-3 sm:px-3.5 py-2.5 relative group",
                             msg.role === "user"
                               ? "text-white rounded-br-[5px]"
                               : "bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-bl-[5px] pr-9"
                           )}
-                          style={msg.role === "user" ? {
-                            background: "linear-gradient(135deg, #1D9E75, #19a87a)",
-                            boxShadow: "0 2px 12px rgba(29,158,117,0.22)",
-                          } : undefined}
+                          style={
+                            msg.role === "user"
+                              ? {
+                                  background: "linear-gradient(135deg, #1D9E75, #19a87a)",
+                                  boxShadow: "0 2px 12px rgba(29,158,117,0.22)",
+                                }
+                              : undefined
+                          }
                         >
                           {msg.role === "user" ? (
-                            <p className="text-[13.5px] font-medium leading-relaxed">{msg.text}</p>
+                            <p className="text-[13px] sm:text-[13.5px] font-medium leading-relaxed">
+                              {msg.text}
+                            </p>
                           ) : (
                             formatMessageText(msg.text)
                           )}
-                          {msg.role === "assistant" && (
-                            <CopyButton text={msg.text} />
-                          )}
-                          <span className={cn(
-                            "block text-[9px] mt-1.5 text-right font-mono",
-                            msg.role === "user" ? "text-white/50" : "text-zinc-400"
-                          )}>
-                            {new Date(msg.createdAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                          {msg.role === "assistant" && <CopyButton text={msg.text} />}
+                          <span
+                            className={cn(
+                              "block text-[9px] mt-1.5 text-right font-mono",
+                              msg.role === "user" ? "text-white/50" : "text-zinc-400"
+                            )}
+                          >
+                            {new Date(msg.createdAt).toLocaleTimeString("id-ID", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </span>
                         </div>
 
                         {/* User avatar */}
                         {msg.role === "user" && (
-                          <UserAvatar 
+                          <UserAvatar
                             size="sm"
                             fallbackType="icon"
-                            className="w-7 h-7 rounded-[9px] shrink-0 mb-0.5 !bg-zinc-100 dark:!bg-zinc-800 border border-zinc-200 dark:border-zinc-700" 
+                            className="w-7 h-7 rounded-[9px] shrink-0 mb-0.5 !bg-zinc-100 dark:!bg-zinc-800 border border-zinc-200 dark:border-zinc-700"
                             fallbackClassName="bg-zinc-100 dark:bg-zinc-800"
                           />
                         )}
@@ -573,7 +585,7 @@ export default function CareerCoPilotChat() {
                         >
                           <Cpu size={13} />
                         </div>
-                        <div className="max-w-[82%] bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl rounded-bl-[5px] px-3.5 py-2.5">
+                        <div className="max-w-[88%] sm:max-w-[82%] bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl rounded-bl-[5px] px-3 sm:px-3.5 py-2.5">
                           {formatMessageText(streamingText)}
                           <span className="inline-block w-[3px] h-3 bg-[#1D9E75] ml-0.5 rounded-full animate-pulse" />
                         </div>
@@ -611,45 +623,58 @@ export default function CareerCoPilotChat() {
               </div>
 
               {/* ── FOOTER ── */}
-              <div className="shrink-0 px-3 pb-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 sm:rounded-b-[20px]">
-                <form
-                  onSubmit={(e) => { e.preventDefault(); handleSendMessage(inputVal); }}
-                  className="flex items-center gap-2"
-                >
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={inputVal}
-                    onChange={(e) => setInputVal(e.target.value)}
-                    disabled={isLoading || isStreaming}
-                    placeholder="Tanyakan soal CV, karir, interview..."
-                    className={cn(
-                      "flex-1 h-10 rounded-[12px] px-3.5 text-[13px] font-medium outline-none transition-all duration-150",
-                      "bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800",
-                      "text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600",
-                      "focus:border-[#1D9E75]/50 focus:ring-2 focus:ring-[#1D9E75]/10",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                    )}
-                  />
-
-                  <motion.button
-                    type="submit"
-                    disabled={!inputVal.trim() || isLoading || isStreaming}
-                    whileTap={inputVal.trim() ? { scale: 0.92 } : undefined}
-                    className={cn(
-                      "w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 transition-all duration-150",
-                      inputVal.trim() && !isLoading && !isStreaming
-                        ? "text-white cursor-pointer"
-                        : "bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-300 dark:text-zinc-700 cursor-not-allowed"
-                    )}
-                    style={inputVal.trim() && !isLoading && !isStreaming ? {
-                      background: "linear-gradient(135deg, #1D9E75, #534AB7)",
-                      boxShadow: "0 2px 12px rgba(29,158,117,0.3)",
-                    } : undefined}
+              {/* Safe area bottom padding on mobile devices (notch / home indicator) */}
+              <div
+                className="shrink-0 border-t border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 sm:rounded-b-[20px]"
+                style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))" }}
+              >
+                <div className="px-3 pb-0 pt-2.5">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSendMessage(inputVal);
+                    }}
+                    className="flex items-center gap-2"
                   >
-                    <Send size={14} />
-                  </motion.button>
-                </form>
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputVal}
+                      onChange={(e) => setInputVal(e.target.value)}
+                      disabled={isLoading || isStreaming}
+                      placeholder="Tanyakan soal CV, karir, interview..."
+                      className={cn(
+                        "flex-1 h-10 rounded-[12px] px-3.5 text-[13px] font-medium outline-none transition-all duration-150",
+                        "bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800",
+                        "text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600",
+                        "focus:border-[#1D9E75]/50 focus:ring-2 focus:ring-[#1D9E75]/10",
+                        "disabled:opacity-50 disabled:cursor-not-allowed",
+                      )}
+                    />
+
+                    <motion.button
+                      type="submit"
+                      disabled={!inputVal.trim() || isLoading || isStreaming}
+                      whileTap={inputVal.trim() ? { scale: 0.92 } : undefined}
+                      className={cn(
+                        "w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 transition-all duration-150",
+                        inputVal.trim() && !isLoading && !isStreaming
+                          ? "text-white cursor-pointer"
+                          : "bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-300 dark:text-zinc-700 cursor-not-allowed"
+                      )}
+                      style={
+                        inputVal.trim() && !isLoading && !isStreaming
+                          ? {
+                              background: "linear-gradient(135deg, #1D9E75, #534AB7)",
+                              boxShadow: "0 2px 12px rgba(29,158,117,0.3)",
+                            }
+                          : undefined
+                      }
+                    >
+                      <Send size={14} />
+                    </motion.button>
+                  </form>
+                </div>
               </div>
             </motion.div>
           </>
