@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
+import { jsPDF } from "jspdf";
 import { 
   FileText, Sparkles, AlertCircle, CheckCircle2, 
   ArrowLeft, Download, RefreshCcw, TrendingUp,
@@ -64,38 +65,389 @@ export default function CVPreview({ data, analysisResult, onReset }: CVPreviewPr
       toast.error("Tunggu hasil analisis selesai sebelum mengunduh.");
       return;
     }
-    const content = `
-LAPORAN ANALISIS CV - CAREERLENS AI
-=====================================
-Nama File: ${data.filename}
-Tanggal Upload: ${new Date(data.createdAt || Date.now()).toLocaleDateString('id-ID')}
-ATS Score: ${analysisResult?.cvScore?.atsCompatibility || 0}%
 
-HASIL ANALISIS:
-- Kompatibilitas ATS: ${analysisResult?.cvScore?.atsCompatibility || 0}%
-- Kelengkapan CV: ${analysisResult?.cvScore?.completeness || 0}%
-- Skor Total: ${analysisResult?.cvScore?.total || 0}%
+    try {
+      const doc = new jsPDF("p", "mm", "a4");
+      const pageHeight = doc.internal.pageSize.getHeight(); // 297
+      const pageWidth = doc.internal.pageSize.getWidth(); // 210
+      let pageNum = 1;
 
-KEYWORD TERDETEKSI:
-${analysisResult?.cvScore?.keywords?.matched?.join(', ') || 'Tidak ada keyword terdeteksi'}
+      // Helper to draw common footer on all pages
+      const drawFooter = (d: typeof doc, pNum: number) => {
+        d.setFont("helvetica", "normal");
+        d.setFontSize(8);
+        d.setTextColor(148, 163, 184); // Slate color
+        
+        // Horizontal footer separator line
+        d.setDrawColor(241, 245, 249);
+        d.setLineWidth(0.3);
+        d.line(20, pageHeight - 15, pageWidth - 20, pageHeight - 15);
+        
+        // Footer text
+        d.text("Laporan Resmi Hasil Analisis · CareerLens AI", 20, pageHeight - 10);
+        d.text(`Halaman ${pNum}`, pageWidth - 20, pageHeight - 10, { align: "right" });
+      };
 
-REKOMENDASI:
-${analysisResult?.rekomendasiUtama?.map((r: string, i: number) => `${i+1}. ${r}`).join('\n') || 'Tidak ada rekomendasi khusus'}
+      // Helper to draw standard page header
+      const drawRunningHeader = (d: typeof doc, titleText: string) => {
+        d.setFont("helvetica", "bold");
+        d.setFontSize(8);
+        d.setTextColor(83, 74, 183); // Purple branding
+        d.text("CAREERLENS AI", 20, 12);
+        
+        d.setFont("helvetica", "normal");
+        d.setTextColor(100, 116, 139);
+        d.text(`|  ${titleText}`, 48, 12);
 
-JALUR KARIER REKOMENDASI:
-${analysisResult?.careerPaths?.map((p: any) => 
-  `- ${p.nama}: ${p.matchScore}% match`
-).join('\n') || 'Tidak ada jalur terdeteksi'}
-    `
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `laporan-careerlens-${Date.now()}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
-    toast.success("Laporan berhasil diunduh!");
-  }
+        d.text(new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - 20, 12, { align: "right" });
+        
+        d.setDrawColor(226, 232, 240);
+        d.setLineWidth(0.3);
+        d.line(20, 15, pageWidth - 20, 15);
+      };
+
+      // ─── PAGE 1: COVER & DASHBOARD OVERVIEW ───
+      // Draw Cover design banner at the top
+      doc.setFillColor(15, 23, 42); // slate-900 (matches app dark mode)
+      doc.rect(0, 0, pageWidth, 45, "F");
+
+      // Running brand stripes (teal & purple)
+      doc.setFillColor(29, 158, 117); // Teal
+      doc.rect(0, 0, 4, 45, "F");
+      doc.setFillColor(83, 74, 183); // Purple
+      doc.rect(4, 0, 2, 45, "F");
+
+      // Typography inside dark banner
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.setTextColor(255, 255, 255);
+      doc.text("CAREERLENS AI", 20, 18);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(29, 158, 117); // Green Accent
+      doc.text("Laporan Hasil Analisis CV & Rekomendasi Karier", 20, 24);
+
+      doc.setFontSize(8.5);
+      doc.setTextColor(148, 163, 184);
+      doc.text(`File: ${data.filename.length > 55 ? data.filename.slice(0, 52) + "..." : data.filename}`, 20, 31);
+      doc.text(`Waktu Analisis: ${new Date().toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' })}, ${new Date().toLocaleDateString('id-ID')}`, 20, 36);
+
+      // Overal Readiness / ATS compatibility big badge at top-right
+      doc.setFillColor(29, 158, 117); // Teal background
+      doc.roundedRect(pageWidth - 65, 12, 45, 22, 3, 3, "F");
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(255, 255, 255);
+      doc.text("ATS COMPATIBILITY", pageWidth - 42.5, 18, { align: "center" });
+
+      doc.setFontSize(14);
+      doc.text(`${analysisResult?.cvScore?.atsCompatibility || score}%`, pageWidth - 42.5, 27, { align: "center" });
+
+      let y = 58;
+
+      // Split Section: Score dashboard (left) and Section Checklist (right)
+      doc.setDrawColor(241, 245, 249);
+      doc.setFillColor(255, 255, 255);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(20, y, 80, 52, 4, 4, "F"); // Left Card
+      doc.roundedRect(110, y, 80, 52, 4, 4, "F"); // Right Card
+
+      // Grid borders
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(20, y, 80, 52, 4, 4, "S");
+      doc.roundedRect(110, y, 80, 52, 4, 4, "S");
+
+      // Left Card: Scores Dashboard content
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42); // slate 900
+      doc.text("DASHBOARD EVALUASI", 26, y + 8);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(100, 116, 139);
+
+      doc.text("Kelengkapan Struktur", 26, y + 18);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 41, 59);
+      doc.text(`${analysisResult?.cvScore?.completeness || 85}%`, 92, y + 18, { align: "right" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("Keterbacaan ATS", 26, y + 25);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(29, 158, 117); // Teal
+      doc.text(`${analysisResult?.cvScore?.atsCompatibility || score}%`, 92, y + 25, { align: "right" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("Skor Evaluasi Akhir", 26, y + 32);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(83, 74, 183); // Purple
+      doc.text(`${analysisResult?.cvScore?.total || score}%`, 92, y + 32, { align: "right" });
+
+      // Graphic progress segments
+      // Completeness
+      doc.setFillColor(226, 232, 240);
+      doc.rect(26, y + 20, 66, 1.5, "F");
+      doc.setFillColor(100, 116, 139);
+      doc.rect(26, y + 20, (66 * (analysisResult?.cvScore?.completeness || 85)) / 100, 1.5, "F");
+
+      // ATS score
+      doc.setFillColor(226, 232, 240);
+      doc.rect(26, y + 27, 66, 1.5, "F");
+      doc.setFillColor(29, 158, 117);
+      doc.rect(26, y + 27, (66 * (analysisResult?.cvScore?.atsCompatibility || score)) / 100, 1.5, "F");
+
+      // Total Score
+      doc.setFillColor(226, 232, 240);
+      doc.rect(26, y + 34, 66, 1.5, "F");
+      doc.setFillColor(83, 74, 183);
+      doc.rect(26, y + 34, (66 * (analysisResult?.cvScore?.total || score)) / 100, 1.5, "F");
+
+      // Right Card: Section Status list
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42); // slate 900
+      doc.text("KELENGKAPAN SEKSI CV", 116, y + 8);
+
+      let secY = y + 16;
+      detectedSections.forEach((s: any) => {
+        doc.setFont("helvetica", s.detected ? "bold" : "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(s.detected ? 30 : 160, s.detected ? 41 : 160, s.detected ? 59 : 160);
+        doc.text(s.title, 116, secY);
+
+        if (s.detected) {
+          doc.setFillColor(235, 247, 243);
+          doc.roundedRect(172, secY - 3, 12, 4, 1, 1, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(6.5);
+          doc.setTextColor(29, 158, 117);
+          doc.text("ADA", 178, secY, { align: "center" });
+        } else {
+          doc.setFillColor(241, 245, 249);
+          doc.roundedRect(164, secY - 3, 20, 4, 1, 1, "F");
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(6.5);
+          doc.setTextColor(148, 163, 184);
+          doc.text("BELUM ADA", 174, secY, { align: "center" });
+        }
+        secY += 6;
+      });
+
+      y += 62;
+
+      // Card 3: Keyword Cloud Analisis Box
+      doc.setFillColor(253, 254, 254);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(20, y, 170, 75, 4, 4, "FD");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42); // slate 900
+      doc.text("OPTIMALISASI KATA KUNCI (KEYWORD CLOUD)", 26, y + 8);
+
+      // Match Keywords (Teal highlight)
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(29, 158, 117); // Teal
+      doc.text("Kata Kunci yang Dipenuhi CV:", 26, y + 16);
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      const matchedStr = analysisResult?.cvScore?.keywords?.matched?.slice(0, 16).join("   ·   ") || "Tidak ada keyword teridentifikasi.";
+      const matchedSplit = doc.splitTextToSize(matchedStr, 158);
+      doc.text(matchedSplit, 26, y + 21);
+
+      // Missing Keywords (Purple warning)
+      const missingY = y + 37;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(83, 74, 183); // Purple
+      doc.text("Kata Kunci Penting Industri yang Perlu Ditambahkan (Missing):", 26, missingY);
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      const missingStr = analysisResult?.cvScore?.keywords?.missing?.slice(0, 16).join("   ·   ") || "Harap sesuaikan kelengkapan kompetensi.";
+      const missingSplit = doc.splitTextToSize(missingStr, 158);
+      doc.text(missingSplit, 26, missingY + 5);
+
+      // AI Advice highlighting box
+      doc.setFillColor(245, 243, 255); // Purple background pill
+      doc.roundedRect(26, y + 54, 158, 15, 2, 2, "F");
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(83, 74, 183);
+      doc.text("REKOMENDASI KUNCI KATA KUNCI:", 30, y + 60);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(71, 85, 105);
+      const outputSuggestion = aiSuggestion.length > 95 ? aiSuggestion.slice(0, 92) + "..." : aiSuggestion;
+      doc.text(outputSuggestion, 30, y + 65);
+
+      y += 85;
+
+      // Card 4: Strategi Rekomendasi Pokok
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(20, y, 170, 48, 4, 4, "FD");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42); // slate 900
+      doc.text("SARAN DAN EVALUASI STRATEGIS UNTUK KARIER", 26, y + 8);
+
+      let suggestionY = y + 16;
+      const suggestions = analysisResult?.rekomendasiUtama || [
+        "Tambahkan rincian proyek berbobot tinggi untuk menarik rekruter digital.",
+        "Pastikan ringkasan profil mencantumkan spesialisasi spesifik yang dicari industri.",
+        "Seimbangkan penyebaran kata kunci di bagian Riwayat Pekerjaan supaya mudah dibaca robot ATS."
+      ];
+
+      suggestions.slice(0, 3).forEach((item: string, idx: number) => {
+        // Bullet Point
+        doc.setFillColor(29, 158, 117);
+        doc.circle(28, suggestionY - 1, 1, "F");
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(30, 41, 59);
+        const splitRec = doc.splitTextToSize(item, 152);
+        doc.text(splitRec, 32, suggestionY + 1.5);
+        suggestionY += (splitRec.length * 4) + 2;
+      });
+
+      // Page 1 Footer
+      drawFooter(doc, pageNum);
+
+
+      // ─── PAGE 2: DETAILED CAREER ROADMAPS ───
+      pageNum++;
+      doc.addPage();
+      drawRunningHeader(doc, "Rekomendasi Jalur Karier Sesuai Kompetensi");
+
+      let y2 = 28;
+
+      // Header Page 2
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(15, 23, 42);
+      doc.text("REKOMENDASI ARAH & JALUR KARIER", 20, y2);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      doc.text("Saran kecocokan jalur kerja dengan persentase relevansi tertinggi bagi Fresh Graduate & Pelamar:", 20, y2 + 5);
+
+      y2 += 14;
+
+      const pathList = analysisResult?.careerPaths || [];
+      if (pathList.length > 0) {
+        pathList.forEach((path: any, index: number) => {
+          // Break if runs out of height space
+          if (y2 + 65 > pageHeight - 20) {
+            drawFooter(doc, pageNum);
+            pageNum++;
+            doc.addPage();
+            drawRunningHeader(doc, "Rekomendasi Jalur Karier (Lanjutan)");
+            y2 = 28;
+          }
+
+          // Card panel
+          doc.setFillColor(255, 255, 255);
+          doc.setDrawColor(241, 245, 249);
+          doc.roundedRect(20, y2, 170, 52, 4, 4, "F");
+          doc.setDrawColor(226, 232, 240);
+          doc.roundedRect(20, y2, 170, 52, 4, 4, "S");
+
+          // Left border accent strip
+          const primaryColor = index % 2 === 0 ? [29, 158, 117] : [83, 74, 183]; // Teal or Purple alternate
+          doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+          doc.rect(20, y2, 2, 52, "F");
+
+          // Career Title
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.setTextColor(15, 23, 42);
+          doc.text(`${index + 1}. ${path.nama}`, 25, y2 + 8);
+
+          // Percent Match Badge on the right
+          doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+          doc.roundedRect(158, y2 + 5, 26, 10, 1.5, 1.5, "F");
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8);
+          doc.setTextColor(255, 255, 255);
+          doc.text(`${path.matchScore}% MATCH`, 171, y2 + 11, { align: "center" });
+
+          // Path description
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.5);
+          doc.setTextColor(71, 85, 105);
+          const splitDesc = doc.splitTextToSize(path.deskripsi || "Jalur karier strategis untuk menyalurkan kompetensi teknis dan soft-skills Anda ke lini industri utama.", 156);
+          doc.text(splitDesc, 25, y2 + 16);
+
+          // Required Skills block
+          const skillsY = y2 + 30;
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8);
+          doc.setTextColor(30, 41, 59);
+          doc.text("Keahlian Utama (Core Skills):", 25, skillsY);
+
+          // Pill list
+          let badgeX = 25;
+          const reqSkills = path.requiredSkills || [];
+          reqSkills.slice(0, 4).forEach((skillObj: any) => {
+            const skillName = typeof skillObj === "string" ? skillObj : (skillObj.skill || "");
+            if (!skillName) return;
+            
+            const txtWidth = doc.getTextWidth(skillName.toUpperCase());
+            const badgeW = txtWidth + 6;
+
+            doc.setFillColor(241, 245, 249);
+            doc.roundedRect(badgeX, skillsY + 2.5, badgeW, 5.5, 1, 1, "F");
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(6.5);
+            doc.setTextColor(100, 116, 139);
+            doc.text(skillName.toUpperCase(), badgeX + (badgeW / 2), skillsY + 6.2, { align: "center" });
+
+            badgeX += badgeW + 3;
+          });
+
+          // Footer link advice
+          const adviseY = y2 + 45;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.5);
+          doc.setTextColor(148, 163, 184);
+          doc.text("Petunjuk belajar detail dan sertifikasi dapat Anda akses lewat dasbor CareerLens AI.", 25, adviseY);
+
+          y2 += 60;
+        });
+      } else {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text("Rekomendasi detail jalur dan keahlian tidak terdeteksi di database.", 20, y2 + 10);
+      }
+
+      // Page 2 Footer
+      drawFooter(doc, pageNum);
+
+      // Save the generated document
+      const sanitizeName = data.filename.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 20);
+      doc.save(`Laporan-Analisis-CV-${sanitizeName}-${Date.now()}.pdf`);
+      toast.success("Laporan berhasil diunduh sebagai PDF!");
+    } catch (err) {
+      console.error("Gagal meluncurkan ekspor PDF:", err);
+      toast.error("Format atau parser PDF mengalami kendala teknis.");
+    }
+  };
 
   const handleSimpanHasil = async () => {
     if (!analysisResult) return
