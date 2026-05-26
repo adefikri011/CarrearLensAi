@@ -63,6 +63,7 @@
     "react-hook-form": "^7.75.0",
     "react-markdown": "^10.1.0",
     "recharts": "^2.12.7",
+    "resend": "^6.12.4",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.6.1",
     "tailwindcss-animate": "^1.0.7",

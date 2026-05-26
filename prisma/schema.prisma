@@ -17,6 +17,8 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  resetToken    String?   @unique
+  resetTokenExpiry DateTime?
   username      String?   @unique
   bio           String?
   linkedin      String?

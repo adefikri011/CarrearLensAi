@@ -5,23 +5,23 @@ import { verifyRecaptcha } from "@/lib/recaptcha";
 
 /**
  * POST /api/auth/reset-password
- * Handles secure user password reset with reCAPTCHA verification.
+ * Resets the password using a secure token that was sent via email.
  */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, newPassword, captchaToken } = body;
+    const { token, newPassword, captchaToken } = body;
 
-    if (!email || !newPassword) {
+    if (!token || !newPassword) {
       return NextResponse.json(
-        { success: false, error: "Email dan password baru wajib diisi" },
+        { success: false, error: "Token dan password baru wajib diisi." },
         { status: 400 }
       );
     }
 
     if (newPassword.length < 8) {
       return NextResponse.json(
-        { success: false, error: "Password baru minimal harus 8 karakter" },
+        { success: false, error: "Password baru minimal harus 8 karakter." },
         { status: 400 }
       );
     }
@@ -35,27 +35,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const formattedEmail = email.toLowerCase().trim();
-
-    // Find the user
-    const user = await prisma.user.findUnique({
-      where: { email: formattedEmail },
+    // Check if user exists with the valid, non-expired reset token
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          gt: new Date(),
+        },
+      },
     });
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Akun dengan email tersebut tidak terdaftar" },
-        { status: 404 }
+        { success: false, error: "Token atur ulang tidak valid, salah, atau telah kedaluwarsa." },
+        { status: 400 }
       );
     }
 
     // Encrypt new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password
+    // Update password inside user and clear out resetToken fields
     await prisma.user.update({
-      where: { email: formattedEmail },
-      data: { password: hashedPassword },
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
     });
 
     return NextResponse.json({
@@ -65,7 +72,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Reset Password Route Error:", error);
     return NextResponse.json(
-      { success: false, error: "Terjadi kesalahan internal ketika memperbarui password" },
+      { success: false, error: "Terjadi kesalahan internal ketika memperbarui password." },
       { status: 500 }
     );
   }
