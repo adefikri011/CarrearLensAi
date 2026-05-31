@@ -57,7 +57,7 @@ export const NumbersSection = () => {
               <h3 className={`text-[clamp(32px,6vw,60px)] font-bold tracking-tighter mb-4 ${stat.color}`}>
                 <Counter from={0} to={stat.value} suffix={stat.suffix} />
               </h3>
-              <p className="text-[10px] lg:text-[12px] font-bold tracking-[2px] lg:tracking-[3px] uppercase text-[#888888]">
+              <p className="text-[10px] lg:text-[12px] font-bold tracking-[2px] lg:tracking-[3px] uppercase text-zinc-400">
                 {stat.label}
               </p>
             </motion.div>

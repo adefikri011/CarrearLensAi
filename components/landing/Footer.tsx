@@ -64,21 +64,22 @@ export const Footer = () => {
                 CareerLens <span className="text-[#1D9E75]">AI</span>
               </span>
             </Link>
-            <p className="text-gray-500 dark:text-zinc-500 text-[15px] font-medium leading-relaxed max-w-sm mx-auto md:mx-0">
+            <p className="text-zinc-600 dark:text-zinc-400 text-[15px] font-medium leading-relaxed max-w-sm mx-auto md:mx-0">
               Membangun jembatan antara pendidikan dan industri modern melalui kekuatan AI yang presisi. Dikembangkan untuk membimbing talenta muda Indonesia menuju karir impian.
             </p>
             <div className="flex gap-4 text-gray-400">
                {[
-                 { Icon: Instagram, href: "https://www.instagram.com/ficckryy" },
-                 { Icon: MessageCircle, href: "https://wa.me/62895329890324" },
-                 { Icon: Linkedin, href: "https://www.linkedin.com/in/adeifikriamsyarr" },
-                 { Icon: Github, href: "https://github.com/adefikri011" }
-               ].map(({ Icon, href }, i) => (
+                 { Icon: Instagram, href: "https://www.instagram.com/ficckryy", label: "Kunjungi Instagram Ade Fikri" },
+                 { Icon: MessageCircle, href: "https://wa.me/62895329890324", label: "Hubungi WhatsApp Ade Fikri" },
+                 { Icon: Linkedin, href: "https://www.linkedin.com/in/adeifikriamsyarr", label: "Kunjungi LinkedIn Ade Fikri" },
+                 { Icon: Github, href: "https://github.com/adefikri011", label: "Kunjungi GitHub Ade Fikri" }
+               ].map(({ Icon, href, label }, i) => (
                  <Link 
                    key={i} 
                    href={href} 
                    target="_blank" 
                    rel="noopener noreferrer" 
+                   aria-label={label}
                    className="hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-all hover:scale-110 active:scale-95 duration-200"
                  >
                     <Icon size={20} />
@@ -99,14 +100,14 @@ export const Footer = () => {
                       {link.href.startsWith("#") ? (
                         <button 
                           onClick={() => scrollToSection(link.href)}
-                          className="text-[14px] font-bold text-gray-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-colors inline-block"
+                          className="text-[14px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-colors inline-block"
                         >
                           {link.name}
                         </button>
                       ) : (
                         <Link 
                           href={link.href}
-                          className="text-[14px] font-bold text-gray-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-colors inline-block"
+                          className="text-[14px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] transition-colors inline-block"
                         >
                           {link.name}
                         </Link>
@@ -121,7 +122,7 @@ export const Footer = () => {
 
         <div className="h-px bg-gray-50 dark:bg-zinc-900 mb-12" />
         
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[11px] lg:text-[12px] font-black text-gray-400 dark:text-zinc-600 uppercase tracking-widest text-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[11px] lg:text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest text-center">
            <div className="flex flex-col md:flex-row items-center gap-4">
              <p>© {currentYear} CAREERLENS AI — JUARAVIBECODING 2026.</p>
              <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#1D9E75]/30" />

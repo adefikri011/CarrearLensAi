@@ -18,7 +18,7 @@ const UploadMockup = () => (
         </div>
       </div>
       <div className="space-y-2 pt-2">
-        <div className="flex justify-between text-[10px] font-bold text-[#888888] uppercase tracking-widest">
+        <div className="flex justify-between text-[10px] font-bold text-[#4D4D4D] uppercase tracking-widest">
            <span>Uploading...</span>
            <span>75%</span>
         </div>
@@ -66,7 +66,7 @@ const TimelineMockup = () => (
              <div className={cn("w-5 h-5 rounded-md flex items-center justify-center shrink-0 border", item.s ? "bg-[#1D9E75] border-[#1D9E75] text-white" : "border-[#EFEFEF] bg-[#F8F8F8]")}>
                 {item.s && <Check size={12} strokeWidth={3} />}
              </div>
-             <span className={cn("text-[13px] font-bold", item.s ? "text-[#0A0A0A]" : "text-[#888888]")}>{item.t}</span>
+             <span className={cn("text-[13px] font-bold", item.s ? "text-[#0A0A0A]" : "text-[#4D4D4D]")}>{item.t}</span>
           </div>
         ))}
      </div>
@@ -140,7 +140,7 @@ export const HowItWorksSection = () => {
                 <div className="space-y-4">
                    <div className="w-12 h-12 rounded-2xl bg-[#0A0A0A] text-white flex items-center justify-center font-bold text-xl">{i + 1}</div>
                    <h4 className="text-2xl font-bold tracking-tight text-[#0A0A0A]">{step.title}</h4>
-                   <p className="text-[15px] text-[#888888] leading-relaxed">{step.desc}</p>
+                   <p className="text-[15px] text-[#4D4D4D] leading-relaxed">{step.desc}</p>
                 </div>
                 <div className="bg-[#F8F8F8] rounded-3xl border border-[#EFEFEF] overflow-hidden"><StepVisual index={i} /></div>
               </div>
@@ -167,7 +167,7 @@ export const HowItWorksSection = () => {
                       <motion.div key={i} style={{ opacity, y, position: "absolute" }} className="pointer-events-none">
                          <span className="text-[12px] font-bold tracking-[3px] uppercase text-[#1D9E75] mb-6 block">0{i + 1} / CARA KERJA</span>
                          <h3 className="text-5xl font-bold tracking-[-2px] leading-[1.1] text-[#0A0A0A] mb-8">{step.title}</h3>
-                         <p className="text-[17px] text-[#888888] leading-relaxed font-medium">{step.desc}</p>
+                         <p className="text-[17px] text-[#4D4D4D] leading-relaxed font-medium">{step.desc}</p>
                       </motion.div>
                     );
                   })}

@@ -70,7 +70,7 @@ export const Navbar = () => {
               <button 
                 key={link.name} 
                 onClick={() => scrollToSection(link.href)}
-                className="text-[13px] font-black uppercase tracking-widest text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+                className="text-[13px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
               >
                 {link.name}
               </button>
@@ -100,6 +100,7 @@ export const Navbar = () => {
             <button 
               className="p-2 text-black dark:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu navigasi"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

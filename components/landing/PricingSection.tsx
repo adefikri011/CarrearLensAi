@@ -50,7 +50,7 @@ export const PricingSection = () => {
                 onClick={() => setIsYearly(false)}
                 className={cn(
                   "px-6 lg:px-8 py-3 rounded-full text-[13px] font-bold tracking-tight transition-all",
-                  !isYearly ? "bg-white text-[#0A0A0A] shadow-sm" : "text-[#888888] hover:text-[#0A0A0A]"
+                  !isYearly ? "bg-white text-[#0A0A0A] shadow-sm" : "text-zinc-650 hover:text-[#0A0A0A]"
                 )}
               >
                 Bulanan
@@ -59,7 +59,7 @@ export const PricingSection = () => {
                 onClick={() => setIsYearly(true)}
                 className={cn(
                   "px-6 lg:px-8 py-3 rounded-full text-[13px] font-bold tracking-tight transition-all flex items-center gap-2",
-                  isYearly ? "bg-white text-[#0A0A0A] shadow-sm" : "text-[#888888] hover:text-[#0A0A0A]"
+                  isYearly ? "bg-white text-[#0A0A0A] shadow-sm" : "text-zinc-650 hover:text-[#0A0A0A]"
                 )}
               >
                 Tahunan
@@ -89,7 +89,7 @@ export const PricingSection = () => {
                     Paling Populer
                   </div>
                 )}
-                <span className={cn("text-[12px] font-bold tracking-[2px] uppercase mb-2", tier.featured ? "text-[#1D9E75]" : "text-[#888888]")}>
+                <span className={cn("text-[12px] font-bold tracking-[2px] uppercase mb-2", tier.featured ? "text-[#1D9E75]" : "text-[#4D4D4D]")}>
                   {tier.name}
                 </span>
                 
@@ -104,7 +104,7 @@ export const PricingSection = () => {
                    )}
                 </div>
 
-                <p className={cn("text-[15px] font-medium leading-relaxed mb-10", tier.featured ? "text-white/60" : "text-[#888888]")}>
+                <p className={cn("text-[15px] font-medium leading-relaxed mb-10", tier.featured ? "text-white/60" : "text-[#4D4D4D]")}>
                   {tier.desc}
                 </p>
 

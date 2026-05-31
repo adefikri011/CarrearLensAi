@@ -11,7 +11,7 @@ const CVScoreVisual = () => (
        <div className="w-24 h-24 lg:w-40 lg:h-40 rounded-full border-[6px] lg:border-[10px] border-white flex items-center justify-center relative bg-white shadow-xl">
           <div className="flex flex-col items-center">
             <span className="text-xl lg:text-4xl font-bold tracking-tighter">82%</span>
-            <span className="text-[8px] lg:text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-0.5 lg:mt-1">Excellent</span>
+            <span className="text-[8px] lg:text-[10px] font-bold text-[#4a4a4a] uppercase tracking-widest mt-0.5 lg:mt-1">Excellent</span>
           </div>
           <svg className="absolute inset-0 w-full h-full transform -rotate-90">
              <circle 
@@ -139,12 +139,12 @@ export const FeaturesSection = () => {
               {/* Text Side */}
               <div className="flex-1 space-y-6 lg:space-y-8 w-full">
                 <div className="space-y-4">
-                   <span className="text-[12px] font-bold tracking-[2px] uppercase text-[#888888]">{feature.label}</span>
+                   <span className="text-[12px] font-bold tracking-[2px] uppercase text-[#4D4D4D]">{feature.label}</span>
                    <h3 className="text-[clamp(28px,6vw,48px)] font-bold tracking-[-1px] text-[#0A0A0A] leading-[1.1]">
                      {feature.title}
                    </h3>
                 </div>
-                <p className="text-[16px] lg:text-[18px] text-[#888888] leading-relaxed font-medium lg:max-w-md">
+                <p className="text-[16px] lg:text-[18px] text-[#4D4D4D] leading-relaxed font-medium lg:max-w-md">
                   {feature.desc}
                 </p>
                 <div className="pt-2">

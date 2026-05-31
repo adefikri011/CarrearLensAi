@@ -296,16 +296,7 @@ const HeroAndPlayground = () => {
 
   // Interview states
   const [interviewAnswered, setInterviewAnswered] = useState<number | null>(null);
-  const [waveformBars, setWaveformBars] = useState<number[]>([]);
-  
-  // Waveform animation effect: highly continuous and organic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const bars = Array.from({ length: 24 }, () => Math.floor(Math.random() * 38) + 3);
-      setWaveformBars(bars);
-    }, 95);
-    return () => clearInterval(interval);
-  }, []);
+  const waveformBars = Array.from({ length: 24 });
 
   const handleSimulateScan = () => {
     setIsScanning(true);
@@ -515,7 +506,7 @@ const HeroAndPlayground = () => {
               </div>
 
               {/* Advanced Navigation Slider Tabs */}
-              <div className="flex bg-zinc-200/80 dark:bg-zinc-800/80 rounded-xl p-1 gap-1 w-full sm:w-auto relative">
+              <div className="flex bg-zinc-200/80 dark:bg-zinc-850/80 rounded-xl p-1 gap-1 w-full sm:w-auto relative border border-zinc-300/40 dark:border-zinc-800/40">
                 {[
                   { id: "cv-scanner", label: "CV SCANNER", icon: FileText },
                   { id: "roadmap", label: "90-DAY PATH", icon: Compass },
@@ -530,7 +521,7 @@ const HeroAndPlayground = () => {
                         setActiveTab(tab.id as any);
                         setInterviewAnswered(null);
                       }}
-                      className="relative flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer flex-1 sm:flex-initial"
+                      className="relative flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer flex-1 sm:flex-initial"
                     >
                       {active && (
                         <motion.div 
@@ -539,9 +530,9 @@ const HeroAndPlayground = () => {
                           transition={{ type: "spring", stiffness: 380, damping: 30 }}
                         />
                       )}
-                      <span className="relative z-10 flex items-center gap-1.5">
-                        <Icon size={12} className={active ? "text-[#1D9E75]" : "text-zinc-500"} />
-                        <span className={active ? "text-[#1D9E75] dark:text-white font-extrabold" : "text-zinc-500"}>
+                      <span className="relative z-10 flex items-center gap-1.5 font-sans">
+                        <Icon size={12} className={active ? "text-[#157a5b] dark:text-[#1D9E75]" : "text-zinc-700 dark:text-zinc-450"} />
+                        <span className={active ? "text-[#157a5b] dark:text-white font-black" : "text-zinc-700 dark:text-zinc-400 font-extrabold"}>
                           {tab.label}
                         </span>
                       </span>
@@ -559,8 +550,8 @@ const HeroAndPlayground = () => {
                 <div className="space-y-6">
                   <div>
                     <div className="flex items-center gap-1.5 mb-2.5">
-                      <GraduationCap size={14} className="text-[#1D9E75]" />
-                      <span className="text-[10px] font-extrabold tracking-widest text-[#534AB7] uppercase font-mono">
+                      <GraduationCap size={14} className="text-[#157a5b] dark:text-[#1D9E75]" />
+                      <span className="text-[10px] font-extrabold tracking-widest text-indigo-700 dark:text-indigo-400 uppercase font-mono">
                         Pilih Tingkat / Target Audiens:
                       </span>
                     </div>
@@ -580,8 +571,8 @@ const HeroAndPlayground = () => {
                           }}
                           className={`py-3.5 px-2 rounded-xl border text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer text-center ${
                             selectedAudience === aud.id
-                              ? "bg-[#1D9E75]/10 border-[#1D9E75] text-[#1D9E75] scale-[1.02] shadow-sm font-black"
-                              : "border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                              ? "bg-[#1D9E75]/10 border-[#1D9E75] text-[#12644a] dark:text-[#19f2af] scale-[1.02] shadow-sm font-black"
+                              : "border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50"
                           }`}
                         >
                           {aud.label}
@@ -600,23 +591,23 @@ const HeroAndPlayground = () => {
                         className="bg-zinc-50 dark:bg-zinc-950/40 rounded-2xl p-5 border border-dashed border-zinc-200 dark:border-zinc-800 relative space-y-4"
                       >
                         <div className="flex items-start gap-4">
-                          <div className="p-3 bg-zinc-100 dark:bg-zinc-800 text-[#1D9E75] rounded-xl shrink-0">
+                          <div className="p-3 bg-zinc-150 dark:bg-zinc-800 text-[#157a5b] dark:text-[#1D9E75] rounded-xl shrink-0">
                             <UploadCloud size={24} className="animate-pulse" />
                           </div>
                           <div className="space-y-1 text-left min-w-0">
                             <h4 className="text-xs sm:text-sm font-extrabold text-zinc-800 dark:text-zinc-200 truncate">{currProfile.name}</h4>
-                            <p className="text-[9px] text-zinc-400 font-black tracking-widest font-mono truncate uppercase">{currProfile.education}</p>
+                            <p className="text-[9px] text-zinc-600 dark:text-zinc-400 font-black tracking-widest font-mono truncate uppercase">{currProfile.education}</p>
                           </div>
                         </div>
                         
-                        <div className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-xl p-3.5 text-[10px] sm:text-[11px] font-mono whitespace-pre-wrap text-left text-zinc-550 dark:text-zinc-400 relative overflow-hidden h-24 select-none leading-relaxed">
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 text-[10px] sm:text-[11px] font-mono whitespace-pre-wrap text-left text-zinc-700 dark:text-zinc-300 relative overflow-hidden h-24 select-none leading-relaxed">
                           <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent pointer-events-none" />
                           {currProfile.rawText}
                         </div>
                         
-                        <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-500 font-bold uppercase tracking-widest bg-zinc-100/55 dark:bg-zinc-900/60 px-4 py-3 rounded-xl border border-zinc-150 dark:border-zinc-850 font-mono">
+                        <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-700 dark:text-zinc-300 font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900/60 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-850 font-mono">
                           <span>SKOR ATS AWAL:</span>
-                          <span className="text-red-500 font-black shrink-0">
+                          <span className="text-red-650 dark:text-red-400 font-black shrink-0">
                             {currProfile.originalScore}% (KURANG LAYAK)
                           </span>
                         </div>
@@ -681,32 +672,32 @@ const HeroAndPlayground = () => {
                         {/* Dynamically Comparison scoring metric widgets */}
                         <div className="grid grid-cols-2 gap-3">
                           <div className="p-4 bg-red-500/5 dark:bg-red-950/10 rounded-2xl border border-red-200/50 dark:border-red-900/30 text-center space-y-1">
-                            <span className="text-[9px] font-black text-red-500 uppercase tracking-widest font-mono">Sebelum (Unoptimized)</span>
-                            <h5 className="text-2xl font-black text-red-500 font-mono italic">{currProfile.originalScore}%</h5>
+                            <span className="text-[9px] font-black text-red-650 dark:text-red-400 uppercase tracking-widest font-mono">Sebelum (Unoptimized)</span>
+                            <h5 className="text-2xl font-black text-red-650 dark:text-red-450 font-mono italic">{currProfile.originalScore}%</h5>
                           </div>
                           
                           <div className="p-4 bg-[#1D9E75]/10 rounded-2xl border border-[#1D9E75]/35 text-center space-y-1 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-8 h-8 bg-[#1D9E75]/10 rounded-bl-2xl flex items-center justify-center">
-                              <Sparkles size={11} className="text-[#1D9E75] animate-pulse" />
+                              <Sparkles size={11} className="text-[#157a5b] dark:text-[#1D9E75] animate-pulse" />
                             </div>
-                            <span className="text-[9px] font-black text-[#1D9E75] uppercase tracking-widest font-mono">Setelah AI Audit</span>
-                            <h5 className="text-2xl font-black text-[#1D9E75] font-mono italic">{currProfile.optimizedScore}%</h5>
+                            <span className="text-[9px] font-black text-[#157a5b] dark:text-[#19f2af] uppercase tracking-widest font-mono">Setelah AI Audit</span>
+                            <h5 className="text-2xl font-black text-[#157a5b] dark:text-[#19f2af] font-mono italic">{currProfile.optimizedScore}%</h5>
                           </div>
                         </div>
 
                         {/* Staggered dynamic recommendations list */}
                         <div className="space-y-2.5">
-                          <h6 className="text-[10px] font-black text-[#534AB7] uppercase tracking-widest font-mono flex items-center gap-1.5">
-                            <CheckCircle2 size={12} className="text-[#534AB7]" />
+                          <h6 className="text-[10px] font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-widest font-mono flex items-center gap-1.5">
+                            <CheckCircle2 size={12} className="text-indigo-700 dark:text-indigo-400" />
                             REKOMENDASI PENGUATAN PROFIL:
                           </h6>
                           <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                             {currProfile.recommendations.map((rec, i) => (
-                              <div key={i} className="flex gap-2.5 items-start text-[11px] bg-zinc-50 dark:bg-zinc-850/40 p-2.5 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                <span className="w-5 h-5 rounded-full bg-[#1D9E75]/10 text-[#1D9E75] flex items-center justify-center font-black text-[9px] shrink-0 mt-0.5 font-mono">
+                              <div key={i} className="flex gap-2.5 items-start text-[11px] bg-zinc-50 dark:bg-zinc-850/40 p-2.5 rounded-xl border border-zinc-150 dark:border-zinc-800">
+                                <span className="w-5 h-5 rounded-full bg-[#1D9E75]/15 text-[#12644a] dark:text-[#19f2af] flex items-center justify-center font-black text-[9px] shrink-0 mt-0.5 font-mono">
                                   {i + 1}
                                 </span>
-                                <span className="text-zinc-650 dark:text-zinc-300 font-semibold">{rec}</span>
+                                <span className="text-zinc-750 dark:text-zinc-300 font-semibold">{rec}</span>
                               </div>
                             ))}
                           </div>
@@ -714,22 +705,22 @@ const HeroAndPlayground = () => {
 
                         {/* Interactive dynamic matching section */}
                         <div className="space-y-2 pt-3.5 border-t border-zinc-150 dark:border-zinc-800/80">
-                          <div className="flex justify-between items-center text-[9px] font-black uppercase text-zinc-400 font-mono tracking-wider">
+                          <div className="flex justify-between items-center text-[9px] font-black uppercase text-zinc-500 dark:text-zinc-450 font-mono tracking-wider">
                             <span>Kecocokan Lowongan AI Mitra:</span>
-                            <span className="text-[#1D9E75] flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#1D9E75] animate-ping" />
+                            <span className="text-[#157a5b] dark:text-[#19f2af] flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#157a5b] dark:bg-[#1D9E75] animate-ping" />
                               AUTOPILOT MATCHED
                             </span>
                           </div>
                           
                           <div className="grid grid-cols-3 gap-2">
                             {currProfile.matches.map((job) => (
-                              <div key={job.role} className="p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-850 rounded-xl flex flex-col justify-between h-20 shadow-sm hover:border-teal-500/50 transition-colors">
+                              <div key={job.role} className="p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-xl flex flex-col justify-between h-20 shadow-sm hover:border-teal-500/50 transition-colors">
                                 <div className="space-y-0.5">
                                   <h5 className="text-[9px] font-black text-zinc-800 dark:text-zinc-200 truncate">{job.role}</h5>
-                                  <span className="text-[8px] font-bold text-zinc-400 block truncate uppercase font-mono">{job.company}</span>
+                                  <span className="text-[8px] font-bold text-zinc-500 dark:text-zinc-400 block truncate uppercase font-mono">{job.company}</span>
                                 </div>
-                                <span className="text-[10px] font-black text-[#1D9E75] block font-mono bg-emerald-500/5 px-1 py-0.5 rounded text-center">{job.score}% Match</span>
+                                <span className="text-[10px] font-black text-[#12644a] dark:text-[#19f2af] block font-mono bg-emerald-500/5 dark:bg-[#1D9E75]/10 px-1 py-0.5 rounded text-center">{job.score}% Match</span>
                               </div>
                             ))}
                           </div>
@@ -739,7 +730,7 @@ const HeroAndPlayground = () => {
                           onClick={() => setAnalysisDone(false)}
                           className="w-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-700"
                         >
-                          <RotateCw size={12} className="text-[#1D9E75] animate-spin-slow" /> ULANGI INTEGRASI SIMULASI
+                          <RotateCw size={12} className="text-[#157a5b] dark:text-[#1D9E75] animate-spin-slow" /> ULANGI INTEGRASI SIMULASI
                         </button>
                       </motion.div>
                     )}
@@ -751,7 +742,7 @@ const HeroAndPlayground = () => {
               {activeTab === 'roadmap' && (
                 <div className="space-y-6">
                   <div>
-                    <span className="text-[10px] font-bold tracking-widest text-[#1D9E75] bg-[#1D9E75]/10 px-2.5 py-1.5 rounded-md uppercase font-mono">
+                    <span className="text-[10px] font-extrabold tracking-widest text-[#12644a] dark:text-[#19f2af] bg-[#1D9E75]/10 dark:bg-[#1D9E75]/15 px-2.5 py-1.5 rounded-md uppercase font-mono">
                       FASE BELAJAR & SELEKSI KOMPETENSI:
                     </span>
                     <div className="grid grid-cols-3 gap-1.5 mt-3">
@@ -761,8 +752,8 @@ const HeroAndPlayground = () => {
                           onClick={() => setActiveWeekIndex(i)}
                           className={`text-center py-3 rounded-xl border text-[9px] sm:text-[10px] font-black uppercase tracking-wider cursor-pointer transition-all ${
                             activeWeekIndex === i
-                              ? "bg-[#1D9E75]/10 border-[#1D9E75] text-[#1D9E75] scale-[1.02] shadow-sm font-black"
-                              : "border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                              ? "bg-[#1D9E75]/11 border-[#1D9E75] text-[#12644a] dark:text-[#19f2af] scale-[1.02] shadow-sm font-black"
+                              : "border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800"
                           }`}
                         >
                           {rm.week}
@@ -774,7 +765,7 @@ const HeroAndPlayground = () => {
                   {/* Active Segment Panel Detail */}
                   <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 text-left">
                     <div className="flex gap-2 items-center">
-                      <Compass size={16} className="text-[#1D9E75] animate-spin-slow" />
+                      <Compass size={16} className="text-[#157a5b] dark:text-[#1D9E75] animate-spin-slow" />
                       <h4 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
                         {ROADMAP_DATA[activeWeekIndex].title}
                       </h4>
@@ -793,7 +784,7 @@ const HeroAndPlayground = () => {
                           <span className={`text-[11px] sm:text-xs font-semibold ${
                             task.done 
                               ? "text-zinc-350 dark:text-zinc-500 line-through" 
-                              : "text-zinc-700 dark:text-zinc-300 animate-pulse"
+                              : "text-zinc-750 dark:text-zinc-300 animate-pulse"
                           }`}>
                             {task.name}
                           </span>
@@ -804,21 +795,24 @@ const HeroAndPlayground = () => {
                     {/* Accompanying Resource Kit */}
                     <div className="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 p-3.5 rounded-xl flex items-center justify-between shadow-sm">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-[#534AB7]/10 text-[#534AB7] flex items-center justify-center font-bold text-xs shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
                           <Award size={16} />
                         </div>
                         <div className="text-left min-w-0">
-                          <p className="text-[9px] font-black tracking-widest text-[#534AB7] uppercase font-mono">{ROADMAP_DATA[activeWeekIndex].resource.type}</p>
+                          <p className="text-[9px] font-black tracking-widest text-indigo-700 dark:text-indigo-400 uppercase font-mono">{ROADMAP_DATA[activeWeekIndex].resource.type}</p>
                           <h5 className="text-[11px] font-extrabold text-zinc-800 dark:text-zinc-200 truncate pr-2 leading-none mt-0.5">{ROADMAP_DATA[activeWeekIndex].resource.title}</h5>
                         </div>
                       </div>
-                      <button className="text-[10px] font-black uppercase text-[#1D9E75] hover:underline cursor-pointer shrink-0 flex items-center gap-0.5">
+                      <button 
+                        aria-label={`Ambil modul belajar ${ROADMAP_DATA[activeWeekIndex].resource.title}`}
+                        className="text-[10px] font-black uppercase text-[#157a5b] dark:text-[#1D9E75] hover:underline cursor-pointer shrink-0 flex items-center gap-0.5"
+                      >
                         Ambil <ArrowUpRight size={12} />
                       </button>
                     </div>
                   </div>
 
-                  <p className="text-[10px] font-extrabold text-center text-zinc-400 uppercase tracking-widest font-mono">
+                  <p className="text-[10px] font-extrabold text-center text-zinc-650 dark:text-zinc-450 uppercase tracking-widest font-mono">
                     🏁 Diperbarui otomatis mengikuti standar kualifikasi kurikulum industri global.
                   </p>
                 </div>
@@ -828,11 +822,11 @@ const HeroAndPlayground = () => {
               {activeTab === 'interview' && (
                 <div className="space-y-4 text-left">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold tracking-widest text-[#534AB7] bg-[#534AB7]/10 px-2.5 py-1.5 rounded-md uppercase font-mono">
+                    <span className="text-[10px] font-extrabold tracking-widest text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 px-2.5 py-1.5 rounded-md uppercase font-mono">
                       AI VOICE & INTERVIEW SIMULATOR:
                     </span>
-                    <span className="text-[9px] font-black text-emerald-500 flex items-center gap-1 font-mono shrink-0">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> LIVE CONNECTED
+                    <span className="text-[9px] font-black text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-mono shrink-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" /> LIVE CONNECTED
                     </span>
                   </div>
 
@@ -840,13 +834,13 @@ const HeroAndPlayground = () => {
                   <div className="bg-zinc-50 dark:bg-zinc-950/40 rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 flex items-center gap-3.5">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#1D9E75] to-[#534AB7] flex items-center justify-center text-white font-black text-xs shrink-0 shadow-sm relative">
                       SISKA
-                      <div className="absolute -bottom-1 -right-1 w-4.5 h-4.5 bg-emerald-500 rounded-full border-2 border-white dark:border-zinc-950 flex items-center justify-center">
+                      <div className="absolute -bottom-1 -right-1 w-4.5 h-4.5 bg-emerald-500 dark:bg-emerald-400 rounded-full border-2 border-white dark:border-zinc-950 flex items-center justify-center">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                       </div>
                     </div>
                     <div className="space-y-0.5 min-w-0">
                       <h4 className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">Ibu Siska Amelia, S.Psi</h4>
-                      <p className="text-[8px] sm:text-[9px] text-[#1D9E75] font-black tracking-widest uppercase font-mono truncate">Lead Recruiter Korporat & Group BUMN</p>
+                      <p className="text-[8px] sm:text-[9px] text-[#157a5b] dark:text-[#19f2af] font-black tracking-widest uppercase font-mono truncate">Lead Recruiter Korporat & Group BUMN</p>
                     </div>
                   </div>
 
@@ -859,13 +853,23 @@ const HeroAndPlayground = () => {
 
                   {/* Micro sound wave visualization bars */}
                   <div className="flex items-center justify-center gap-1 h-9 py-1 text-teal-400">
-                    {waveformBars.map((h, i) => (
+                    {waveformBars.map((_, i) => (
                       <motion.div 
                         key={i} 
                         className="w-1.5 bg-gradient-to-t from-[#1D9E75] to-teal-300 rounded-full" 
-                        style={{ height: `${h}px` }} 
-                        animate={{ opacity: [0.7, 1, 0.7] }}
-                        transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.04 }}
+                        animate={{ 
+                          height: [
+                            `${((i * 7 + 13) % 20) + 6}px`,
+                            `${((i * 11 + 23) % 22) + 12}px`,
+                            `${((i * 7 + 13) % 20) + 6}px`
+                          ]
+                        }}
+                        transition={{ 
+                          duration: 0.9 + (i % 4) * 0.1, 
+                          repeat: Infinity, 
+                          ease: "easeInOut",
+                          delay: i * 0.02
+                        }}
                       />
                     ))}
                   </div>
@@ -1154,7 +1158,7 @@ const BentoFeatures = () => {
                 </p>
               </div>
               
-              <div className="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-805 grid grid-cols-3 gap-4 text-center relative z-20">
+              <dl className="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-805 grid grid-cols-3 gap-4 text-center relative z-20">
                 <div>
                   <dt className="text-2xl sm:text-3xl font-mono font-black text-[#1D9E75]">180+</dt>
                   <dd className="text-[9px] font-mono uppercase text-zinc-450 dark:text-zinc-400 font-extrabold mt-1">Sektor Perusahaan</dd>
@@ -1167,7 +1171,7 @@ const BentoFeatures = () => {
                   <dt className="text-2xl sm:text-3xl font-mono font-black text-amber-500">22 Jam</dt>
                   <dd className="text-[9px] font-mono uppercase text-zinc-450 dark:text-zinc-400 font-extrabold mt-1">Umpan Balik HRD</dd>
                 </div>
-              </div>
+              </dl>
             </div>
           </ScrollReveal>
 

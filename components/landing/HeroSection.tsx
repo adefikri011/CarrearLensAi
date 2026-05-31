@@ -4,6 +4,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionValueEvent } from "motion/react";
 import { Check, Target, Layout, BrainCircuit, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const Ticker = ({ value }: { value: any }) => {
   const [display, setDisplay] = useState(0);
@@ -145,6 +147,8 @@ const DashboardMockup = ({
 };
 
 export const HeroSection = () => {
+  const { data: session } = useSession();
+  const authenticated = !!session;
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -216,14 +220,17 @@ export const HeroSection = () => {
           >
             AI yang membantu kamu membangun masa depan yang terarah dengan presisi tingkat tinggi.
           </motion.p>
-          <motion.button 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="h-16 w-full max-w-[300px] bg-black dark:bg-white text-white dark:text-black rounded-full font-black text-[11px] tracking-[2px] uppercase hover:bg-teal dark:hover:bg-teal dark:hover:text-white transition-all shadow-xl active:scale-95"
-          >
-             Analisis CV Sekarang
-           </motion.button>
+          <Link href={authenticated ? "/dashboard/cv" : "/register"} className="w-full flex justify-center">
+            <motion.button 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              aria-label="Analisis CV Sekarang secara gratis"
+              className="h-16 w-full max-w-[300px] bg-black dark:bg-white text-white dark:text-black rounded-full font-black text-[11px] tracking-[2px] uppercase hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-xl active:scale-95 cursor-pointer"
+            >
+               Analisis CV Sekarang
+             </motion.button>
+          </Link>
         </div>
         
         <div className="w-full max-w-[90vw] z-0">
@@ -286,9 +293,14 @@ export const HeroSection = () => {
 
         {/* Floating CTA */}
         <motion.div style={{ opacity: ctaOpacity, zIndex: 15 }} className="absolute bottom-[8%]">
-           <button className="h-20 px-14 bg-black dark:bg-white text-white dark:text-black rounded-full font-black text-[12px] tracking-[2px] uppercase hover:bg-teal dark:hover:bg-teal dark:hover:text-white transition-all shadow-2xl active:scale-95">
-             Analisis CV Sekarang
-           </button>
+          <Link href={authenticated ? "/dashboard/cv" : "/register"}>
+             <button 
+               aria-label="Analisis CV Sekarang secara gratis"
+               className="h-20 px-14 bg-black dark:bg-white text-white dark:text-black rounded-full font-black text-[12px] tracking-[2px] uppercase hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] dark:hover:text-white transition-all shadow-2xl active:scale-95 cursor-pointer animate-bounce"
+             >
+               Analisis CV Sekarang
+             </button>
+          </Link>
         </motion.div>
 
       </div>

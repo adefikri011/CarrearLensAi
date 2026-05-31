@@ -47,7 +47,7 @@ export const TestimonialsSection = () => {
       <div className="container max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8 lg:gap-12 mb-16 lg:mb-24">
            <div className="max-w-2xl">
-              <span className="text-[12px] font-bold tracking-[3px] uppercase text-[#888888] mb-4 block">03 / TESTIMONI</span>
+              <span className="text-[12px] font-bold tracking-[3px] uppercase text-[#4D4D4D] mb-4 block">03 / TESTIMONI</span>
               <h3 className="text-[clamp(32px,8vw,64px)] font-bold tracking-[-1px] lg:tracking-[-3px] text-[#0A0A0A] leading-[1.1]">
                 Kisah Mereka yang Menemukan Jalannya.
               </h3>
@@ -56,12 +56,14 @@ export const TestimonialsSection = () => {
            <div className="flex gap-4">
               <button 
                 onClick={prev}
+                aria-label="Testimoni sebelumnya"
                 className="w-12 h-12 lg:w-16 lg:h-16 rounded-full border border-[#EFEFEF] bg-white flex items-center justify-center hover:bg-[#0A0A0A] hover:text-white transition-all shadow-sm active:scale-90"
               >
                  <ChevronLeft size={20} />
               </button>
               <button 
                 onClick={next}
+                aria-label="Testimoni berikutnya"
                 className="w-12 h-12 lg:w-16 lg:h-16 rounded-full border border-[#EFEFEF] bg-white flex items-center justify-center hover:bg-[#0A0A0A] hover:text-white transition-all shadow-sm active:scale-90"
               >
                  <ChevronRight size={20} />
@@ -93,7 +95,7 @@ export const TestimonialsSection = () => {
                     </div>
                     <div>
                        <h4 className="text-[17px] font-bold text-[#0A0A0A]">{testimonials[index].name}</h4>
-                       <p className="text-[14px] text-[#888888] font-medium">{testimonials[index].role}</p>
+                       <p className="text-[14px] text-[#4D4D4D] font-medium">{testimonials[index].role}</p>
                     </div>
                  </div>
               </motion.div>
@@ -106,6 +108,7 @@ export const TestimonialsSection = () => {
              <button
                key={i}
                onClick={() => setIndex(i)}
+               aria-label={`Lihat testimoni ke-${i + 1}`}
                className={cn(
                  "h-1.5 rounded-full transition-all duration-300",
                  index === i ? "w-8 bg-[#1D9E75]" : "w-3 bg-[#EFEFEF]"

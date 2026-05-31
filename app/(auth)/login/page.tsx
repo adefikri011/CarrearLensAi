@@ -349,7 +349,7 @@ function LoginForm() {
                       <button 
                         type="button"
                         onClick={() => setShowResetDialog(true)}
-                        className="text-[10px] font-bold text-[#1D9E75] hover:underline cursor-pointer"
+                        className="text-[10px] font-bold text-[#157a5b] dark:text-[#19f2af] hover:underline cursor-pointer"
                       >
                         Lupa Password?
                       </button>
@@ -365,6 +365,7 @@ function LoginForm() {
                         <button 
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                           className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                         >
                           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -564,6 +565,7 @@ function LoginForm() {
                     <button
                       type="button"
                       onClick={() => setShowResetPassword(!showResetPassword)}
+                      aria-label={showResetPassword ? "Sembunyikan password baru" : "Tampilkan password baru"}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200"
                     >
                       {showResetPassword ? <EyeOff size={15} /> : <Eye size={15} />}
