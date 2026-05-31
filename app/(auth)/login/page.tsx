@@ -15,9 +15,7 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
-  ShieldCheck,
-  Mail,
-  ArrowLeft
+  ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -138,9 +136,11 @@ function LoginForm() {
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [isResetPending, setIsResetPending] = useState(false);
+  const [resetValues, setResetValues] = useState<{ email: string; password: string } | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
-  const [linkSent, setLinkSent] = useState(false);
+  const [resetPassword, setResetPassword] = useState("");
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   React.useEffect(() => {
@@ -170,17 +170,19 @@ function LoginForm() {
 
     setCaptchaToken(token);
 
-    if (isResetPending && resetEmail) {
-      const emailToReset = resetEmail;
+    if (isResetPending && resetValues) {
+      const values = resetValues;
+      setResetValues(null);
       setIsResetPending(false);
       setShowCaptcha(false);
 
       try {
-        const response = await fetch("/api/auth/reset-password/send", {
+        const response = await fetch("/api/auth/reset-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: emailToReset,
+            email: values.email,
+            password: values.password,
             captchaToken: token,
           }),
         });
@@ -188,18 +190,20 @@ function LoginForm() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Gagal mengirim link atur ulang");
+          throw new Error(data.error || "Gagal memperbarui password");
         }
 
         toast({
-          title: "Link Atur Ulang Dikirim",
-          description: data.message || "Tautan atur ulang kata sandi berhasil dikirim ke email Anda.",
+          title: "Password Diperbarui",
+          description: "Password Anda berhasil diperbarui. Silakan masuk menggunakan password baru Anda.",
         });
 
-        setLinkSent(true);
+        setShowResetDialog(false);
+        setResetEmail("");
+        setResetPassword("");
       } catch (error) {
         toast({
-          title: "Gagal Mengirim Email",
+          title: "Gagal Mengubah Password",
           description: error instanceof Error ? error.message : "Terjadi kesalahan sistem.",
           variant: "destructive",
         });
@@ -522,131 +526,95 @@ function LoginForm() {
               initial={{ scale: 0.98, y: 4 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.98, y: 4 }}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-805/40 rounded-2xl p-6 max-w-sm w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative text-left"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] space-y-4 relative text-left"
             >
-              {!linkSent ? (
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-                      Lupa Password?
-                    </h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
-                      Kami akan mengirimkan instruksi dan tautan atur ulang kata sandi ke email Anda melalui Resend.
-                    </p>
-                  </div>
+              <div>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                  Atur Ulang Password
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
+                  Masukkan email akun Anda dan password baru yang ingin Anda gunakan.
+                </p>
+              </div>
 
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 ml-1">Email Anda</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="nama@email.com"
-                        value={resetEmail}
-                        onChange={(e) => setResetEmail(e.target.value)}
-                        className="w-full h-11 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 text-xs font-medium dark:text-white focus:outline-none focus:ring-1 focus:ring-[#1D9E75]"
-                      />
-                    </div>
-                  </div>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 ml-1">Email Anda</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="nama@email.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full h-11 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 text-xs font-medium dark:text-white focus:outline-none focus:ring-1 focus:ring-[#1D9E75]"
+                  />
+                </div>
 
-                  <div className="pt-2 flex flex-col gap-2">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 ml-1">Password Baru</label>
+                  <div className="relative">
+                    <input
+                      type={showResetPassword ? "text" : "password"}
+                      required
+                      placeholder="Minimal 8 karakter"
+                      value={resetPassword}
+                      onChange={(e) => setResetPassword(e.target.value)}
+                      className="w-full h-11 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 pr-10 text-xs font-medium dark:text-white focus:outline-none focus:ring-1 focus:ring-[#1D9E75]"
+                    />
                     <button
                       type="button"
-                      disabled={isLoading}
-                      onClick={() => {
-                        if (!resetEmail) {
-                          toast({
-                            title: "Email Kosong",
-                            description: "Mohon isi email akun Anda.",
-                            variant: "destructive"
-                          });
-                          return;
-                        }
-                        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) {
-                          toast({
-                            title: "Format Email Salah",
-                            description: "Mohon masukkan email yang valid.",
-                            variant: "destructive"
-                          });
-                          return;
-                        }
-                        setIsLoading(true);
-                        setIsResetPending(true);
-                        setIsGooglePending(false);
-                        setPendingValues(null);
-                        setShowCaptcha(true);
-                      }}
-                      className="w-full text-xs font-bold text-white bg-[#1D9E75] hover:bg-[#168562] h-11 rounded-xl transition-all cursor-pointer flex items-center justify-center font-semibold gap-2 shadow-sm"
+                      onClick={() => setShowResetPassword(!showResetPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200"
                     >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          Memproses...
-                        </>
-                      ) : (
-                        "Kirim Link Atur Ulang"
-                      )}
-                    </button>
-                    
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowResetDialog(false);
-                        setResetEmail("");
-                      }}
-                      className="w-full text-xs font-semibold text-zinc-500 hover:text-zinc-650 dark:text-zinc-400 dark:hover:text-zinc-300 h-10 border border-zinc-200 dark:border-zinc-850 rounded-xl transition-all cursor-pointer"
-                    >
-                      Batal
+                      {showResetPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-4 text-center py-2">
-                  <div className="mx-auto size-12 rounded-full bg-[#ecfdf5] dark:bg-[#064e3b] text-[#115e59] dark:text-[#a7f3d0] flex items-center justify-center border border-emerald-100 dark:border-emerald-950">
-                    <Mail size={22} className="stroke-[1.75]" />
-                  </div>
+              </div>
 
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-                      Instruksi Terkirim
-                    </h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[260px] mx-auto leading-relaxed">
-                      Kami telah mengirimkan tautan pemulihan kata sandi Anda ke:
-                    </p>
-                    <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-800/80 px-2.5 py-1.5 rounded-lg border border-zinc-100 dark:border-zinc-750 inline-block mt-1">
-                      {resetEmail}
-                    </p>
-                  </div>
-
-                  <div className="bg-purple-50 dark:bg-purple-950/40 border border-dashed border-purple-150 dark:border-purple-900/60 rounded-xl p-3 text-[11px] text-purple-750 dark:text-purple-300 leading-relaxed text-left">
-                    <span className="font-bold">Tips Keamanan:</span> Tautan ini hanya berlaku sebatas <strong>1 jam</strong>. Silakan periksa folder <strong>Spam</strong> Anda bila email tidak segera tiba di inbox.
-                  </div>
-
-                  <div className="pt-2 flex flex-col gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowResetDialog(false);
-                        setLinkSent(false);
-                        setResetEmail("");
-                      }}
-                      className="w-full text-xs font-bold text-white bg-[#534AB7] hover:bg-[#463e9c] h-11 rounded-xl transition-all cursor-pointer flex items-center justify-center border border-transparent shadow-sm"
-                    >
-                      Selesai & Tutup
-                    </button>
-                    
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLinkSent(false);
-                      }}
-                      className="text-xs font-semibold text-zinc-400 hover:text-zinc-620 dark:text-zinc-500 dark:hover:text-zinc-400 flex items-center justify-center gap-1.5 hover:underline"
-                    >
-                      <ArrowLeft size={12} /> Kirim ulang ke email berbeda
-                    </button>
-                  </div>
-                </div>
-              )}
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!resetEmail || !resetPassword) {
+                      toast({
+                        title: "Formulir Kosong",
+                        description: "Mohon isi semua data.",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    if (resetPassword.length < 8) {
+                      toast({
+                        title: "Password Terlalu Pendek",
+                        description: "Password harus minimal 8 karakter.",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    setIsLoading(true);
+                    setResetValues({ email: resetEmail, password: resetPassword });
+                    setIsResetPending(true);
+                    setIsGooglePending(false);
+                    setPendingValues(null);
+                    setShowCaptcha(true);
+                  }}
+                  className="w-full text-xs font-bold text-white bg-[#1D9E75] hover:bg-[#168562] h-10 rounded-xl transition-all cursor-pointer flex items-center justify-center font-semibold"
+                >
+                  Perbarui Password Saya
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetDialog(false);
+                    setResetEmail("");
+                    setResetPassword("");
+                  }}
+                  className="w-full text-xs font-semibold text-zinc-500 hover:text-zinc-650 dark:text-zinc-400 dark:hover:text-zinc-300 h-10 border border-zinc-200 dark:border-zinc-850 rounded-xl transition-all cursor-pointer"
+                >
+                  Batal
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

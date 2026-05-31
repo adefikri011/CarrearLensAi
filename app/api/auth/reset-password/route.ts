@@ -5,28 +5,30 @@ import { verifyRecaptcha } from "@/lib/recaptcha";
 
 /**
  * POST /api/auth/reset-password
- * Resets the password using a secure token that was sent via email.
+ * Direct password reset by providing email, new password, and reCAPTCHA token.
  */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { token, newPassword, captchaToken } = body;
+    const { email, password, newPassword, captchaToken } = body;
 
-    if (!token || !newPassword) {
+    const targetPassword = password || newPassword;
+
+    if (!email || !targetPassword) {
       return NextResponse.json(
-        { success: false, error: "Token dan password baru wajib diisi." },
+        { success: false, error: "Email dan password baru wajib diisi." },
         { status: 400 }
       );
     }
 
-    if (newPassword.length < 8) {
+    if (targetPassword.length < 8) {
       return NextResponse.json(
         { success: false, error: "Password baru minimal harus 8 karakter." },
         { status: 400 }
       );
     }
 
-    // Verify CAPTCHA
+    // Verify reCAPTCHA
     const isCaptchaValid = await verifyRecaptcha(captchaToken);
     if (!isCaptchaValid) {
       return NextResponse.json(
@@ -35,27 +37,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if user exists with the valid, non-expired reset token
-    const user = await prisma.user.findFirst({
-      where: {
-        resetToken: token,
-        resetTokenExpiry: {
-          gt: new Date(),
-        },
-      },
+    const formattedEmail = email.toLowerCase().trim();
+
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: { email: formattedEmail },
     });
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Token atur ulang tidak valid, salah, atau telah kedaluwarsa." },
-        { status: 400 }
+        { success: false, error: "Pengguna dengan email tersebut tidak ditemukan." },
+        { status: 404 }
       );
     }
 
-    // Encrypt new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Encrypt password
+    const hashedPassword = await bcrypt.hash(targetPassword, 10);
 
-    // Update password inside user and clear out resetToken fields
+    // Update password inside user and clear out any residual resetToken fields
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -70,7 +69,7 @@ export async function POST(req: NextRequest) {
       message: "Password Anda berhasil diperbarui. Silakan login kembali.",
     });
   } catch (error) {
-    console.error("Reset Password Route Error:", error);
+    console.error("Direct Reset Password Route Error:", error);
     return NextResponse.json(
       { success: false, error: "Terjadi kesalahan internal ketika memperbarui password." },
       { status: 500 }
