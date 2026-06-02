@@ -21,7 +21,92 @@ export const getAI = (): GoogleGenerativeAI => {
     aiInstance = new GoogleGenerativeAI(apiKey);
   }
   
-  return aiInstance;
+  const realAI = aiInstance;
+
+  // Create a transparent proxy object that intercepts getGenerativeModel
+  const proxyAI = Object.create(realAI);
+  
+  proxyAI.getGenerativeModel = function (modelParams: any) {
+    const requestedModel = modelParams.model || GEMINI_MODEL;
+    
+    // Fallback list of models to try sequentially if a transient error (e.g., 503 overload) occurs
+    const fallbackModels = [
+      requestedModel,
+      "gemini-2.5-flash",
+      "gemini-1.5-pro",
+      "gemini-1.5-flash",
+    ];
+    
+    const uniqueModels = Array.from(new Set(fallbackModels));
+
+    return {
+      generateContent: async function (generateParams: any) {
+        let lastError: any = null;
+        
+        for (const currentModel of uniqueModels) {
+          let retries = 3;
+          let delay = 1000;
+          
+          console.log(`[Gemini Proxy] Attempting generation with model: ${currentModel}`);
+          
+          while (retries > 0) {
+            try {
+              const realModel = realAI.getGenerativeModel({
+                ...modelParams,
+                model: currentModel,
+              });
+              
+              const result = await realModel.generateContent(generateParams);
+              
+              if (result && result.response) {
+                try {
+                  const txt = result.response.text();
+                  if (txt) {
+                    console.log(`[Gemini Proxy] Successfully completed generation using model: ${currentModel}`);
+                    return result;
+                  }
+                } catch (e) {
+                  console.warn(`[Gemini Proxy] Response text extraction failed for model ${currentModel}:`, e);
+                }
+              }
+              
+              throw new Error("Received empty or corrupt response from Gemini API");
+            } catch (error: any) {
+              lastError = error;
+              const status = error?.status || error?.statusCode || 0;
+              const message = error?.message || "";
+              
+              console.error(
+                `[Gemini Proxy] Failed attempt with ${currentModel}. Remaining attempts: ${retries - 1}. ` +
+                `Error Status: ${status}, Message: ${message}`
+              );
+              
+              // Immediate fail for client semantic/argument issues
+              if (
+                status === 400 || 
+                message.includes("400") || 
+                message.includes("INVALID_ARGUMENT") || 
+                message.includes("does not support responseMimeType")
+              ) {
+                throw error;
+              }
+              
+              retries--;
+              if (retries > 0) {
+                console.log(`[Gemini Proxy] Waiting ${delay}ms before retrying...`);
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                delay *= 2;
+              }
+            }
+          }
+        }
+        
+        throw lastError || new Error("Semua model Gemini yang dicoba sedang tidak dapat diakses.");
+      }
+    };
+  };
+
+  return proxyAI as GoogleGenerativeAI;
 };
 
 // Recommended model for production tasks
