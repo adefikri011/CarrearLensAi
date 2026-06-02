@@ -84,7 +84,54 @@ export async function POST(req: NextRequest) {
     });
 
     const responseText = result.response.text();
-    const responseData = JSON.parse(responseText || "{}");
+    let cleanJson = (responseText || "{}").trim();
+    
+    // Robust bounds extraction
+    const firstBrace = cleanJson.indexOf('{');
+    const firstBracket = cleanJson.indexOf('[');
+    let startIdx = -1;
+    let endChar = '';
+    
+    if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+      startIdx = firstBrace;
+      endChar = '}';
+    } else if (firstBracket !== -1) {
+      startIdx = firstBracket;
+      endChar = ']';
+    }
+    
+    if (startIdx !== -1) {
+      const lastIdx = cleanJson.lastIndexOf(endChar);
+      if (lastIdx !== -1 && lastIdx > startIdx) {
+        cleanJson = cleanJson.substring(startIdx, lastIdx + 1);
+      }
+    }
+
+    // Strip markdown code block boundaries if they remain
+    cleanJson = cleanJson.replace(/```json|```/gi, "").trim();
+
+    let responseData: any;
+    try {
+      responseData = JSON.parse(cleanJson);
+    } catch (e) {
+      console.error("[Interview parse fail] Standard parse failed. Trying deep cleaner. Raw:", responseText);
+      try {
+        const commentless = cleanJson
+          .replace(/\/\*[\s\S]*?\*\//g, "")
+          .replace(/(?:^|[^:])\/\/.*$/gm, "")
+          .trim();
+        responseData = JSON.parse(commentless);
+      } catch (e2) {
+        console.error("[Interview parse fail] Deep clean failed too. Cleaned path:", cleanJson);
+        responseData = {
+          question: "Maaf, bisakah Anda mengulangi jawaban Anda? Mari lanjutkan wawancara.",
+          feedback: "Ada kendala teknis kecil dalam memproses respons Anda.",
+          score: null,
+          isFinished: false,
+          overallEvaluation: ""
+        };
+      }
+    }
 
     return NextResponse.json({
       success: true,

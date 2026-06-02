@@ -29,12 +29,13 @@ export const getAI = (): GoogleGenerativeAI => {
   proxyAI.getGenerativeModel = function (modelParams: any) {
     const requestedModel = modelParams.model || GEMINI_MODEL;
     
-    // Fallback list of models to try sequentially if a transient error (e.g., 503 overload) occurs
+    // Fallback list of models to try sequentially if a transient error occurs
     const fallbackModels = [
       requestedModel,
-      "gemini-2.5-flash",
-      "gemini-1.5-pro",
-      "gemini-1.5-flash",
+      "gemini-3.5-flash",
+      "gemini-3.1-flash-lite",
+      "gemini-3.1-pro-preview",
+      "gemini-flash-latest"
     ];
     
     const uniqueModels = Array.from(new Set(fallbackModels));
@@ -110,7 +111,7 @@ export const getAI = (): GoogleGenerativeAI => {
 };
 
 // Recommended model for production tasks
-export const GEMINI_MODEL = "gemini-flash-latest";
+export const GEMINI_MODEL = "gemini-3.5-flash";
 
 /**
  * Builds a specific prompt for generating a detailed 12-week roadmap for a chosen career path.
@@ -134,22 +135,20 @@ INSTRUKSI:
 Kembalikan HANYA JSON array dengan struktur:
 [
   {
-    "minggu": number,
-    "fase": "fondasi"|"pengembangan"|"persiapan",
-    "title": string,
-    "tasks": string[],
-    "hours": string,
-    "resource": string,
-    "resourceLink": string
-  },
-  ... (sampai minggu 12)
+    "minggu": 1,
+    "fase": "fondasi",
+    "title": "Dasar-Dasar HTML & CSS",
+    "tasks": ["Latihan taji kelas HTML", "Mempelajari box-model CSS", "Media query responsif"],
+    "hours": "10 Jam",
+    "resource": "MDN Web Docs",
+    "resourceLink": "https://developer.mozilla.org"
+  }
 ]
 `;
 }
 export function buildAnalysisPrompt(profile: any, cvText: string): string {
   return `
-Kamu adalah career counselor AI expert. Analisis SINKRONISASI antara 
-profil yang diisi user DAN isi CV mereka.
+Kamu adalah career counselor AI expert. Analisis SINKRONISASI antara profil yang diisi user DAN isi CV mereka.
 
 PRIORITAS ANALISIS:
 1. ISI CV = sumber utama (primary source). Jika ada perbedaan antara profil dan CV, prioritaskan bukti dari CV.
@@ -172,75 +171,80 @@ ${cvText}
 
 INSTRUKSI ANALISIS:
 1. Bandingkan skills di profil vs skills yang terdeteksi di CV
-2. Jika ada INKONSISTENSI (misal: profil bilang programmer tapi CV berisi 
-   pekerjaan admin), TETAP analisis berdasarkan KOMBINASI keduanya
+2. Jika ada INKONSISTENSI (misal: profil bilang programmer tapi CV berisi pekerjaan admin), TETAP analisis berdasarkan KOMBINASI keduanya
 3. Berikan career path yang realistis berdasarkan KEDUANYA
 4. Dalam rekomendasiUtama, sebutkan jika ada gap antara profil dan CV
 5. cvScore harus mencerminkan kualitas CV yang sebenarnya
+6. PENTING: roadmap90Hari HARUS berisi tepat 12 elemen array (untuk Minggu 1 hingga Minggu 12 secara berurutan).
+7. Di setiap minggu dalam roadmap90Hari, tugas-tugas (array 'tugas') HARUS berisi antara 5-7 item tugas yang spesifik dan konkret.
 
-PENTING: Jangan asal-asalan. Berikan analisis yang jujur dan akurat.
-Jika profil dan CV tidak sinkron, rekomendasikan cara menyeleraskannya.
-
-Kembalikan HANYA JSON valid dengan struktur ini:
+Kembalikan HANYA JSON valid dengan struktur persis seperti schema berikut (tanpa ada komentar di dalam JSON):
 {
-  "overallReadiness": number (0-100),
-  "syncScore": number (0-100, seberapa sinkron profil vs CV),
-  "syncIssues": string[] (list masalah sinkronisasi jika ada),
+  "overallReadiness": 85,
+  "syncScore": 80,
+  "syncIssues": ["Inkonsistensi antara skill pemrograman di profil dengan pengalaman admin di CV"],
   "cvScore": {
-    "total": number,
-    "atsCompatibility": number,
-    "completeness": number,
-    "actionVerbs": number,
-    "keywords": { "matched": string[], "missing": string[] },
+    "total": 75,
+    "atsCompatibility": 80,
+    "completeness": 70,
+    "actionVerbs": 60,
+    "keywords": { "matched": ["Microsoft Office", "Administrasi"], "missing": ["SQL", "React"] },
     "sections": [
-      { "title": "Data Pribadi", "detected": boolean },
-      { "title": "Ringkasan Profil", "detected": boolean },
-      { "title": "Pengalaman Kerja", "detected": boolean },
-      { "title": "Pendidikan", "detected": boolean },
-      { "title": "Skill Teknis", "detected": boolean },
-      { "title": "Proyek & Sertifikat", "detected": boolean }
+      { "title": "Data Pribadi", "detected": true },
+      { "title": "Ringkasan Profil", "detected": true },
+      { "title": "Pengalaman Kerja", "detected": true },
+      { "title": "Pendidikan", "detected": true },
+      { "title": "Skill Teknis", "detected": true },
+      { "title": "Proyek & Sertifikat", "detected": false }
     ]
   },
   "careerPaths": [
     {
-      "id": string,
-      "nama": string,
-      "matchScore": number,
-      "deskripsi": string,
-      "estimasiGajiMin": number,
-      "estimasiGajiMax": number,
-      "waktuSiapBulan": number,
+      "id": "path_1",
+      "nama": "Frontend Developer",
+      "matchScore": 75,
+      "deskripsi": "Mengembangkan antarmuka aplikasi web menggunakan teknologi modern.",
+      "estimasiGajiMin": 5000000,
+      "estimasiGajiMax": 8000000,
+      "waktuSiapBulan": 6,
       "requiredSkills": [
-        { "skill": string, "userHas": boolean, "priority": "high"|"medium"|"low" }
+        { "skill": "React.js", "userHas": false, "priority": "high" }
       ],
-      "sertifikasiRekomendasi": string[],
-      "jobDemand": "tinggi"|"sedang"|"rendah",
-      "trendArah": "naik"|"stabil"|"turun",
-      "roadmapSummary": string
+      "sertifikasiRekomendasi": ["Google IT Support", "Dicoding Frontend Developer"],
+      "jobDemand": "tinggi",
+      "trendArah": "naik",
+      "roadmapSummary": "Fokus pada penguasaan fundamental HTML/CSS, JavaScript modern, dan Framework React."
     }
   ],
   "roadmap90Hari": [
     {
-      "minggu": number, (1-12)
-      "fase": "fondasi"|"pengembangan"|"persiapan",
-      "judul": string, (Singkat & padat)
+      "minggu": 1,
+      "fase": "fondasi",
+      "judul": "Pengenalan Ekosistem Web",
       "tugas": [
-        { "id": string, "text": string, "selesai": false } (Wajib 5-7 tugas per minggu, teks singkat & padat)
+        { "id": "tugas_1", "text": "Mempelajari dasar HTML5 dan struktur dokumen web", "selesai": false },
+        { "id": "tugas_2", "text": "Mempelajari CSS3 selectors dan box model", "selesai": false },
+        { "id": "tugas_3", "text": "Membangun layout halaman web statis responsif", "selesai": false },
+        { "id": "tugas_4", "text": "Melakukan hosting halaman web di GitHub Pages", "selesai": false },
+        { "id": "tugas_5", "text": "Membuat ringkasan dokumentasi HTML/CSS", "selesai": false }
       ],
-      "resource": { "judul": string, "url": string, "platform": string },
-      "estimasiJam": number
+      "resource": { "judul": "MDN Web Docs - HTML & CSS", "url": "https://developer.mozilla.org", "platform": "MDN" },
+      "estimasiJam": 10
     }
-  ], (PENTING: Harus berisi tepat 12 elemen, satu untuk tiap minggu)
+  ],
   "skillRadar": {
-    "teknisDigital": number,
-    "komunikasi": number,
-    "kreativitas": number,
-    "analitis": number,
-    "kepemimpinan": number,
-    "adaptabilitas": number
+    "teknisDigital": 65,
+    "komunikasi": 80,
+    "kreativitas": 75,
+    "analitis": 60,
+    "kepemimpinan": 70,
+    "adaptabilitas": 85
   },
-  "rekomendasiUtama": string[],
-  "pesan": string
+  "rekomendasiUtama": [
+    "Tambahkan proyek portofolio React yang nyata ke dalam CV.",
+    "Selaraskan deskripsi profil di LinkedIn dengan target karir baru."
+  ],
+  "pesan": "CV kamu sudah cukup baik, namun perlu penyelarasan di bagian keterampilan teknis serta penulisan proyek yang relevan."
 }
 `;
 }

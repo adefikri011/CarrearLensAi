@@ -45,13 +45,48 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "AI memberikan respon kosong" }, { status: 500 });
     }
 
-    const cleanJson = responseText.replace(/```json|```/g, "").trim();
     let analysisResult: AnalysisResult;
+    let cleanJson = responseText.trim();
+    
+    // Robust search for the exact JSON bounds to skip conversational slop or outer markdown text
+    const firstBrace = cleanJson.indexOf('{');
+    const firstBracket = cleanJson.indexOf('[');
+    let startIdx = -1;
+    let endChar = '';
+    
+    if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+      startIdx = firstBrace;
+      endChar = '}';
+    } else if (firstBracket !== -1) {
+      startIdx = firstBracket;
+      endChar = ']';
+    }
+    
+    if (startIdx !== -1) {
+      const lastIdx = cleanJson.lastIndexOf(endChar);
+      if (lastIdx !== -1 && lastIdx > startIdx) {
+        cleanJson = cleanJson.substring(startIdx, lastIdx + 1);
+      }
+    }
+
+    // Strip markdown code block boundaries if they remain
+    cleanJson = cleanJson.replace(/```json|```/gi, "").trim();
+
     try {
       analysisResult = JSON.parse(cleanJson);
-    } catch (e) {
-      console.error("Failed to parse Gemini response:", cleanJson);
-      return NextResponse.json({ success: false, error: "Format respon AI tidak valid" }, { status: 500 });
+    } catch (e: any) {
+      console.error("[Gemini parse fail] Standard parse failed. Attempting deep cleanup. Raw:", responseText);
+      try {
+        // Strip out single-line & multi-line comments that may have sneaked in
+        const commentless = cleanJson
+          .replace(/\/\*[\s\S]*?\*\//g, "")
+          .replace(/(?:^|[^:])\/\/.*$/gm, "")
+          .trim();
+        analysisResult = JSON.parse(commentless);
+      } catch (e2: any) {
+        console.error("[Gemini parse fail] Deep cleanup also failed. Clean text attempted:", cleanJson);
+        return NextResponse.json({ success: false, error: "Format respon AI tidak valid" }, { status: 500 });
+      }
     }
 
     // 3. Save to DB
